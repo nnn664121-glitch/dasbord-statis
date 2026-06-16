@@ -198,10 +198,8 @@ with tab1:
             labels={'x': 'Jumlah Cangkir Kopi', 'y': 'Jumlah Responden'},
             color_discrete_sequence=['#6F4E37']
         )
-        fig_dist_kopi.update_layout(
-            xaxis=dict(dtick=1),
-            hovertemplate="<b>%{x} cangkir</b><br>Responden: %{y}<extra></extra>"
-        )
+        fig_dist_kopi.update_layout(xaxis=dict(dtick=1))
+        fig_dist_kopi.update_traces(hovertemplate="<b>%{x} cangkir</b><br>Responden: %{y}<extra></extra>")
         st.plotly_chart(fig_dist_kopi, use_container_width=True)
     
     with col_b:
