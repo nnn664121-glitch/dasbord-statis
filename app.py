@@ -233,7 +233,7 @@ with tab1:
             }
         )
         fig_box.update_layout(showlegend=False)
-fig_box.update_traces(hovertemplate="<b>%{x} cangkir</b><br>Skor: %{y:.2f}<extra></extra>")
+        fig_box.update_traces(hovertemplate="<b>%{x} cangkir</b><br>Skor: %{y:.2f}<extra></extra>")
         st.plotly_chart(fig_box, use_container_width=True)
     
     with col_d:
