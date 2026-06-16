@@ -211,9 +211,9 @@ with tab1:
             color_discrete_sequence=['#2E86AB'],
             labels={'Skor_Produktivitas': 'Skor Produktivitas'}
         )
-        fig_hist_prod.update_layout(
-            hovertemplate="<b>Skor: %{x:.2f}</b><br>Frekuensi: %{y}<extra></extra>"
-        )
+        fig_hist_prod.update_traces(
+    hovertemplate="<b>Skor: %{x:.2f}</b><br>Frekuensi: %{y}<extra></extra>"
+)
         st.plotly_chart(fig_hist_prod, use_container_width=True)
     
     # Row 2: Boxplot & Barplot
