@@ -211,8 +211,7 @@ with tab1:
             color_discrete_sequence=['#2E86AB'],
             labels={'Skor_Produktivitas': 'Skor Produktivitas'}
         )
-        fig_hist_prod.update_traces(
-    hovertemplate="<b>Skor: %{x:.2f}</b><br>Frekuensi: %{y}<extra></extra>"
+       fig_hist_prod.update_traces(hovertemplate="<b>Skor: %{x:.2f}</b><br>Frekuensi: %{y}<extra></extra>")
 )
         st.plotly_chart(fig_hist_prod, use_container_width=True)
     
@@ -250,10 +249,8 @@ with tab1:
         'Durasi_Belajar_Num': 'Rata-rata Jam Belajar'
     }
 )
-        fig_bar_durasi.update_layout(
-            coloraxis_showscale=False,
-            hovertemplate="<b>%{x} cangkir</b><br>Durasi: %{y:.1f} jam<extra></extra>"
-        )
+        fig_bar_durasi.update_layout(coloraxis_showscale=False)
+        fig_bar_durasi.update_traces(hovertemplate="<b>%{x} cangkir</b><br>Durasi: %{y:.1f} jam<extra></extra>")
         st.plotly_chart(fig_bar_durasi, use_container_width=True)
     
     # Tabel Statistik
@@ -279,10 +276,8 @@ with tab2:
             zmin=-1, zmax=1,
             labels={'color': 'Korelasi'}
         )
-        fig_heatmap.update_layout(
-            height=450,
-            hovertemplate="<b>%{y} vs %{x}</b><br>Korelasi: %{z:.3f}<extra></extra>"
-        )
+        fig_heatmap.update_layout(height=450)
+        fig_heatmap.update_traces(hovertemplate="<b>%{y} vs %{x}</b><br>Korelasi: %{z:.3f}<extra></extra>")
         st.plotly_chart(fig_heatmap, use_container_width=True)
     
     with col_f:
@@ -316,9 +311,7 @@ with tab2:
             },
             hover_data=['Is_Fokus_Tinggi']
         )
-        fig_scatter.update_layout(
-            hovertemplate="<b>%{x} cangkir</b><br>Produktivitas: %{y:.2f}<extra></extra>"
-        )
+        fig_scatter.update_traces(hovertemplate="<b>%{x} cangkir</b><br>Produktivitas: %{y:.2f}<extra></extra>")
         st.plotly_chart(fig_scatter, use_container_width=True)
     
     # Insight korelasi
