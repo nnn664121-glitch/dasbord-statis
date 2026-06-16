@@ -240,16 +240,16 @@ with tab1:
         st.subheader("Rata-rata Durasi Belajar per Kelompok Kopi")
         durasi_mean = df_filtered.groupby('Kopi_per_Hari')['Durasi_Belajar_Num'].mean().reset_index()
         fig_bar_durasi = px.bar(
-            durasi_mean,
-            x='Kopi_per_Hari',
-            y='Durasi_Belajar_Num',
-            color='Durasi_Belajar_Num',
-            color_continuous_scale='copper',
-            labels={
-                'Kopi_per_Hari': 'Cangkir/Hari',
-                'Durasi_Belajar_Num': 'Rata-rata Jam Belajar'
-            }
-        )
+    durasi_mean,
+    x='Kopi_per_Hari',
+    y='Durasi_Belajar_Num',
+    color='Durasi_Belajar_Num',
+    color_continuous_scale='Oranges', # <-- Diganti ke palet warna orange/cokelat yang valid
+    labels={
+        'Kopi_per_Hari': 'Cangkir/Hari',
+        'Durasi_Belajar_Num': 'Rata-rata Jam Belajar'
+    }
+)
         fig_bar_durasi.update_layout(
             coloraxis_showscale=False,
             hovertemplate="<b>%{x} cangkir</b><br>Durasi: %{y:.1f} jam<extra></extra>"
