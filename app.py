@@ -212,7 +212,7 @@ with tab1:
             labels={'Skor_Produktivitas': 'Skor Produktivitas'}
         )
     fig_hist_prod.update_traces(hovertemplate="<b>Skor: %{x:.2f}</b><br>Frekuensi: %{y}<extra></extra>")
-)
+
         st.plotly_chart(fig_hist_prod, use_container_width=True)
     
     # Row 2: Boxplot & Barplot
