@@ -729,7 +729,7 @@ with tab1:
                 Z[i, j] = np.nan
     
     # Fill NaN dengan interpolasi sederhana
-    Z_filled = pd.DataFrame(Z).fillna(method='ffill').fillna(method='bfill').fillna(df_filtered['Skor_Produktivitas'].mean()).values
+    Z_filled = pd.DataFrame(Z).ffill().bfill().fillna(df_filtered['Skor_Produktivitas'].mean()).values
     
     fig_surface = go.Figure(data=[go.Surface(
         z=Z_filled,
