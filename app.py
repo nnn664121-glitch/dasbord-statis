@@ -16,7 +16,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- CSS PREMIUM 3D EDITION V2 ---
+# --- CSS PREMIUM 3D EDITION V3 + ANIMATIONS ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
@@ -25,6 +25,7 @@ st.markdown("""
     .stApp {
         background: radial-gradient(ellipse at top, #1a0b2e 0%, #0f0524 40%, #050212 100%);
         font-family: 'Space Grotesk', sans-serif;
+        overflow-x: hidden;
     }
     
     /* Hide Streamlit chrome */
@@ -38,7 +39,97 @@ st.markdown("""
         border-radius: 10px;
     }
     
-    /* HERO SECTION */
+    /* ============================================ */
+    /* ANIMATED FLOATING ORBS BACKGROUND             */
+    /* ============================================ */
+    .floating-orbs {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+        overflow: hidden;
+    }
+    
+    .orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.3;
+        animation: float-orb 20s infinite ease-in-out;
+    }
+    
+    .orb1 {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, #ff006e, transparent);
+        top: 10%;
+        left: 5%;
+        animation-delay: 0s;
+    }
+    
+    .orb2 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, #8338ec, transparent);
+        top: 60%;
+        right: 10%;
+        animation-delay: -5s;
+    }
+    
+    .orb3 {
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, #3a86ff, transparent);
+        bottom: 10%;
+        left: 40%;
+        animation-delay: -10s;
+    }
+    
+    .orb4 {
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, #06ffa5, transparent);
+        top: 30%;
+        right: 30%;
+        animation-delay: -15s;
+    }
+    
+    @keyframes float-orb {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(100px, -50px) scale(1.1); }
+        50% { transform: translate(-50px, 100px) scale(0.9); }
+        75% { transform: translate(-100px, -100px) scale(1.05); }
+    }
+    
+    /* ============================================ */
+    /* ANIMATED GRID BACKGROUND                    */
+    /* ============================================ */
+    .animated-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        background-image: 
+            linear-gradient(rgba(131, 56, 236, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(131, 56, 236, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: grid-move 20s linear infinite;
+    }
+    
+    @keyframes grid-move {
+        0% { background-position: 0 0; }
+        100% { background-position: 50px 50px; }
+    }
+    
+    /* ============================================ */
+    /* HERO SECTION ENHANCED                       */
+    /* ============================================ */
     .hero-container {
         position: relative;
         padding: 4rem 2rem;
@@ -49,6 +140,18 @@ st.markdown("""
         margin-bottom: 2rem;
         border: 1px solid rgba(255, 255, 255, 0.1);
         backdrop-filter: blur(20px);
+        animation: hero-entrance 1s ease-out;
+    }
+    
+    @keyframes hero-entrance {
+        0% {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+        }
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
     
     .hero-container::before {
@@ -66,6 +169,30 @@ st.markdown("""
         100% { transform: rotate(360deg); }
     }
     
+    /* Animated particles inside hero */
+    .hero-container::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: 
+            radial-gradient(circle at 20% 30%, rgba(255, 0, 110, 0.4) 0%, transparent 1%),
+            radial-gradient(circle at 80% 70%, rgba(131, 56, 236, 0.4) 0%, transparent 1%),
+            radial-gradient(circle at 50% 50%, rgba(58, 134, 255, 0.4) 0%, transparent 1%),
+            radial-gradient(circle at 30% 80%, rgba(6, 255, 165, 0.4) 0%, transparent 1%),
+            radial-gradient(circle at 70% 20%, rgba(255, 190, 11, 0.4) 0%, transparent 1%);
+        background-size: 100% 100%;
+        animation: particles-float 15s ease-in-out infinite;
+        pointer-events: none;
+    }
+    
+    @keyframes particles-float {
+        0%, 100% { transform: translate(0, 0); opacity: 0.6; }
+        50% { transform: translate(20px, -20px); opacity: 1; }
+    }
+    
     .hero-content {
         position: relative;
         z-index: 2;
@@ -73,14 +200,19 @@ st.markdown("""
     
     .hero-emoji {
         font-size: 5rem;
-        display: block;
+        display: inline-block;
         margin-bottom: 1rem;
-        animation: float 3s ease-in-out infinite;
+        animation: float-emoji 3s ease-in-out infinite, spin-slow 8s linear infinite;
     }
     
-    @keyframes float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-20px); }
+    @keyframes float-emoji {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-30px) rotate(15deg); }
+    }
+    
+    @keyframes spin-slow {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
     }
     
     .hero-title {
@@ -94,7 +226,7 @@ st.markdown("""
         margin: 0;
         letter-spacing: -3px;
         line-height: 1.1;
-        animation: gradient-flow 5s ease infinite;
+        animation: gradient-flow 5s ease infinite, title-glow 3s ease-in-out infinite;
     }
     
     @keyframes gradient-flow {
@@ -102,12 +234,34 @@ st.markdown("""
         50% { background-position: 100% 50%; }
     }
     
+    @keyframes title-glow {
+        0%, 100% { text-shadow: 0 0 20px rgba(131, 56, 236, 0.5); }
+        50% { text-shadow: 0 0 40px rgba(255, 0, 110, 0.8); }
+    }
+    
+    /* TYPING ANIMATION FOR SUBTITLE */
     .hero-subtitle {
         font-size: 1.3rem;
         color: rgba(255, 255, 255, 0.7);
         margin-top: 1rem;
         font-weight: 400;
         letter-spacing: 1px;
+        overflow: hidden;
+        white-space: nowrap;
+        border-right: 3px solid #06ffa5;
+        animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        max-width: 100%;
+        display: inline-block;
+    }
+    
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+    
+    @keyframes blink-caret {
+        from, to { border-color: transparent }
+        50% { border-color: #06ffa5 }
     }
     
     .hero-badge {
@@ -121,9 +275,28 @@ st.markdown("""
         margin-top: 1.5rem;
         font-family: 'JetBrains Mono', monospace;
         letter-spacing: 2px;
+        animation: badge-pulse 2s ease-in-out infinite, badge-float 3s ease-in-out infinite;
     }
     
-    /* KPI CARDS - NEON GLOW */
+    @keyframes badge-pulse {
+        0%, 100% { 
+            box-shadow: 0 0 20px rgba(6, 255, 165, 0.3);
+            transform: scale(1);
+        }
+        50% { 
+            box-shadow: 0 0 40px rgba(6, 255, 165, 0.8);
+            transform: scale(1.05);
+        }
+    }
+    
+    @keyframes badge-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    /* ============================================ */
+    /* KPI CARDS - ENHANCED WITH SHIMMER            */
+    /* ============================================ */
     .kpi-grid {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -140,6 +313,24 @@ st.markdown("""
         overflow: hidden;
         transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(10px);
+        animation: card-entrance 0.8s ease-out backwards;
+    }
+    
+    .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+    .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+    .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+    .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+    .kpi-card:nth-child(5) { animation-delay: 0.5s; }
+    
+    @keyframes card-entrance {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
     }
     
     .kpi-card::before {
@@ -154,13 +345,35 @@ st.markdown("""
         animation: gradient-shift 3s linear infinite;
     }
     
+    /* Shimmer effect */
+    .kpi-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent
+        );
+        animation: shimmer 3s infinite;
+    }
+    
     @keyframes gradient-shift {
         0% { background-position: 0% 50%; }
         100% { background-position: 300% 50%; }
     }
     
+    @keyframes shimmer {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
     .kpi-card:hover {
-        transform: translateY(-8px) scale(1.02);
+        transform: translateY(-8px) scale(1.02) rotateX(5deg);
         box-shadow: 0 20px 60px rgba(131, 56, 236, 0.3);
         border-color: rgba(131, 56, 236, 0.5);
     }
@@ -168,7 +381,14 @@ st.markdown("""
     .kpi-icon {
         font-size: 2rem;
         margin-bottom: 0.8rem;
-        display: block;
+        display: inline-block;
+        animation: icon-bounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes icon-bounce {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        25% { transform: translateY(-5px) rotate(-5deg); }
+        75% { transform: translateY(-5px) rotate(5deg); }
     }
     
     .kpi-value {
@@ -181,6 +401,12 @@ st.markdown("""
         margin: 0;
         line-height: 1;
         font-family: 'JetBrains Mono', monospace;
+        animation: value-glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes value-glow {
+        0%, 100% { filter: brightness(1) drop-shadow(0 0 5px rgba(131, 56, 236, 0.3)); }
+        50% { filter: brightness(1.2) drop-shadow(0 0 15px rgba(131, 56, 236, 0.8)); }
     }
     
     .kpi-label {
@@ -202,9 +428,17 @@ st.markdown("""
         font-size: 0.75rem;
         margin-top: 0.5rem;
         font-family: 'JetBrains Mono', monospace;
+        animation: delta-slide 3s ease-in-out infinite;
     }
     
-    /* SECTION HEADERS */
+    @keyframes delta-slide {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(5px); }
+    }
+    
+    /* ============================================ */
+    /* SECTION HEADERS ENHANCED                     */
+    /* ============================================ */
     .section-header {
         display: flex;
         align-items: center;
@@ -212,6 +446,18 @@ st.markdown("""
         margin: 2.5rem 0 1.5rem 0;
         padding-bottom: 1rem;
         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        animation: header-slide 0.8s ease-out;
+    }
+    
+    @keyframes header-slide {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
     }
     
     .section-number {
@@ -223,6 +469,18 @@ st.markdown("""
         background-clip: text;
         font-family: 'JetBrains Mono', monospace;
         line-height: 1;
+        animation: number-pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes number-pulse {
+        0%, 100% { 
+            transform: scale(1);
+            filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.5));
+        }
+        50% { 
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 20px rgba(131, 56, 236, 0.8));
+        }
     }
     
     .section-title {
@@ -240,7 +498,9 @@ st.markdown("""
         font-family: 'JetBrains Mono', monospace;
     }
     
-    /* GLASS CARDS */
+    /* ============================================ */
+    /* GLASS CARDS ENHANCED                        */
+    /* ============================================ */
     .glass-card {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
         backdrop-filter: blur(20px);
@@ -252,10 +512,22 @@ st.markdown("""
         transition: all 0.3s ease;
         position: relative;
         overflow: hidden;
+        animation: glass-appear 0.6s ease-out;
+    }
+    
+    @keyframes glass-appear {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
     }
     
     .glass-card:hover {
-        transform: translateY(-3px);
+        transform: translateY(-3px) scale(1.01);
         border-color: rgba(131, 56, 236, 0.4);
         box-shadow: 0 15px 40px rgba(131, 56, 236, 0.15);
     }
@@ -277,7 +549,9 @@ st.markdown("""
         opacity: 1;
     }
     
-    /* 3D BADGE */
+    /* ============================================ */
+    /* 3D BADGE ENHANCED                            */
+    /* ============================================ */
     .badge-3d {
         display: inline-flex;
         align-items: center;
@@ -293,9 +567,23 @@ st.markdown("""
         margin-left: 1rem;
         box-shadow: 0 5px 20px rgba(255, 0, 110, 0.4);
         font-family: 'JetBrains Mono', monospace;
+        animation: badge-glow 2s ease-in-out infinite;
     }
     
-    /* SIDEBAR */
+    @keyframes badge-glow {
+        0%, 100% { 
+            box-shadow: 0 5px 20px rgba(255, 0, 110, 0.4);
+            transform: scale(1);
+        }
+        50% { 
+            box-shadow: 0 5px 30px rgba(255, 0, 110, 0.8);
+            transform: scale(1.05);
+        }
+    }
+    
+    /* ============================================ */
+    /* SIDEBAR ENHANCED                             */
+    /* ============================================ */
     .stSidebar {
         background: rgba(15, 5, 36, 0.95);
         backdrop-filter: blur(20px);
@@ -305,7 +593,9 @@ st.markdown("""
         background: transparent;
     }
     
-    /* TABS */
+    /* ============================================ */
+    /* TABS ENHANCED                                */
+    /* ============================================ */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background: rgba(255, 255, 255, 0.03);
@@ -322,20 +612,46 @@ st.markdown("""
         padding: 12px 24px;
         transition: all 0.3s ease;
         font-family: 'Space Grotesk', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stTabs [data-baseweb="tab"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(131, 56, 236, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover::before {
+        left: 100%;
     }
     
     .stTabs [data-baseweb="tab"]:hover {
         background: rgba(131, 56, 236, 0.1);
         color: #fff;
+        transform: translateY(-2px);
     }
     
     .stTabs [aria-selected="true"] {
         background: linear-gradient(135deg, #ff006e, #8338ec);
         color: #fff;
         box-shadow: 0 5px 20px rgba(131, 56, 236, 0.4);
+        animation: tab-active 0.3s ease;
     }
     
-    /* BUTTONS */
+    @keyframes tab-active {
+        from { transform: scale(0.95); }
+        to { transform: scale(1); }
+    }
+    
+    /* ============================================ */
+    /* BUTTONS ENHANCED                             */
+    /* ============================================ */
     .stButton > button {
         background: linear-gradient(135deg, #ff006e, #8338ec);
         color: white;
@@ -346,6 +662,26 @@ st.markdown("""
         transition: all 0.3s ease;
         font-family: 'Space Grotesk', sans-serif;
         letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+    
+    .stButton > button:hover::before {
+        width: 300px;
+        height: 300px;
     }
     
     .stButton > button:hover {
@@ -353,14 +689,36 @@ st.markdown("""
         box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
     }
     
-    /* DIVIDER */
+    /* ============================================ */
+    /* DIVIDER ENHANCED                             */
+    /* ============================================ */
     .fancy-divider {
         height: 2px;
         background: linear-gradient(90deg, transparent, rgba(131, 56, 236, 0.5), transparent);
         margin: 3rem 0;
+        position: relative;
+        overflow: hidden;
     }
     
-    /* INSIGHT CARDS */
+    .fancy-divider::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, #ff006e, transparent);
+        animation: divider-shine 3s linear infinite;
+    }
+    
+    @keyframes divider-shine {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    /* ============================================ */
+    /* INSIGHT CARDS ENHANCED                       */
+    /* ============================================ */
     .insight-card {
         background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(131, 56, 236, 0.08) 100%);
         border: 1px solid rgba(131, 56, 236, 0.3);
@@ -370,16 +728,46 @@ st.markdown("""
         position: relative;
         overflow: hidden;
         transition: all 0.3s ease;
+        animation: insight-float 4s ease-in-out infinite;
+    }
+    
+    @keyframes insight-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
     }
     
     .insight-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 15px 40px rgba(131, 56, 236, 0.2);
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 50px rgba(131, 56, 236, 0.3);
+        border-color: rgba(255, 0, 110, 0.5);
+    }
+    
+    .insight-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .insight-card:hover::before {
+        left: 100%;
     }
     
     .insight-icon {
         font-size: 2rem;
         margin-bottom: 0.5rem;
+        display: inline-block;
+        animation: icon-dance 2s ease-in-out infinite;
+    }
+    
+    @keyframes icon-dance {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        25% { transform: rotate(-10deg) scale(1.1); }
+        75% { transform: rotate(10deg) scale(1.1); }
     }
     
     .insight-title {
@@ -395,7 +783,9 @@ st.markdown("""
         line-height: 1.6;
     }
     
-    /* INFO BOX */
+    /* ============================================ */
+    /* INFO BOX ENHANCED                            */
+    /* ============================================ */
     .info-box {
         background: linear-gradient(135deg, rgba(58, 134, 255, 0.15) 0%, rgba(6, 255, 165, 0.1) 100%);
         border-left: 4px solid #3a86ff;
@@ -405,16 +795,51 @@ st.markdown("""
         color: rgba(255, 255, 255, 0.9);
         font-family: 'JetBrains Mono', monospace;
         font-size: 0.85rem;
+        animation: info-slide 0.6s ease-out;
     }
     
-    /* METRIC HIGHLIGHT */
+    @keyframes info-slide {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* ============================================ */
+    /* METRIC HIGHLIGHT ENHANCED                    */
+    /* ============================================ */
     .metric-highlight {
         font-family: 'JetBrains Mono', monospace;
         color: #06ffa5;
         font-weight: 600;
+        position: relative;
+        display: inline-block;
     }
     
-    /* FOOTER */
+    .metric-highlight::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, #06ffa5, #3a86ff);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+    
+    .metric-highlight:hover::after {
+        transform: scaleX(1);
+    }
+    
+    /* ============================================ */
+    /* FOOTER ENHANCED                              */
+    /* ============================================ */
     .premium-footer {
         text-align: center;
         padding: 2rem;
@@ -422,12 +847,27 @@ st.markdown("""
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
         border-radius: 20px;
         border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .premium-footer::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(from 0deg, transparent, rgba(131, 56, 236, 0.1), transparent);
+        animation: rotate 30s linear infinite;
     }
     
     .footer-text {
         color: rgba(255, 255, 255, 0.5);
         font-size: 0.85rem;
         margin: 0.3rem 0;
+        position: relative;
+        z-index: 1;
     }
     
     .footer-brand {
@@ -437,9 +877,15 @@ st.markdown("""
         background-clip: text;
         font-weight: 700;
         font-size: 1rem;
+        position: relative;
+        z-index: 1;
+        animation: gradient-flow 5s ease infinite;
+        background-size: 200% 200%;
     }
     
-    /* ANIMATED NUMBER EFFECT */
+    /* ============================================ */
+    /* ANIMATED NUMBER EFFECT                       */
+    /* ============================================ */
     @keyframes pulse-glow {
         0%, 100% { 
             box-shadow: 0 0 20px rgba(131, 56, 236, 0.3);
@@ -453,17 +899,9 @@ st.markdown("""
         animation: pulse-glow 3s ease-in-out infinite;
     }
     
-    /* DOWNLOAD BUTTON */
-    .download-btn {
-        background: linear-gradient(135deg, #06ffa5, #3a86ff) !important;
-        box-shadow: 0 5px 20px rgba(6, 255, 165, 0.3);
-    }
-    
-    .download-btn:hover {
-        box-shadow: 0 10px 30px rgba(6, 255, 165, 0.5) !important;
-    }
-    
-    /* PROGRESS BAR */
+    /* ============================================ */
+    /* PROGRESS BAR ENHANCED                        */
+    /* ============================================ */
     .progress-container {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 10px;
@@ -473,41 +911,284 @@ st.markdown("""
     
     .progress-bar {
         height: 8px;
-        background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff);
+        background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+        background-size: 200% 100%;
         border-radius: 10px;
         transition: width 0.5s ease;
+        animation: progress-shine 2s linear infinite;
     }
     
-    /* TOOLTIP */
-    .tooltip {
-        position: relative;
+    @keyframes progress-shine {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+    
+    /* ============================================ */
+    /* MARQUEE SCROLLING TEXT                       */
+    /* ============================================ */
+    .marquee-container {
+        overflow: hidden;
+        white-space: nowrap;
+        background: linear-gradient(90deg, rgba(255, 0, 110, 0.05), rgba(131, 56, 236, 0.05), rgba(58, 134, 255, 0.05));
+        padding: 0.8rem 0;
+        border-radius: 12px;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .marquee-content {
         display: inline-block;
+        animation: marquee-scroll 30s linear infinite;
+        color: rgba(255, 255, 255, 0.7);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
     }
     
-    .tooltip .tooltiptext {
-        visibility: hidden;
-        width: 200px;
-        background-color: rgba(15, 5, 36, 0.95);
-        color: #fff;
-        text-align: center;
-        border-radius: 8px;
-        padding: 8px;
+    @keyframes marquee-scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
+    
+    /* ============================================ */
+    /* WAVE ANIMATION                               */
+    /* ============================================ */
+    .wave-container {
+        position: relative;
+        height: 50px;
+        overflow: hidden;
+        margin: 2rem 0;
+    }
+    
+    .wave {
         position: absolute;
-        z-index: 1;
-        bottom: 125%;
-        left: 50%;
-        margin-left: -100px;
-        opacity: 0;
-        transition: opacity 0.3s;
-        font-size: 0.8rem;
-        border: 1px solid rgba(131, 56, 236, 0.3);
+        bottom: 0;
+        left: 0;
+        width: 200%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(131, 56, 236, 0.2) 25%, 
+            rgba(255, 0, 110, 0.2) 50%, 
+            rgba(131, 56, 236, 0.2) 75%, 
+            transparent 100%
+        );
+        animation: wave-move 4s ease-in-out infinite;
     }
     
-    .tooltip:hover .tooltiptext {
-        visibility: visible;
-        opacity: 1;
+    @keyframes wave-move {
+        0%, 100% { transform: translateX(-50%); }
+        50% { transform: translateX(0%); }
+    }
+    
+    /* ============================================ */
+    /* NEON TEXT EFFECT                             */
+    /* ============================================ */
+    .neon-text {
+        color: #fff;
+        text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #ff006e,
+            0 0 40px #ff006e,
+            0 0 80px #ff006e;
+        animation: neon-flicker 3s infinite alternate;
+    }
+    
+    @keyframes neon-flicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #ff006e,
+                0 0 40px #ff006e,
+                0 0 80px #ff006e;
+        }
+        20%, 24%, 55% {
+            text-shadow: none;
+        }
+    }
+    
+    /* ============================================ */
+    /* RIPPLE EFFECT                                */
+    /* ============================================ */
+    .ripple {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ripple::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(131, 56, 236, 0.5);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .ripple:active::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    /* ============================================ */
+    /* FLOATING COFFEE BEANS                        */
+    /* ============================================ */
+    .coffee-bean {
+        position: fixed;
+        font-size: 2rem;
+        opacity: 0.3;
+        pointer-events: none;
+        z-index: 1;
+        animation: bean-float 15s linear infinite;
+    }
+    
+    .bean-1 { top: 20%; left: 10%; animation-delay: 0s; }
+    .bean-2 { top: 40%; right: 15%; animation-delay: -3s; }
+    .bean-3 { top: 60%; left: 25%; animation-delay: -6s; }
+    .bean-4 { top: 80%; right: 30%; animation-delay: -9s; }
+    .bean-5 { top: 15%; left: 60%; animation-delay: -12s; }
+    
+    @keyframes bean-float {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.3;
+        }
+        50% {
+            opacity: 0.6;
+        }
+        100% {
+            transform: translateY(-100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
+    /* ============================================ */
+    /* DATAFRAME ANIMATIONS                         */
+    /* ============================================ */
+    .stDataFrame {
+        animation: dataframe-appear 0.5s ease-out;
+    }
+    
+    @keyframes dataframe-appear {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* ============================================ */
+    /* SPINNER ENHANCED                             */
+    /* ============================================ */
+    .stSpinner > div {
+        border-top-color: #ff006e !important;
+        animation: spin 1s linear infinite !important;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    /* ============================================ */
+    /* METRIC CARDS ANIMATION                       */
+    /* ============================================ */
+    [data-testid="stMetric"] {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-3px);
+        border-color: rgba(131, 56, 236, 0.4);
+        box-shadow: 0 10px 30px rgba(131, 56, 236, 0.2);
+    }
+    
+    [data-testid="stMetric"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        animation: shimmer 4s infinite;
+    }
+    
+    /* ============================================ */
+    /* SCROLL INDICATOR                             */
+    /* ============================================ */
+    .scroll-indicator {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+        z-index: 9999;
+        transition: width 0.1s ease;
+    }
+    
+    /* ============================================ */
+    /* GRADIENT BORDER ANIMATION                    */
+    /* ============================================ */
+    .gradient-border {
+        position: relative;
+        background: rgba(15, 5, 36, 0.8);
+        border-radius: 20px;
+        padding: 2px;
+    }
+    
+    .gradient-border::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 20px;
+        padding: 2px;
+        background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+        background-size: 200% 200%;
+        animation: gradient-border-flow 3s ease infinite;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+    }
+    
+    @keyframes gradient-border-flow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
     }
 </style>
+""", unsafe_allow_html=True)
+
+# --- ANIMATED BACKGROUND ELEMENTS ---
+st.markdown("""
+<div class="animated-grid"></div>
+<div class="floating-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    <div class="orb orb4"></div>
+</div>
+<div class="coffee-bean bean-1">☕</div>
+<div class="coffee-bean bean-2">🫘</div>
+<div class="coffee-bean bean-3">☕</div>
+<div class="coffee-bean bean-4">🫘</div>
+<div class="coffee-bean bean-5">☕</div>
 """, unsafe_allow_html=True)
 
 # --- FUNGSI LOAD & PREPROCESS DATA ---
@@ -534,11 +1215,9 @@ def load_data():
     df_clean['Is_Fokus_Tinggi'] = (df_clean['Skor_Produktivitas'] > 3.0).astype(int)
     df_clean['Is_Peminum_Kopi'] = (df_clean['Kopi_per_Hari'] > 0).astype(int)
     
-    # Label untuk 3D
     df_clean['Fokus_Label'] = df_clean['Is_Fokus_Tinggi'].map({1: 'High Focus', 0: 'Low Focus'})
     df_clean['Kopi_Label'] = df_clean['Kopi_per_Hari'].apply(lambda x: f'{x} Cangkir')
     
-    # Kategori Konsumsi
     def categorize_kopi(x):
         if x == 0:
             return 'Non-Drinker'
@@ -551,7 +1230,6 @@ def load_data():
     
     df_clean['Kategori_Konsumsi'] = df_clean['Kopi_per_Hari'].apply(categorize_kopi)
     
-    # Produktivitas Level
     def categorize_produktivitas(x):
         if x < 2.5:
             return 'Low'
@@ -573,7 +1251,16 @@ st.markdown("""
         <span class="hero-emoji">☕</span>
         <h1 class="hero-title">Coffee Analytics Pro</h1>
         <p class="hero-subtitle">Advanced 3D Neuroscience & Productivity Intelligence Platform</p>
-        <span class="hero-badge">◆ PREMIUM EDITION v2.0 ◆ AI-POWERED INSIGHTS ◆</span>
+        <span class="hero-badge">◆ PREMIUM EDITION v3.0 ◆ AI-POWERED INSIGHTS ◆</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
+
+# --- MARQUEE SCROLLING TEXT ---
+st.markdown("""
+<div class="marquee-container">
+    <div class="marquee-content">
+        ☕ COFFEE ANALYTICS • 📊 DATA SCIENCE • 🧠 NEUROSCIENCE • 📈 PRODUCTIVITY • 🎯 3D VISUALIZATION • 🤖 AI INSIGHTS • 🎲 MONTE CARLO • 📉 CORRELATION • ☕ COFFEE ANALYTICS • 📊 DATA SCIENCE • 🧠 NEUROSCIENCE • 📈 PRODUCTIVITY • 🎯 3D VISUALIZATION • 🤖 AI INSIGHTS • 🎲 MONTE CARLO • 📉 CORRELATION •
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -583,7 +1270,6 @@ with st.sidebar:
     st.markdown("### 🎛️ **Control Panel**")
     st.markdown("---")
 
-    # Advanced Filters
     st.markdown("#### 🔍 **Data Filters**")
     
     kopi_filter = st.multiselect(
@@ -640,7 +1326,6 @@ with st.sidebar:
 
     st.markdown("---")
     
-    # Live Stats
     st.markdown("#### 📈 **Live Statistics**")
     st.markdown(f"""
     <div class="glass-card pulse-card" style="text-align: center;">
@@ -650,7 +1335,6 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
     
-    # Progress Bar
     pct_filtered = (len(df_filtered) / len(df)) * 100 if len(df) > 0 else 0
     st.markdown(f"""
     <div class="progress-container">
@@ -664,7 +1348,6 @@ with st.sidebar:
     
     st.markdown("---")
     
-    # Export Options
     st.markdown("#### 💾 **Export Data**")
     
     csv = df_filtered.to_csv(index=False).encode('utf-8')
@@ -676,7 +1359,6 @@ with st.sidebar:
         use_container_width=True
     )
     
-    # Reset Button
     if st.button("🔄 Reset All Filters", use_container_width=True):
         st.rerun()
 
@@ -745,7 +1427,12 @@ with col5:
     </div>
     """, unsafe_allow_html=True)
 
-st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+# --- WAVE DIVIDER ---
+st.markdown("""
+<div class="wave-container">
+    <div class="wave"></div>
+</div>
+""", unsafe_allow_html=True)
 
 # --- TABS ---
 tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
@@ -771,7 +1458,6 @@ with tab1:
     """, unsafe_allow_html=True)
     
     if len(df_filtered) > 0:
-        # 3D SCATTER PLOT - MAIN VISUALIZATION
         st.markdown("### 🌌 **3D Scatter Plot: Kopi × Durasi × Produktivitas**")
         st.markdown("""
         <div class="info-box">
@@ -862,7 +1548,6 @@ with tab1:
         
         st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
         
-        # 3D SURFACE PLOT
         st.markdown("### 🏔️ **3D Surface Plot: Produktivitas Landscape**")
         st.markdown("""
         <div class="info-box">
@@ -871,7 +1556,6 @@ with tab1:
         </div>
         """, unsafe_allow_html=True)
         
-        # Binning untuk surface
         kopi_bins = np.linspace(df_filtered['Kopi_per_Hari'].min(), df_filtered['Kopi_per_Hari'].max(), 10)
         durasi_bins = np.linspace(df_filtered['Durasi_Belajar_Num'].min(), df_filtered['Durasi_Belajar_Num'].max(), 10)
         
@@ -887,7 +1571,6 @@ with tab1:
                 else:
                     Z[i, j] = np.nan
         
-        # Fill NaN dengan interpolasi sederhana
         Z_filled = pd.DataFrame(Z).ffill().bfill().fillna(df_filtered['Skor_Produktivitas'].mean()).values
         
         fig_surface = go.Figure(data=[go.Surface(
@@ -947,7 +1630,6 @@ with tab1:
         
         st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
         
-        # 3D CONTOUR PLOT
         st.markdown("### 🌊 **3D Contour Plot: Density Mapping**")
         
         fig_contour = go.Figure()
@@ -993,7 +1675,6 @@ with tab1:
         
         st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
         
-        # 3D INSIGHTS
         st.markdown("### 💎 **3D Insights & Pattern Discovery**")
         
         ins_col1, ins_col2, ins_col3, ins_col4 = st.columns(4)
@@ -1228,7 +1909,6 @@ with tab2:
             use_container_width=True
         )
         
-        # Additional Statistics
         st.markdown("#### 📊 **Advanced Statistics**")
         col_stat1, col_stat2, col_stat3 = st.columns(3)
         
@@ -1350,7 +2030,6 @@ with tab3:
         with col_h:
             st.markdown("#### 📊 **Correlation Matrix Details**")
             
-            # Calculate all correlations
             corr_details = []
             for i, col1 in enumerate(corr_cols):
                 for j, col2 in enumerate(corr_cols):
@@ -1444,7 +2123,6 @@ with tab4:
             kontingensi.columns = ['Low Focus', 'High Focus', 'Total'] if len(kontingensi.columns) == 3 else list(kontingensi.columns)
             st.dataframe(kontingensi, use_container_width=True)
             
-            # Chi-square test
             try:
                 if len(df_filtered) > 0:
                     ct_table = pd.crosstab(df_filtered['Is_Peminum_Kopi'], df_filtered['Is_Fokus_Tinggi'])
@@ -1480,12 +2158,12 @@ with tab4:
             st.markdown("#### 📈 **Probability Comparison**")
             
             if 1 in df_filtered['Is_Peminum_Kopi'].values and len(prob_bersyarat) > 1:
-                p_kopi = prob_bersyarat.iloc[-1, -1]  # Last row, last column (High Focus)
+                p_kopi = prob_bersyarat.iloc[-1, -1]
             else:
                 p_kopi = 0
 
             if 0 in df_filtered['Is_Peminum_Kopi'].values and len(prob_bersyarat) > 1:
-                p_non_kopi = prob_bersyarat.iloc[0, -1]  # First row, last column
+                p_non_kopi = prob_bersyarat.iloc[0, -1]
             else:
                 p_non_kopi = 0
 
@@ -1519,7 +2197,6 @@ with tab4:
             if p_kopi > p_non_kopi and p_non_kopi > 0:
                 st.success(f"📈 Coffee drinkers have **{p_kopi/p_non_kopi:.1f}x higher** chance of achieving high focus!")
             
-            # Odds Ratio
             if p_non_kopi > 0 and p_non_kopi < 100 and p_kopi < 100:
                 odds_kopi = p_kopi / (100 - p_kopi) if p_kopi < 100 else float('inf')
                 odds_non = p_non_kopi / (100 - p_non_kopi)
@@ -1535,10 +2212,8 @@ with tab4:
                 </div>
                 """, unsafe_allow_html=True)
         
-        # Additional Probability Analysis
         st.markdown("#### 🎲 **Bayesian Probability Matrix**")
         
-        # Calculate P(Focus | Coffee Amount)
         prob_matrix = pd.crosstab(
             df_filtered['Kopi_per_Hari'],
             df_filtered['Is_Fokus_Tinggi'],
@@ -1675,7 +2350,6 @@ with tab5:
             )
             st.plotly_chart(fig_mc, use_container_width=True)
             
-            # Additional Statistics
             st.markdown("#### 📊 **Monte Carlo Statistics**")
             mc_col1, mc_col2, mc_col3, mc_col4 = st.columns(4)
             
@@ -1706,7 +2380,6 @@ with tab6:
         with col_adv1:
             st.markdown("#### 🕸️ **Radar Chart: Multi-dimensional Profile**")
             
-            # Calculate average metrics per category
             radar_data = df_filtered.groupby('Kategori_Konsumsi').agg({
                 'Kopi_per_Hari': 'mean',
                 'Durasi_Belajar_Num': 'mean',
@@ -1715,7 +2388,6 @@ with tab6:
             }).round(2)
             
             if len(radar_data) > 0:
-                # Normalize data for radar chart
                 radar_min = radar_data.min()
                 radar_max = radar_data.max()
                 radar_range = radar_max - radar_min + 0.001
@@ -1727,7 +2399,7 @@ with tab6:
                 
                 for idx, category in enumerate(radar_normalized.index):
                     vals = radar_normalized.loc[category].values.tolist()
-                    vals.append(vals[0])  # Close the polygon
+                    vals.append(vals[0])
                     theta = categories + [categories[0]]
                     
                     fig_radar.add_trace(go.Scatterpolar(
@@ -1823,7 +2495,6 @@ with tab6:
         with col_adv4:
             st.markdown("#### 🌡️ **Heatmap: Productivity by Coffee & Study Duration**")
             
-            # Create heatmap data
             heatmap_data = df_filtered.groupby(['Kopi_per_Hari', 'Durasi_Belajar_Num'])['Skor_Produktivitas'].mean().reset_index()
             heatmap_pivot = heatmap_data.pivot(index='Kopi_per_Hari', columns='Durasi_Belajar_Num', values='Skor_Produktivitas')
             
@@ -1849,7 +2520,6 @@ with tab6:
             
             st.plotly_chart(fig_heatmap_adv, use_container_width=True)
         
-        # Statistical Tests
         st.markdown("#### 🧪 **Hypothesis Testing**")
         
         test_col1, test_col2, test_col3 = st.columns(3)
@@ -1934,10 +2604,8 @@ with tab7:
     """, unsafe_allow_html=True)
     
     if len(df_filtered) > 0:
-        # Generate AI Insights
         st.markdown("### 🤖 **Automated Analysis**")
         
-        # Insight 1: Optimal Coffee Consumption
         prod_by_coffee = df_filtered.groupby('Kopi_per_Hari')['Skor_Produktivitas'].mean()
         if len(prod_by_coffee) > 0:
             optimal_coffee = prod_by_coffee.idxmax()
@@ -1958,7 +2626,6 @@ with tab7:
         </div>
         """, unsafe_allow_html=True)
         
-        # Insight 2: Study Duration Sweet Spot
         durasi_bins = pd.cut(df_filtered['Durasi_Belajar_Num'], bins=[0, 2, 4, 6, 8, 10])
         durasi_productivity = df_filtered.groupby(durasi_bins, observed=True)['Skor_Produktivitas'].mean()
         if len(durasi_productivity) > 0:
@@ -1980,7 +2647,6 @@ with tab7:
         </div>
         """, unsafe_allow_html=True)
         
-        # Insight 3: Sleep Quality Impact
         sleep_corr = df_filtered['Kualitas_Tidur_Memburuk'].corr(df_filtered['Skor_Produktivitas'])
         
         st.markdown(f"""
@@ -1995,7 +2661,6 @@ with tab7:
         </div>
         """, unsafe_allow_html=True)
         
-        # Insight 4: Risk Factors
         high_coffee_low_sleep = df_filtered[(df_filtered['Kopi_per_Hari'] >= 2) & (df_filtered['Kualitas_Tidur_Memburuk'] >= 4)]
         risk_percentage = (len(high_coffee_low_sleep) / len(df_filtered)) * 100
         
@@ -2011,7 +2676,6 @@ with tab7:
         </div>
         """, unsafe_allow_html=True)
         
-        # Recommendations
         st.markdown("### 💡 **Personalized Recommendations**")
         
         rec_col1, rec_col2, rec_col3 = st.columns(3)
@@ -2055,30 +2719,23 @@ with tab7:
             </div>
             """, unsafe_allow_html=True)
         
-        # Predictive Model Summary - USING NUMPY INSTEAD OF SKLEARN
         st.markdown("### 📊 **Predictive Model Summary**")
         
         try:
             X = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk']].values
             y = df_filtered['Skor_Produktivitas'].values
             
-            # Add intercept column (column of ones)
             X_with_intercept = np.column_stack([np.ones(len(X)), X])
             
-            # Compute coefficients using normal equation: β = (X^T X)^(-1) X^T y
-            # Using numpy's lstsq for numerical stability
             beta, residuals, rank, s = np.linalg.lstsq(X_with_intercept, y, rcond=None)
             y_pred = X_with_intercept @ beta
             
-            # Calculate R² score
             ss_res = np.sum((y - y_pred) ** 2)
             ss_tot = np.sum((y - np.mean(y)) ** 2)
             r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
             
-            # Calculate RMSE
             rmse = np.sqrt(np.mean((y - y_pred) ** 2))
             
-            # Coefficients (without intercept)
             coef = beta[1:]
             
             st.markdown(f"""
@@ -2105,7 +2762,6 @@ with tab7:
             </div>
             """, unsafe_allow_html=True)
             
-            # Feature Importance
             st.markdown("### 📈 **Feature Importance**")
             
             feature_importance = pd.DataFrame({
