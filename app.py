@@ -16,22 +16,19 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# --- CSS PREMIUM 3D EDITION V3 + ANIMATIONS ---
+# --- CSS PREMIUM 3D EDITION V4 + PROFILES ---
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
     
-    /* Global Dark Theme */
     .stApp {
         background: radial-gradient(ellipse at top, #1a0b2e 0%, #0f0524 40%, #050212 100%);
         font-family: 'Space Grotesk', sans-serif;
         overflow-x: hidden;
     }
     
-    /* Hide Streamlit chrome */
     #MainMenu, header, footer {visibility: hidden;}
     
-    /* Custom Scrollbar */
     ::-webkit-scrollbar {width: 10px;}
     ::-webkit-scrollbar-track {background: #0f0524;}
     ::-webkit-scrollbar-thumb {
@@ -39,9 +36,7 @@ st.markdown("""
         border-radius: 10px;
     }
     
-    /* ============================================ */
-    /* ANIMATED FLOATING ORBS BACKGROUND             */
-    /* ============================================ */
+    /* Floating Orbs */
     .floating-orbs {
         position: fixed;
         top: 0;
@@ -61,41 +56,10 @@ st.markdown("""
         animation: float-orb 20s infinite ease-in-out;
     }
     
-    .orb1 {
-        width: 300px;
-        height: 300px;
-        background: radial-gradient(circle, #ff006e, transparent);
-        top: 10%;
-        left: 5%;
-        animation-delay: 0s;
-    }
-    
-    .orb2 {
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(circle, #8338ec, transparent);
-        top: 60%;
-        right: 10%;
-        animation-delay: -5s;
-    }
-    
-    .orb3 {
-        width: 250px;
-        height: 250px;
-        background: radial-gradient(circle, #3a86ff, transparent);
-        bottom: 10%;
-        left: 40%;
-        animation-delay: -10s;
-    }
-    
-    .orb4 {
-        width: 350px;
-        height: 350px;
-        background: radial-gradient(circle, #06ffa5, transparent);
-        top: 30%;
-        right: 30%;
-        animation-delay: -15s;
-    }
+    .orb1 { width: 300px; height: 300px; background: radial-gradient(circle, #ff006e, transparent); top: 10%; left: 5%; }
+    .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, #8338ec, transparent); top: 60%; right: 10%; animation-delay: -5s; }
+    .orb3 { width: 250px; height: 250px; background: radial-gradient(circle, #3a86ff, transparent); bottom: 10%; left: 40%; animation-delay: -10s; }
+    .orb4 { width: 350px; height: 350px; background: radial-gradient(circle, #06ffa5, transparent); top: 30%; right: 30%; animation-delay: -15s; }
     
     @keyframes float-orb {
         0%, 100% { transform: translate(0, 0) scale(1); }
@@ -104,9 +68,6 @@ st.markdown("""
         75% { transform: translate(-100px, -100px) scale(1.05); }
     }
     
-    /* ============================================ */
-    /* ANIMATED GRID BACKGROUND                    */
-    /* ============================================ */
     .animated-grid {
         position: fixed;
         top: 0;
@@ -127,9 +88,7 @@ st.markdown("""
         100% { background-position: 50px 50px; }
     }
     
-    /* ============================================ */
-    /* HERO SECTION ENHANCED                       */
-    /* ============================================ */
+    /* Hero Section */
     .hero-container {
         position: relative;
         padding: 4rem 2rem;
@@ -144,14 +103,8 @@ st.markdown("""
     }
     
     @keyframes hero-entrance {
-        0% {
-            opacity: 0;
-            transform: translateY(50px) scale(0.9);
-        }
-        100% {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+        0% { opacity: 0; transform: translateY(50px) scale(0.9); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
     }
     
     .hero-container::before {
@@ -165,54 +118,20 @@ st.markdown("""
         animation: rotate 20s linear infinite;
     }
     
-    @keyframes rotate {
-        100% { transform: rotate(360deg); }
-    }
+    @keyframes rotate { 100% { transform: rotate(360deg); } }
     
-    /* Animated particles inside hero */
-    .hero-container::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-image: 
-            radial-gradient(circle at 20% 30%, rgba(255, 0, 110, 0.4) 0%, transparent 1%),
-            radial-gradient(circle at 80% 70%, rgba(131, 56, 236, 0.4) 0%, transparent 1%),
-            radial-gradient(circle at 50% 50%, rgba(58, 134, 255, 0.4) 0%, transparent 1%),
-            radial-gradient(circle at 30% 80%, rgba(6, 255, 165, 0.4) 0%, transparent 1%),
-            radial-gradient(circle at 70% 20%, rgba(255, 190, 11, 0.4) 0%, transparent 1%);
-        background-size: 100% 100%;
-        animation: particles-float 15s ease-in-out infinite;
-        pointer-events: none;
-    }
-    
-    @keyframes particles-float {
-        0%, 100% { transform: translate(0, 0); opacity: 0.6; }
-        50% { transform: translate(20px, -20px); opacity: 1; }
-    }
-    
-    .hero-content {
-        position: relative;
-        z-index: 2;
-    }
+    .hero-content { position: relative; z-index: 2; }
     
     .hero-emoji {
         font-size: 5rem;
         display: inline-block;
         margin-bottom: 1rem;
-        animation: float-emoji 3s ease-in-out infinite, spin-slow 8s linear infinite;
+        animation: float-emoji 3s ease-in-out infinite;
     }
     
     @keyframes float-emoji {
         0%, 100% { transform: translateY(0) rotate(0deg); }
         50% { transform: translateY(-30px) rotate(15deg); }
-    }
-    
-    @keyframes spin-slow {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
     }
     
     .hero-title {
@@ -226,7 +145,7 @@ st.markdown("""
         margin: 0;
         letter-spacing: -3px;
         line-height: 1.1;
-        animation: gradient-flow 5s ease infinite, title-glow 3s ease-in-out infinite;
+        animation: gradient-flow 5s ease infinite;
     }
     
     @keyframes gradient-flow {
@@ -234,34 +153,12 @@ st.markdown("""
         50% { background-position: 100% 50%; }
     }
     
-    @keyframes title-glow {
-        0%, 100% { text-shadow: 0 0 20px rgba(131, 56, 236, 0.5); }
-        50% { text-shadow: 0 0 40px rgba(255, 0, 110, 0.8); }
-    }
-    
-    /* TYPING ANIMATION FOR SUBTITLE */
     .hero-subtitle {
         font-size: 1.3rem;
         color: rgba(255, 255, 255, 0.7);
         margin-top: 1rem;
         font-weight: 400;
         letter-spacing: 1px;
-        overflow: hidden;
-        white-space: nowrap;
-        border-right: 3px solid #06ffa5;
-        animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
-        max-width: 100%;
-        display: inline-block;
-    }
-    
-    @keyframes typing {
-        from { width: 0 }
-        to { width: 100% }
-    }
-    
-    @keyframes blink-caret {
-        from, to { border-color: transparent }
-        50% { border-color: #06ffa5 }
     }
     
     .hero-badge {
@@ -275,35 +172,15 @@ st.markdown("""
         margin-top: 1.5rem;
         font-family: 'JetBrains Mono', monospace;
         letter-spacing: 2px;
-        animation: badge-pulse 2s ease-in-out infinite, badge-float 3s ease-in-out infinite;
+        animation: badge-pulse 2s ease-in-out infinite;
     }
     
     @keyframes badge-pulse {
-        0%, 100% { 
-            box-shadow: 0 0 20px rgba(6, 255, 165, 0.3);
-            transform: scale(1);
-        }
-        50% { 
-            box-shadow: 0 0 40px rgba(6, 255, 165, 0.8);
-            transform: scale(1.05);
-        }
+        0%, 100% { box-shadow: 0 0 20px rgba(6, 255, 165, 0.3); transform: scale(1); }
+        50% { box-shadow: 0 0 40px rgba(6, 255, 165, 0.8); transform: scale(1.05); }
     }
     
-    @keyframes badge-float {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-10px); }
-    }
-    
-    /* ============================================ */
-    /* KPI CARDS - ENHANCED WITH SHIMMER            */
-    /* ============================================ */
-    .kpi-grid {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: 1.5rem;
-        margin: 2rem 0;
-    }
-    
+    /* KPI Cards */
     .kpi-card {
         position: relative;
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
@@ -316,21 +193,9 @@ st.markdown("""
         animation: card-entrance 0.8s ease-out backwards;
     }
     
-    .kpi-card:nth-child(1) { animation-delay: 0.1s; }
-    .kpi-card:nth-child(2) { animation-delay: 0.2s; }
-    .kpi-card:nth-child(3) { animation-delay: 0.3s; }
-    .kpi-card:nth-child(4) { animation-delay: 0.4s; }
-    .kpi-card:nth-child(5) { animation-delay: 0.5s; }
-    
     @keyframes card-entrance {
-        from {
-            opacity: 0;
-            transform: translateY(30px) scale(0.9);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-        }
+        from { opacity: 0; transform: translateY(30px) scale(0.9); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
     }
     
     .kpi-card::before {
@@ -345,7 +210,6 @@ st.markdown("""
         animation: gradient-shift 3s linear infinite;
     }
     
-    /* Shimmer effect */
     .kpi-card::after {
         content: '';
         position: absolute;
@@ -353,12 +217,7 @@ st.markdown("""
         left: -100%;
         width: 100%;
         height: 100%;
-        background: linear-gradient(
-            90deg,
-            transparent,
-            rgba(255, 255, 255, 0.1),
-            transparent
-        );
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
         animation: shimmer 3s infinite;
     }
     
@@ -373,7 +232,7 @@ st.markdown("""
     }
     
     .kpi-card:hover {
-        transform: translateY(-8px) scale(1.02) rotateX(5deg);
+        transform: translateY(-8px) scale(1.02);
         box-shadow: 0 20px 60px rgba(131, 56, 236, 0.3);
         border-color: rgba(131, 56, 236, 0.5);
     }
@@ -428,17 +287,9 @@ st.markdown("""
         font-size: 0.75rem;
         margin-top: 0.5rem;
         font-family: 'JetBrains Mono', monospace;
-        animation: delta-slide 3s ease-in-out infinite;
     }
     
-    @keyframes delta-slide {
-        0%, 100% { transform: translateX(0); }
-        50% { transform: translateX(5px); }
-    }
-    
-    /* ============================================ */
-    /* SECTION HEADERS ENHANCED                     */
-    /* ============================================ */
+    /* Section Headers */
     .section-header {
         display: flex;
         align-items: center;
@@ -450,14 +301,8 @@ st.markdown("""
     }
     
     @keyframes header-slide {
-        from {
-            opacity: 0;
-            transform: translateX(-50px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        from { opacity: 0; transform: translateX(-50px); }
+        to { opacity: 1; transform: translateX(0); }
     }
     
     .section-number {
@@ -473,14 +318,8 @@ st.markdown("""
     }
     
     @keyframes number-pulse {
-        0%, 100% { 
-            transform: scale(1);
-            filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.5));
-        }
-        50% { 
-            transform: scale(1.1);
-            filter: drop-shadow(0 0 20px rgba(131, 56, 236, 0.8));
-        }
+        0%, 100% { transform: scale(1); filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.5)); }
+        50% { transform: scale(1.1); filter: drop-shadow(0 0 20px rgba(131, 56, 236, 0.8)); }
     }
     
     .section-title {
@@ -498,9 +337,7 @@ st.markdown("""
         font-family: 'JetBrains Mono', monospace;
     }
     
-    /* ============================================ */
-    /* GLASS CARDS ENHANCED                        */
-    /* ============================================ */
+    /* Glass Cards */
     .glass-card {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
         backdrop-filter: blur(20px);
@@ -516,14 +353,8 @@ st.markdown("""
     }
     
     @keyframes glass-appear {
-        from {
-            opacity: 0;
-            transform: scale(0.95);
-        }
-        to {
-            opacity: 1;
-            transform: scale(1);
-        }
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
     }
     
     .glass-card:hover {
@@ -532,26 +363,7 @@ st.markdown("""
         box-shadow: 0 15px 40px rgba(131, 56, 236, 0.15);
     }
     
-    .glass-card::after {
-        content: '';
-        position: absolute;
-        top: -50%;
-        left: -50%;
-        width: 200%;
-        height: 200%;
-        background: radial-gradient(circle, rgba(131, 56, 236, 0.1) 0%, transparent 70%);
-        opacity: 0;
-        transition: opacity 0.3s ease;
-        pointer-events: none;
-    }
-    
-    .glass-card:hover::after {
-        opacity: 1;
-    }
-    
-    /* ============================================ */
-    /* 3D BADGE ENHANCED                            */
-    /* ============================================ */
+    /* Badge 3D */
     .badge-3d {
         display: inline-flex;
         align-items: center;
@@ -571,31 +383,11 @@ st.markdown("""
     }
     
     @keyframes badge-glow {
-        0%, 100% { 
-            box-shadow: 0 5px 20px rgba(255, 0, 110, 0.4);
-            transform: scale(1);
-        }
-        50% { 
-            box-shadow: 0 5px 30px rgba(255, 0, 110, 0.8);
-            transform: scale(1.05);
-        }
+        0%, 100% { box-shadow: 0 5px 20px rgba(255, 0, 110, 0.4); transform: scale(1); }
+        50% { box-shadow: 0 5px 30px rgba(255, 0, 110, 0.8); transform: scale(1.05); }
     }
     
-    /* ============================================ */
-    /* SIDEBAR ENHANCED                             */
-    /* ============================================ */
-    .stSidebar {
-        background: rgba(15, 5, 36, 0.95);
-        backdrop-filter: blur(20px);
-    }
-    
-    .stSidebar .sidebar-content {
-        background: transparent;
-    }
-    
-    /* ============================================ */
-    /* TABS ENHANCED                                */
-    /* ============================================ */
+    /* Tabs */
     .stTabs [data-baseweb="tab-list"] {
         gap: 8px;
         background: rgba(255, 255, 255, 0.03);
@@ -616,21 +408,6 @@ st.markdown("""
         overflow: hidden;
     }
     
-    .stTabs [data-baseweb="tab"]::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(131, 56, 236, 0.2), transparent);
-        transition: left 0.5s ease;
-    }
-    
-    .stTabs [data-baseweb="tab"]:hover::before {
-        left: 100%;
-    }
-    
     .stTabs [data-baseweb="tab"]:hover {
         background: rgba(131, 56, 236, 0.1);
         color: #fff;
@@ -641,17 +418,9 @@ st.markdown("""
         background: linear-gradient(135deg, #ff006e, #8338ec);
         color: #fff;
         box-shadow: 0 5px 20px rgba(131, 56, 236, 0.4);
-        animation: tab-active 0.3s ease;
     }
     
-    @keyframes tab-active {
-        from { transform: scale(0.95); }
-        to { transform: scale(1); }
-    }
-    
-    /* ============================================ */
-    /* BUTTONS ENHANCED                             */
-    /* ============================================ */
+    /* Buttons */
     .stButton > button {
         background: linear-gradient(135deg, #ff006e, #8338ec);
         color: white;
@@ -666,32 +435,12 @@ st.markdown("""
         overflow: hidden;
     }
     
-    .stButton > button::before {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s ease, height 0.6s ease;
-    }
-    
-    .stButton > button:hover::before {
-        width: 300px;
-        height: 300px;
-    }
-    
     .stButton > button:hover {
         transform: translateY(-2px);
         box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
     }
     
-    /* ============================================ */
-    /* DIVIDER ENHANCED                             */
-    /* ============================================ */
+    /* Divider */
     .fancy-divider {
         height: 2px;
         background: linear-gradient(90deg, transparent, rgba(131, 56, 236, 0.5), transparent);
@@ -716,9 +465,7 @@ st.markdown("""
         100% { left: 100%; }
     }
     
-    /* ============================================ */
-    /* INSIGHT CARDS ENHANCED                       */
-    /* ============================================ */
+    /* Insight Cards */
     .insight-card {
         background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(131, 56, 236, 0.08) 100%);
         border: 1px solid rgba(131, 56, 236, 0.3);
@@ -740,21 +487,6 @@ st.markdown("""
         transform: translateY(-8px) scale(1.02);
         box-shadow: 0 20px 50px rgba(131, 56, 236, 0.3);
         border-color: rgba(255, 0, 110, 0.5);
-    }
-    
-    .insight-card::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 50%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-        transition: left 0.6s ease;
-    }
-    
-    .insight-card:hover::before {
-        left: 100%;
     }
     
     .insight-icon {
@@ -783,9 +515,7 @@ st.markdown("""
         line-height: 1.6;
     }
     
-    /* ============================================ */
-    /* INFO BOX ENHANCED                            */
-    /* ============================================ */
+    /* Info Box */
     .info-box {
         background: linear-gradient(135deg, rgba(58, 134, 255, 0.15) 0%, rgba(6, 255, 165, 0.1) 100%);
         border-left: 4px solid #3a86ff;
@@ -799,47 +529,17 @@ st.markdown("""
     }
     
     @keyframes info-slide {
-        from {
-            opacity: 0;
-            transform: translateX(-20px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
+        from { opacity: 0; transform: translateX(-20px); }
+        to { opacity: 1; transform: translateX(0); }
     }
     
-    /* ============================================ */
-    /* METRIC HIGHLIGHT ENHANCED                    */
-    /* ============================================ */
     .metric-highlight {
         font-family: 'JetBrains Mono', monospace;
         color: #06ffa5;
         font-weight: 600;
-        position: relative;
-        display: inline-block;
     }
     
-    .metric-highlight::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: linear-gradient(90deg, #06ffa5, #3a86ff);
-        transform: scaleX(0);
-        transform-origin: left;
-        transition: transform 0.3s ease;
-    }
-    
-    .metric-highlight:hover::after {
-        transform: scaleX(1);
-    }
-    
-    /* ============================================ */
-    /* FOOTER ENHANCED                              */
-    /* ============================================ */
+    /* Footer */
     .premium-footer {
         text-align: center;
         padding: 2rem;
@@ -883,25 +583,13 @@ st.markdown("""
         background-size: 200% 200%;
     }
     
-    /* ============================================ */
-    /* ANIMATED NUMBER EFFECT                       */
-    /* ============================================ */
     @keyframes pulse-glow {
-        0%, 100% { 
-            box-shadow: 0 0 20px rgba(131, 56, 236, 0.3);
-        }
-        50% { 
-            box-shadow: 0 0 40px rgba(131, 56, 236, 0.6);
-        }
+        0%, 100% { box-shadow: 0 0 20px rgba(131, 56, 236, 0.3); }
+        50% { box-shadow: 0 0 40px rgba(131, 56, 236, 0.6); }
     }
     
-    .pulse-card {
-        animation: pulse-glow 3s ease-in-out infinite;
-    }
+    .pulse-card { animation: pulse-glow 3s ease-in-out infinite; }
     
-    /* ============================================ */
-    /* PROGRESS BAR ENHANCED                        */
-    /* ============================================ */
     .progress-container {
         background: rgba(255, 255, 255, 0.05);
         border-radius: 10px;
@@ -923,9 +611,6 @@ st.markdown("""
         100% { background-position: 200% 50%; }
     }
     
-    /* ============================================ */
-    /* MARQUEE SCROLLING TEXT                       */
-    /* ============================================ */
     .marquee-container {
         overflow: hidden;
         white-space: nowrap;
@@ -950,9 +635,6 @@ st.markdown("""
         100% { transform: translateX(-100%); }
     }
     
-    /* ============================================ */
-    /* WAVE ANIMATION                               */
-    /* ============================================ */
     .wave-container {
         position: relative;
         height: 50px;
@@ -981,63 +663,6 @@ st.markdown("""
         50% { transform: translateX(0%); }
     }
     
-    /* ============================================ */
-    /* NEON TEXT EFFECT                             */
-    /* ============================================ */
-    .neon-text {
-        color: #fff;
-        text-shadow: 
-            0 0 5px #fff,
-            0 0 10px #fff,
-            0 0 20px #ff006e,
-            0 0 40px #ff006e,
-            0 0 80px #ff006e;
-        animation: neon-flicker 3s infinite alternate;
-    }
-    
-    @keyframes neon-flicker {
-        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
-            text-shadow: 
-                0 0 5px #fff,
-                0 0 10px #fff,
-                0 0 20px #ff006e,
-                0 0 40px #ff006e,
-                0 0 80px #ff006e;
-        }
-        20%, 24%, 55% {
-            text-shadow: none;
-        }
-    }
-    
-    /* ============================================ */
-    /* RIPPLE EFFECT                                */
-    /* ============================================ */
-    .ripple {
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .ripple::after {
-        content: '';
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: 0;
-        height: 0;
-        border-radius: 50%;
-        background: rgba(131, 56, 236, 0.5);
-        transform: translate(-50%, -50%);
-        transition: width 0.6s, height 0.6s;
-    }
-    
-    .ripple:active::after {
-        width: 300px;
-        height: 300px;
-    }
-    
-    /* ============================================ */
-    /* FLOATING COFFEE BEANS                        */
-    /* ============================================ */
     .coffee-bean {
         position: fixed;
         font-size: 2rem;
@@ -1054,53 +679,443 @@ st.markdown("""
     .bean-5 { top: 15%; left: 60%; animation-delay: -12s; }
     
     @keyframes bean-float {
-        0% {
-            transform: translateY(0) rotate(0deg);
-            opacity: 0.3;
-        }
-        50% {
-            opacity: 0.6;
-        }
-        100% {
-            transform: translateY(-100vh) rotate(360deg);
-            opacity: 0;
-        }
+        0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+        50% { opacity: 0.6; }
+        100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
     }
     
     /* ============================================ */
-    /* DATAFRAME ANIMATIONS                         */
+    /* PROFILE CARDS - NEW ADDITIONS                */
     /* ============================================ */
-    .stDataFrame {
-        animation: dataframe-appear 0.5s ease-out;
+    
+    .profile-card {
+        position: relative;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 24px;
+        padding: 2rem;
+        overflow: hidden;
+        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        backdrop-filter: blur(20px);
+        margin-bottom: 1.5rem;
+        animation: profile-card-entrance 0.8s ease-out backwards;
     }
     
-    @keyframes dataframe-appear {
-        from {
-            opacity: 0;
-            transform: translateY(10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
+    .profile-card:nth-child(1) { animation-delay: 0.1s; border-color: rgba(255, 0, 110, 0.4); }
+    .profile-card:nth-child(2) { animation-delay: 0.2s; border-color: rgba(131, 56, 236, 0.4); }
+    .profile-card:nth-child(3) { animation-delay: 0.3s; border-color: rgba(58, 134, 255, 0.4); }
+    .profile-card:nth-child(4) { animation-delay: 0.4s; border-color: rgba(6, 255, 165, 0.4); }
+    .profile-card:nth-child(5) { animation-delay: 0.5s; border-color: rgba(255, 190, 11, 0.4); }
+    .profile-card:nth-child(6) { animation-delay: 0.6s; border-color: rgba(255, 0, 110, 0.4); }
+    
+    @keyframes profile-card-entrance {
+        from { opacity: 0; transform: translateY(50px) scale(0.9); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
     }
     
-    /* ============================================ */
-    /* SPINNER ENHANCED                             */
-    /* ============================================ */
-    .stSpinner > div {
-        border-top-color: #ff006e !important;
-        animation: spin 1s linear infinite !important;
+    .profile-card::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5, #ffbe0b);
+        background-size: 400% 400%;
+        border-radius: 24px;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        animation: gradient-border-flow 5s ease infinite;
     }
     
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+    .profile-card:hover::before {
+        opacity: 0.5;
     }
     
-    /* ============================================ */
-    /* METRIC CARDS ANIMATION                       */
-    /* ============================================ */
+    .profile-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        box-shadow: 0 30px 80px rgba(131, 56, 236, 0.4);
+    }
+    
+    @keyframes gradient-border-flow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+    
+    .profile-avatar {
+        font-size: 4rem;
+        background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(131, 56, 236, 0.2));
+        border-radius: 50%;
+        width: 100px;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        animation: avatar-float 3s ease-in-out infinite;
+        flex-shrink: 0;
+    }
+    
+    @keyframes avatar-float {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-10px) rotate(5deg); }
+    }
+    
+    .profile-info { flex: 1; }
+    
+    .profile-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+    
+    .profile-tagline {
+        color: rgba(255, 255, 255, 0.6);
+        font-size: 0.9rem;
+        margin-top: 0.3rem;
+        font-style: italic;
+    }
+    
+    .profile-rank {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: rgba(255, 190, 11, 0.2);
+        border: 1px solid rgba(255, 190, 11, 0.5);
+        border-radius: 20px;
+        color: #ffbe0b;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+        font-family: 'JetBrains Mono', monospace;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        animation: rank-glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes rank-glow {
+        0%, 100% { box-shadow: 0 0 10px rgba(255, 190, 11, 0.3); }
+        50% { box-shadow: 0 0 25px rgba(255, 190, 11, 0.7); }
+    }
+    
+    .profile-stats {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1rem;
+        margin: 1.5rem 0;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.2);
+        border-radius: 16px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .profile-stat {
+        text-align: center;
+    }
+    
+    .profile-stat-value {
+        font-size: 1.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #06ffa5, #3a86ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    
+    .profile-stat-label {
+        font-size: 0.7rem;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-top: 0.3rem;
+    }
+    
+    .profile-description {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+        line-height: 1.7;
+        padding: 1rem;
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 12px;
+        border-left: 3px solid rgba(131, 56, 236, 0.5);
+        margin-bottom: 1rem;
+    }
+    
+    .profile-traits {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+    
+    .trait-tag {
+        display: inline-block;
+        padding: 0.4rem 0.9rem;
+        background: rgba(131, 56, 236, 0.15);
+        border: 1px solid rgba(131, 56, 236, 0.4);
+        border-radius: 20px;
+        color: #c4b5fd;
+        font-size: 0.8rem;
+        font-family: 'JetBrains Mono', monospace;
+        transition: all 0.3s ease;
+        cursor: default;
+    }
+    
+    .trait-tag:hover {
+        background: rgba(131, 56, 236, 0.3);
+        transform: translateY(-2px) scale(1.05);
+        box-shadow: 0 5px 15px rgba(131, 56, 236, 0.3);
+    }
+    
+    /* Profile Match Card */
+    .profile-match-card {
+        background: linear-gradient(135deg, rgba(255, 0, 110, 0.1) 0%, rgba(131, 56, 236, 0.1) 100%);
+        border: 2px solid rgba(131, 56, 236, 0.3);
+        border-radius: 20px;
+        padding: 2rem;
+        margin: 1.5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .profile-match-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(255, 190, 11, 0.1) 0%, transparent 70%);
+        animation: rotate 15s linear infinite;
+    }
+    
+    .profile-match-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    /* Profile Level Bar */
+    .level-bar-container {
+        background: rgba(0, 0, 0, 0.3);
+        border-radius: 10px;
+        padding: 4px;
+        margin: 0.5rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .level-bar {
+        height: 24px;
+        background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+        background-size: 200% 100%;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 600;
+        font-family: 'JetBrains Mono', monospace;
+        animation: level-shine 3s linear infinite;
+        transition: width 1s ease;
+    }
+    
+    @keyframes level-shine {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+    
+    .level-label {
+        display: flex;
+        justify-content: space-between;
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.85rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    /* Profile Achievement Badge */
+    .achievement-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.6rem 1.2rem;
+        background: linear-gradient(135deg, rgba(255, 190, 11, 0.2), rgba(255, 0, 110, 0.2));
+        border: 1px solid rgba(255, 190, 11, 0.5);
+        border-radius: 50px;
+        color: #ffbe0b;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0.3rem;
+        transition: all 0.3s ease;
+        animation: achievement-pop 0.5s ease-out;
+    }
+    
+    @keyframes achievement-pop {
+        from { transform: scale(0); }
+        to { transform: scale(1); }
+    }
+    
+    .achievement-badge:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(255, 190, 11, 0.4);
+    }
+    
+    /* Profile Comparison Table */
+    .profile-comparison {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    /* Floating Profile Particles */
+    .profile-particle {
+        position: absolute;
+        font-size: 1.5rem;
+        opacity: 0.2;
+        pointer-events: none;
+        animation: particle-float 10s linear infinite;
+    }
+    
+    @keyframes particle-float {
+        0% { transform: translateY(100px) rotate(0deg); opacity: 0; }
+        50% { opacity: 0.4; }
+        100% { transform: translateY(-500px) rotate(360deg); opacity: 0; }
+    }
+    
+    /* Profile Quote */
+    .profile-quote {
+        position: relative;
+        padding: 1.5rem 2rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+        border-radius: 16px;
+        margin: 1rem 0;
+        font-style: italic;
+        color: rgba(255, 255, 255, 0.8);
+        border-left: 4px solid rgba(131, 56, 236, 0.5);
+    }
+    
+    .profile-quote::before {
+        content: '"';
+        position: absolute;
+        top: -10px;
+        left: 10px;
+        font-size: 4rem;
+        color: rgba(131, 56, 236, 0.3);
+        font-family: serif;
+    }
+    
+    /* Personality Radar */
+    .personality-tag {
+        display: inline-block;
+        padding: 0.5rem 1rem;
+        margin: 0.3rem;
+        background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(131, 56, 236, 0.2));
+        border-radius: 20px;
+        color: white;
+        font-size: 0.85rem;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .personality-tag:hover {
+        transform: scale(1.1);
+        box-shadow: 0 5px 20px rgba(131, 56, 236, 0.4);
+    }
+    
+    /* Profile Timeline */
+    .profile-timeline {
+        position: relative;
+        padding-left: 2rem;
+        margin: 1.5rem 0;
+    }
+    
+    .profile-timeline::before {
+        content: '';
+        position: absolute;
+        left: 10px;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: linear-gradient(180deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+    }
+    
+    .timeline-item {
+        position: relative;
+        padding-bottom: 1.5rem;
+        padding-left: 1rem;
+    }
+    
+    .timeline-item::before {
+        content: '';
+        position: absolute;
+        left: -1.6rem;
+        top: 5px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background: #06ffa5;
+        box-shadow: 0 0 15px rgba(6, 255, 165, 0.6);
+        animation: timeline-pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes timeline-pulse {
+        0%, 100% { box-shadow: 0 0 10px rgba(6, 255, 165, 0.6); }
+        50% { box-shadow: 0 0 25px rgba(6, 255, 165, 1); transform: scale(1.2); }
+    }
+    
+    .timeline-time {
+        color: #06ffa5;
+        font-size: 0.8rem;
+        font-family: 'JetBrains Mono', monospace;
+        margin-bottom: 0.3rem;
+    }
+    
+    .timeline-content {
+        color: rgba(255, 255, 255, 0.8);
+        font-size: 0.9rem;
+    }
+    
+    /* Persona Selector Button */
+    .persona-selector {
+        display: inline-block;
+        padding: 0.8rem 1.5rem;
+        margin: 0.3rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 2px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        color: white;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+    }
+    
+    .persona-selector:hover {
+        background: rgba(131, 56, 236, 0.2);
+        border-color: rgba(131, 56, 236, 0.5);
+        transform: translateY(-3px);
+    }
+    
+    .persona-selector.active {
+        background: linear-gradient(135deg, #ff006e, #8338ec);
+        border-color: transparent;
+        box-shadow: 0 5px 20px rgba(131, 56, 236, 0.4);
+    }
+    
     [data-testid="stMetric"] {
         background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
         border: 1px solid rgba(255, 255, 255, 0.1);
@@ -1115,62 +1130,6 @@ st.markdown("""
         transform: translateY(-3px);
         border-color: rgba(131, 56, 236, 0.4);
         box-shadow: 0 10px 30px rgba(131, 56, 236, 0.2);
-    }
-    
-    [data-testid="stMetric"]::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-        animation: shimmer 4s infinite;
-    }
-    
-    /* ============================================ */
-    /* SCROLL INDICATOR                             */
-    /* ============================================ */
-    .scroll-indicator {
-        position: fixed;
-        top: 0;
-        left: 0;
-        height: 3px;
-        background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
-        z-index: 9999;
-        transition: width 0.1s ease;
-    }
-    
-    /* ============================================ */
-    /* GRADIENT BORDER ANIMATION                    */
-    /* ============================================ */
-    .gradient-border {
-        position: relative;
-        background: rgba(15, 5, 36, 0.8);
-        border-radius: 20px;
-        padding: 2px;
-    }
-    
-    .gradient-border::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        border-radius: 20px;
-        padding: 2px;
-        background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
-        background-size: 200% 200%;
-        animation: gradient-border-flow 3s ease infinite;
-        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-        -webkit-mask-composite: xor;
-        mask-composite: exclude;
-    }
-    
-    @keyframes gradient-border-flow {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
     }
 </style>
 """, unsafe_allow_html=True)
@@ -1251,7 +1210,7 @@ st.markdown("""
         <span class="hero-emoji">☕</span>
         <h1 class="hero-title">Coffee Analytics Pro</h1>
         <p class="hero-subtitle">Advanced 3D Neuroscience & Productivity Intelligence Platform</p>
-        <span class="hero-badge">◆ PREMIUM EDITION v3.0 ◆ AI-POWERED INSIGHTS ◆</span>
+        <span class="hero-badge">◆ PREMIUM EDITION v4.0 ◆ PROFILES & PERSONAS ◆</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1260,7 +1219,7 @@ st.markdown("""
 st.markdown("""
 <div class="marquee-container">
     <div class="marquee-content">
-        ☕ COFFEE ANALYTICS • 📊 DATA SCIENCE • 🧠 NEUROSCIENCE • 📈 PRODUCTIVITY • 🎯 3D VISUALIZATION • 🤖 AI INSIGHTS • 🎲 MONTE CARLO • 📉 CORRELATION • ☕ COFFEE ANALYTICS • 📊 DATA SCIENCE • 🧠 NEUROSCIENCE • 📈 PRODUCTIVITY • 🎯 3D VISUALIZATION • 🤖 AI INSIGHTS • 🎲 MONTE CARLO • 📉 CORRELATION •
+        ☕ COFFEE ANALYTICS • 📊 DATA SCIENCE • 🧠 NEUROSCIENCE • 📈 PRODUCTIVITY • 🎯 3D VISUALIZATION • 🤖 AI INSIGHTS • 🎲 MONTE CARLO • 👤 PROFILES • ☕ COFFEE ANALYTICS • 📊 DATA SCIENCE • 🧠 NEUROSCIENCE • 📈 PRODUCTIVITY • 🎯 3D VISUALIZATION • 🤖 AI INSIGHTS • 🎲 MONTE CARLO • 👤 PROFILES •
     </div>
 </div>
 """, unsafe_allow_html=True)
@@ -1435,14 +1394,15 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- TABS ---
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
     "🌐 3D Visualization",
     "📊 Descriptive Analytics",
     "🔗 Correlation Analysis",
     "🎯 Conditional Probability",
     "🎲 Monte Carlo Simulation",
     "📈 Advanced Analytics",
-    "🤖 AI Insights"
+    "🤖 AI Insights",
+    "👤 Profiles"
 ])
 
 # ===================== TAB 1: 3D VISUALIZATION =====================
@@ -2798,6 +2758,533 @@ with tab7:
     else:
         st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
+# ===================== TAB 8: PROFILES - NEW! =====================
+with tab8:
+    st.markdown("""
+    <div class="section-header">
+        <span class="section-number">08</span>
+        <div>
+            <h2 class="section-title">Coffee Consumer Profiles <span class="badge-3d">✦ NEW</span></h2>
+            <p class="section-subtitle">Detailed personas & behavioral segmentation analysis</p>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
+    
+    if len(df_filtered) > 0:
+        # --- PROFILE MATCH CARD ---
+        st.markdown("""
+        <div class="profile-match-card">
+            <div class="profile-match-content">
+                <h2 style="color: #fff; margin: 0;">🎭 Discover Your Coffee Persona</h2>
+                <p style="color: rgba(255,255,255,0.8); margin-top: 0.5rem;">
+                    Based on behavioral analysis of <span class="metric-highlight">{}</span> respondents,
+                    we've identified <span class="metric-highlight">6 distinct coffee consumer archetypes</span>.
+                    Each persona represents a unique pattern of coffee consumption, study habits, and productivity levels.
+                </p>
+            </div>
+        </div>
+        """.format(len(df_filtered)), unsafe_allow_html=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # --- COFFEE PERSONAS ---
+        st.markdown("### 🎨 **The Six Coffee Archetypes**")
+        st.markdown("""
+        <div class="info-box">
+            💡 <strong>Personas:</strong> Klik pada setiap kartu untuk melihat detail profil, karakteristik unik, 
+            dan rekomendasi yang dipersonalisasi untuk setiap tipe peminum kopi.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Calculate stats for each category
+        persona_stats = df_filtered.groupby('Kategori_Konsumsi').agg({
+            'Kopi_per_Hari': 'mean',
+            'Durasi_Belajar_Num': 'mean',
+            'Skor_Produktivitas': 'mean',
+            'Kualitas_Tidur_Memburuk': 'mean',
+            'Is_Fokus_Tinggi': 'mean'
+        }).round(2)
+        
+        # Persona Definitions
+        personas = [
+            {
+                'emoji': '🌱',
+                'name': 'The Mindful Minimalist',
+                'category': 'Non-Drinker',
+                'tagline': 'Less is more - natural focus through discipline',
+                'rank': '🥉 BRONZE TIER',
+                'description': 'Responden yang tidak mengonsumsi kopi sama sekali. Mereka mengandalkan 
+                fokus alami, tidur berkualitas, dan rutinitas yang terstruktur. Tipe ini percaya bahwa 
+                produktivitas sejati datang dari keseimbangan hidup, bukan stimulan.',
+                'traits': ['💪 Disiplin Tinggi', '😴 Tidur Berkualitas', '🧘 Mindful', '📚 Konsisten', '🌿 Natural Focus'],
+                'achievements': ['🏆 Clean Lifestyle', '⏰ Early Riser', '🎯 Consistent Performer'],
+                'quote': 'My mind is my best caffeine.'
+            },
+            {
+                'emoji': '☕',
+                'name': 'The Casual Sipper',
+                'category': 'Light (1 cup)',
+                'tagline': 'One cup a day keeps the fatigue away',
+                'rank': '🥈 SILVER TIER',
+                'description': 'Peminum kopi ringan yang menikmati satu cangkir per hari, biasanya di pagi hari. 
+                Mereka menggunakan kopi sebagai ritual而非 kebutuhan. Tipe ini memiliki keseimbangan ideal antara 
+                konsumsi kopi dan kualitas tidur.',
+                'traits': ['⚖️ Balanced', '🌅 Morning Ritual', '😊 Happy Medium', '📈 Steady Performance', '🎨 Creative'],
+                'achievements': ['☕ Coffee Connoisseur', '🌞 Morning Champion', '⚡ Steady Energy'],
+                'quote': 'One perfect cup, one perfect day.'
+            },
+            {
+                'emoji': '⚡',
+                'name': 'The Power User',
+                'category': 'Moderate (2 cups)',
+                'tagline': 'Strategic caffeine for peak performance',
+                'rank': '🥇 GOLD TIER',
+                'description': 'Pengguna kopi strategis yang mengonsumsi 2 cangkir per hari untuk optimal 
+                performance. Mereka tahu persis kapan dan berapa banyak kopi yang dibutuhkan. Ini adalah 
+                sweet spot untuk produktivitas maksimal tanpa mengorbankan tidur.',
+                'traits': ['🎯 Strategic', '💪 High Performer', '📊 Data-Driven', '⏱️ Time Manager', '🚀 Peak Performance'],
+                'achievements': ['⚡ Power Hour Master', '📈 Productivity Pro', '🎯 Focus Expert'],
+                'quote': 'Coffee is my strategic advantage.'
+            },
+            {
+                'emoji': '🔥',
+                'name': 'The Heavy Drinker',
+                'category': 'Heavy (3+ cups)',
+                'tagline': 'Fueling the grind with multiple cups',
+                'rank': '💎 DIAMOND TIER',
+                'description': 'Peminum kopi berat yang mengonsumsi 3+ cangkir per hari. Mereka sering belajar 
+                dalam durasi panjang dan mengandalkan kopi sebagai bahan bakar. Namun, mereka menghadapi trade-off 
+                dengan kualitas tidur yang menurun.',
+                'traits': ['🔥 Hard Worker', '📚 Long Hours', '💼 Career-Focused', '⚠️ Sleep Sacrifice', '💪 Determined'],
+                'achievements': ['🏃 Marathon Studier', '☕ Caffeine Warrior', '📅 Deadline Crusher'],
+                'quote': 'More coffee, more productivity... right?'
+            },
+            {
+                'emoji': '🎯',
+                'name': 'The High Achiever',
+                'category': 'High Focus',
+                'tagline': 'Results-driven with exceptional focus',
+                'rank': '👑 LEGENDARY TIER',
+                'description': 'Responden dengan skor fokus tinggi (>3.0). Mereka adalah mahasiswa berprestasi 
+                yang telah menemukan formula sukses mereka sendiri, baik dengan atau tanpa kopi. Tipe ini 
+                memiliki kombinasi disiplin, strategi, dan mindset yang optimal.',
+                'traits': ['🏆 Top Performer', '🧠 Sharp Mind', '📊 Analytical', '🎯 Goal-Oriented', '💡 Innovative'],
+                'achievements': ['🌟 Honor Student', '📚 Study Master', '🎯 Focus Champion', '🏅 Excellence Award'],
+                'quote': 'Focus is my superpower.'
+            },
+            {
+                'emoji': '😴',
+                'name': 'The Sleep-Deprived',
+                'category': 'Poor Sleep',
+                'tagline': 'Trading sleep for productivity',
+                'rank': '⚠️ WARNING TIER',
+                'description': 'Responden dengan kualitas tidur buruk yang cenderung mengonsumsi kopi berlebihan. 
+                Mereka terjebak dalam siklus: kurang tidur → butuh kopi → lebih kurang tidur. Tipe ini 
+                membutuhkan intervensi untuk memutus pola tidak sehat ini.',
+                'traits': ['⚠️ At Risk', '😴 Sleep Debt', '☕ Caffeine Dependent', '🌙 Night Owl', '💫 Exhausted'],
+                'achievements': ['🌙 Night Warrior', '☕ Caffeine Addict', '⚠️ Burnout Risk'],
+                'quote': 'Sleep is for the weak... or is it?'
+            }
+        ]
+        
+        # Display persona cards
+        for persona in personas:
+            # Get stats for this category
+            if persona['category'] in persona_stats.index:
+                stats = persona_stats.loc[persona['category']]
+                count = len(df_filtered[df_filtered['Kategori_Konsumsi'] == persona['category']])
+                focus_rate = stats['Is_Fokus_Tinggi'] * 100
+            else:
+                # For special categories
+                if persona['category'] == 'High Focus':
+                    count = len(df_filtered[df_filtered['Is_Fokus_Tinggi'] == 1])
+                    focus_rate = 100.0
+                elif persona['category'] == 'Poor Sleep':
+                    count = len(df_filtered[df_filtered['Kualitas_Tidur_Memburuk'] >= 4])
+                    focus_rate = df_filtered[df_filtered['Kualitas_Tidur_Memburuk'] >= 4]['Is_Fokus_Tinggi'].mean() * 100 if count > 0 else 0
+                else:
+                    count = 0
+                    focus_rate = 0
+            
+            st.markdown(f"""
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">{persona['emoji']}</div>
+                    <div class="profile-info">
+                        <h3 class="profile-name">{persona['name']}</h3>
+                        <p class="profile-tagline">{persona['tagline']}</p>
+                        <span class="profile-rank">{persona['rank']}</span>
+                    </div>
+                </div>
+                
+                <div class="profile-stats">
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">{count}</div>
+                        <div class="profile-stat-label">Members</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">{focus_rate:.0f}%</div>
+                        <div class="profile-stat-label">Focus Rate</div>
+                    </div>
+                    <div class="profile-stat">
+                        <div class="profile-stat-value">{persona['category']}</div>
+                        <div class="profile-stat-label">Category</div>
+                    </div>
+                </div>
+                
+                <div class="profile-description">
+                    {persona['description']}
+                </div>
+                
+                <div class="profile-quote">
+                    {persona['quote']}
+                </div>
+                
+                <h4 style="color: #fff; margin-top: 1rem;">🏷️ Key Traits</h4>
+                <div class="profile-traits">
+                    {''.join([f'<span class="trait-tag">{trait}</span>' for trait in persona['traits']])}
+                </div>
+                
+                <h4 style="color: #fff; margin-top: 1rem;">🏆 Achievements</h4>
+                <div style="margin-top: 0.5rem;">
+                    {''.join([f'<span class="achievement-badge">{ach}</span>' for ach in persona['achievements']])}
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # --- PROFILE RADAR COMPARISON ---
+        st.markdown("### 📊 **Persona Comparison Radar**")
+        st.markdown("""
+        <div class="info-box">
+            📈 <strong>Multi-dimensional Analysis:</strong> Bandingkan karakteristik setiap persona 
+            melalui radar chart yang menampilkan 5 dimensi utama: konsumsi kopi, durasi belajar, 
+            produktivitas, kualitas tidur, dan tingkat fokus.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Create radar comparison
+        radar_categories = ['Coffee Intake', 'Study Hours', 'Productivity', 'Sleep Quality', 'Focus Level']
+        
+        fig_persona_radar = go.Figure()
+        
+        # Calculate normalized values for each category
+        for category in persona_stats.index:
+            stats = persona_stats.loc[category]
+            
+            # Normalize values to 0-1 range
+            values = [
+                stats['Kopi_per_Hari'] / df_filtered['Kopi_per_Hari'].max(),
+                stats['Durasi_Belajar_Num'] / df_filtered['Durasi_Belajar_Num'].max(),
+                stats['Skor_Produktivitas'] / 5.0,
+                (6 - stats['Kualitas_Tidur_Memburuk']) / 5.0,  # Invert sleep quality
+                stats['Is_Fokus_Tinggi']
+            ]
+            
+            values.append(values[0])  # Close the polygon
+            theta = radar_categories + [radar_categories[0]]
+            
+            fig_persona_radar.add_trace(go.Scatterpolar(
+                r=values,
+                theta=theta,
+                fill='toself',
+                name=category,
+                line=dict(width=2)
+            ))
+        
+        fig_persona_radar.update_layout(
+            polar=dict(
+                radialaxis=dict(
+                    visible=True,
+                    range=[0, 1],
+                    gridcolor='rgba(255,255,255,0.1)',
+                    tickfont=dict(color='white')
+                ),
+                angularaxis=dict(
+                    gridcolor='rgba(255,255,255,0.1)',
+                    tickfont=dict(color='white', size=12)
+                ),
+                bgcolor='rgba(0,0,0,0)'
+            ),
+            paper_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', family='Space Grotesk'),
+            showlegend=True,
+            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+            height=550,
+            margin=dict(l=80, r=80, t=50, b=50),
+            title=dict(
+                text='Multi-dimensional Persona Comparison',
+                font=dict(color='white', size=16)
+            )
+        )
+        
+        st.plotly_chart(fig_persona_radar, use_container_width=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # --- BEHAVIORAL TIMELINE ---
+        st.markdown("### ⏰ **A Day in the Life: Behavioral Timeline**")
+        st.markdown("""
+        <div class="info-box">
+            🕐 <strong>Typical Daily Patterns:</strong> Visualisasi pola harian setiap persona, 
+            dari bangun tidur hingga tidur malam.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        timeline_col1, timeline_col2 = st.columns(2)
+        
+        with timeline_col1:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #06ffa5;">☕ The Casual Sipper's Day</h4>
+                <div class="profile-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">06:00 AM</div>
+                        <div class="timeline-content">Bangun tidur dengan energi alami, olahraga ringan</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">07:30 AM</div>
+                        <div class="timeline-content">Sarapan sehat dengan 1 cangkir kopi ☕</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">09:00 AM - 12:00 PM</div>
+                        <div class="timeline-content">Sesi belajar produktif pertama (deep work)</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">12:00 PM - 02:00 PM</div>
+                        <div class="timeline-content">Istirahat makan siang, social time</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">02:00 PM - 05:00 PM</div>
+                        <div class="timeline-content">Sesi belajar kedua, collaborative work</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">10:00 PM</div>
+                        <div class="timeline-content">Tidur tepat waktu, quality rest 😴</div>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with timeline_col2:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #ff006e;">🔥 The Heavy Drinker's Day</h4>
+                <div class="profile-timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-time">08:00 AM</div>
+                        <div class="timeline-content">Bangun terlambat, groggy, langsung kopi pertama ☕</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">10:00 AM</div>
+                        <div class="timeline-content">Kopi kedua, mulai fokus untuk belajar</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">12:00 PM - 03:00 PM</div>
+                        <div class="timeline-content">Belajar intensif, skip makan siang</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">03:00 PM</div>
+                        <div class="timeline-content">Kopi ketiga, energi spike ⚡</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">07:00 PM</div>
+                        <div class="timeline-content">Kopi keempat, masih harus belajar</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-time">02:00 AM</div>
+                        <div class="timeline-content">Akhirnya tidur, sleep debt bertambah 😴</div>
+                    </div>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # --- PROFILE LEVEL PROGRESSION ---
+        st.markdown("### 📈 **Productivity Level Progression by Persona**")
+        
+        for category in persona_stats.index:
+            if category in persona_stats.index:
+                stats = persona_stats.loc[category]
+                productivity_score = stats['Skor_Produktivitas']
+                focus_rate = stats['Is_Fokus_Tinggi'] * 100
+                
+                # Calculate level based on productivity
+                if productivity_score >= 4.0:
+                    level = "LEGENDARY"
+                    level_pct = 95
+                    level_color = "#ffbe0b"
+                elif productivity_score >= 3.5:
+                    level = "MASTER"
+                    level_pct = 80
+                    level_color = "#06ffa5"
+                elif productivity_score >= 3.0:
+                    level = "ADVANCED"
+                    level_pct = 65
+                    level_color = "#3a86ff"
+                elif productivity_score >= 2.5:
+                    level = "INTERMEDIATE"
+                    level_pct = 50
+                    level_color = "#8338ec"
+                else:
+                    level = "BEGINNER"
+                    level_pct = 30
+                    level_color = "#ff006e"
+                
+                st.markdown(f"""
+                <div class="glass-card" style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <h4 style="color: #fff; margin: 0;">{category}</h4>
+                        <span class="profile-rank" style="background: rgba({int(level_color[1:3], 16)}, {int(level_color[3:5], 16)}, {int(level_color[5:7], 16)}, 0.2); border-color: {level_color}; color: {level_color};">
+                            {level} LEVEL
+                        </span>
+                    </div>
+                    
+                    <div class="level-label">
+                        <span>Productivity Score</span>
+                        <span class="metric-highlight">{productivity_score:.2f} / 5.0</span>
+                    </div>
+                    <div class="level-bar-container">
+                        <div class="level-bar" style="width: {productivity_score/5*100:.1f}%;">
+                            {productivity_score:.2f}
+                        </div>
+                    </div>
+                    
+                    <div class="level-label" style="margin-top: 1rem;">
+                        <span>Focus Achievement</span>
+                        <span class="metric-highlight">{focus_rate:.1f}%</span>
+                    </div>
+                    <div class="level-bar-container">
+                        <div class="level-bar" style="width: {focus_rate:.1f}%;">
+                            {focus_rate:.1f}%
+                        </div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # --- PROFILE RECOMMENDATIONS ---
+        st.markdown("### 💡 **Persona-Specific Recommendations**")
+        
+        rec_col1, rec_col2 = st.columns(2)
+        
+        with rec_col1:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #06ffa5;">🌱 For The Mindful Minimalist</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.8;">
+                    <li>✓ Pertahankan gaya hidup natural Anda</li>
+                    <li>✓ Jadilah role model untuk balanced lifestyle</li>
+                    <li>✓ Bagikan tips fokus alami ke teman-teman</li>
+                    <li>✓ Pertimbangkan occasional coffee untuk variasi</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #3a86ff;">⚡ For The Power User</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.8;">
+                    <li>✓ Strategi Anda sudah optimal!</li>
+                    <li>✓ Monitor toleransi kafein secara berkala</li>
+                    <li>✓ Implementasi coffee cycling (2 hari on, 1 off)</li>
+                    <li>✓ Pertahankan sleep hygiene yang baik</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #ffbe0b;">🎯 For The High Achiever</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.8;">
+                    <li>✓ Share formula sukses Anda ke komunitas</li>
+                    <li>✓ Mentor mahasiswa lain yang struggling</li>
+                    <li>✓ Dokumentasikan best practices Anda</li>
+                    <li>✓ Terus optimasi dan iterate strategi</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with rec_col2:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #8338ec;">☕ For The Casual Sipper</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.8;">
+                    <li>✓ Perfect balance! Jangan berubah</li>
+                    <li>✓ Eksperimen dengan waktu minum kopi</li>
+                    <li>✓ Coba specialty coffee untuk quality</li>
+                    <li>✓ Track produktivitas dengan journal</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #ff006e;">🔥 For The Heavy Drinker</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.8;">
+                    <li>⚠️ Kurangi bertahap 1 cangkir per minggu</li>
+                    <li>⚠️ Tetapkan cutoff time (no coffee after 3 PM)</li>
+                    <li>⚠️ Prioritaskan tidur 7-8 jam per malam</li>
+                    <li>⚠️ Ganti kopi sore dengan teh herbal</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #ff006e;">😴 For The Sleep-Deprived</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem; line-height: 1.8;">
+                    <li>🚨 INTERVENSI SEGERA DIPERLUKAN</li>
+                    <li>🚨 Reset sleep schedule di weekend</li>
+                    <li>🚨 Konsultasi dengan health professional</li>
+                    <li>🚨 Implementasi digital detox sebelum tidur</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # --- FINAL INSIGHT ---
+        st.markdown("""
+        <div class="profile-match-card">
+            <div class="profile-match-content">
+                <h3 style="color: #fff; margin: 0; text-align: center;">🎯 Final Insights</h3>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem;">🏆</div>
+                        <h4 style="color: #06ffa5; margin: 0.5rem 0;">Best Persona</h4>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">
+                            <b>The Power User</b> memiliki keseimbangan optimal antara konsumsi kopi 
+                            dan produktivitas dengan sleep quality yang terjaga.
+                        </p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem;">⚠️</div>
+                        <h4 style="color: #ffbe0b; margin: 0.5rem 0;">At Risk</h4>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">
+                            <b>The Heavy Drinker</b> menunjukkan pola berisiko dengan trade-off 
+                            sleep quality yang signifikan. Perlu intervensi segera.
+                        </p>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 3rem;">💎</div>
+                        <h4 style="color: #8338ec; margin: 0.5rem 0;">Key Finding</h4>
+                        <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">
+                            <b>Sleep quality</b> adalah prediktor terkuat untuk produktivitas, 
+                            bahkan lebih kuat dari konsumsi kopi itu sendiri.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+    else:
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter. Silakan ubah filter untuk melihat profil.")
+
 # --- FOOTER ---
 st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
 st.markdown("""
@@ -2807,7 +3294,7 @@ st.markdown("""
     <p class="footer-text">Dibuat untuk Mata Kuliah <b>Statistika dan Probabilitas</b></p>
     <p class="footer-text">Sumber Data: Kuesioner Mahasiswa (n=31) | Powered by Streamlit & Plotly 3D</p>
     <p class="footer-text" style="margin-top: 1rem; opacity: 0.6;">
-        ◆ Interactive 3D Visualization ◆ AI-Powered Insights ◆ Stochastic Modeling ◆ Advanced Analytics ◆
+        ◆ Interactive 3D Visualization ◆ AI-Powered Insights ◆ Stochastic Modeling ◆ Advanced Analytics ◆ Persona Profiles ◆
     </p>
 </div>
 """, unsafe_allow_html=True)
