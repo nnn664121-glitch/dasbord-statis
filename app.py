@@ -601,13 +601,16 @@ with st.sidebar:
     )
 
     durasi_options = df['Durasi_Belajar_Num'].unique()
-    durasi_range = st.slider(
-        "⏰ Durasi Belajar (jam)",
-        min_value=float(min(durasi_options)),
-        max_value=float(max(durasi_options)),
-        value=(float(min(durasi_options)), float(max(durasi_options))),
-        help="Rentang durasi belajar dalam jam"
-    )
+    if len(durasi_options) > 0:
+        durasi_range = st.slider(
+            "⏰ Durasi Belajar (jam)",
+            min_value=float(min(durasi_options)),
+            max_value=float(max(durasi_options)),
+            value=(float(min(durasi_options)), float(max(durasi_options))),
+            help="Rentang durasi belajar dalam jam"
+        )
+    else:
+        durasi_range = (0.0, 10.0)
 
     fokus_filter = st.selectbox(
         "🎯 Status Fokus",
@@ -648,7 +651,7 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     # Progress Bar
-    pct_filtered = (len(df_filtered) / len(df)) * 100
+    pct_filtered = (len(df_filtered) / len(df)) * 100 if len(df) > 0 else 0
     st.markdown(f"""
     <div class="progress-container">
         <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
@@ -767,283 +770,286 @@ with tab1:
     </div>
     """, unsafe_allow_html=True)
     
-    # 3D SCATTER PLOT - MAIN VISUALIZATION
-    st.markdown("### 🌌 **3D Scatter Plot: Kopi × Durasi × Produktivitas**")
-    st.markdown("""
-    <div class="info-box">
-        💡 <strong>Tip:</strong> Klik dan drag untuk memutar, scroll untuk zoom, double-click untuk reset view.
-        Arahkan kursor ke titik untuk melihat detail responden.
-    </div>
-    """, unsafe_allow_html=True)
-    
-    fig_3d_scatter = px.scatter_3d(
-        df_filtered,
-        x='Kopi_per_Hari',
-        y='Durasi_Belajar_Num',
-        z='Skor_Produktivitas',
-        color='Kualitas_Tidur_Memburuk',
-        size=df_filtered['Is_Fokus_Tinggi'].apply(lambda x: 15 if x == 1 else 8),
-        color_continuous_scale=['#06ffa5', '#ffbe0b', '#ff006e'],
-        hover_data={
-            'Kopi_per_Hari': ':.0f',
-            'Durasi_Belajar_Num': ':.1f',
-            'Skor_Produktivitas': ':.2f',
-            'Kualitas_Tidur_Memburuk': ':.0f',
-            'Fokus_Label': True,
-            'Kategori_Konsumsi': True
-        },
-        labels={
-            'Kopi_per_Hari': 'Cangkir Kopi',
-            'Durasi_Belajar_Num': 'Durasi Belajar (jam)',
-            'Skor_Produktivitas': 'Skor Produktivitas',
-            'Kualitas_Tidur_Memburuk': 'Kualitas Tidur'
-        }
-    )
-    
-    fig_3d_scatter.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white', family='Space Grotesk'),
-        scene=dict(
-            xaxis=dict(
-                backgroundcolor='rgba(0,0,0,0)',
-                gridcolor='rgba(255,255,255,0.1)',
-                showbackground=False,
-                zerolinecolor='rgba(255,255,255,0.2)',
-                title='☕ Cangkir Kopi'
-            ),
-            yaxis=dict(
-                backgroundcolor='rgba(0,0,0,0)',
-                gridcolor='rgba(255,255,255,0.1)',
-                showbackground=False,
-                zerolinecolor='rgba(255,255,255,0.2)',
-                title='📚 Durasi Belajar'
-            ),
-            zaxis=dict(
-                backgroundcolor='rgba(0,0,0,0)',
-                gridcolor='rgba(255,255,255,0.1)',
-                showbackground=False,
-                zerolinecolor='rgba(255,255,255,0.2)',
-                title='⚡ Produktivitas'
-            ),
-            camera=dict(
-                eye=dict(x=1.8, y=1.8, z=1.2),
-                up=dict(x=0, y=0, z=1)
-            ),
-            aspectratio=dict(x=1.2, y=1.2, z=0.9)
-        ),
-        height=600,
-        margin=dict(l=20, r=20, t=20, b=20),
-        coloraxis_colorbar=dict(
-            title='Kualitas Tidur',
-            tickfont=dict(color='white'),
-            title_font=dict(color='white')
+    if len(df_filtered) > 0:
+        # 3D SCATTER PLOT - MAIN VISUALIZATION
+        st.markdown("### 🌌 **3D Scatter Plot: Kopi × Durasi × Produktivitas**")
+        st.markdown("""
+        <div class="info-box">
+            💡 <strong>Tip:</strong> Klik dan drag untuk memutar, scroll untuk zoom, double-click untuk reset view.
+            Arahkan kursor ke titik untuk melihat detail responden.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        fig_3d_scatter = px.scatter_3d(
+            df_filtered,
+            x='Kopi_per_Hari',
+            y='Durasi_Belajar_Num',
+            z='Skor_Produktivitas',
+            color='Kualitas_Tidur_Memburuk',
+            size=df_filtered['Is_Fokus_Tinggi'].apply(lambda x: 15 if x == 1 else 8),
+            color_continuous_scale=['#06ffa5', '#ffbe0b', '#ff006e'],
+            hover_data={
+                'Kopi_per_Hari': ':.0f',
+                'Durasi_Belajar_Num': ':.1f',
+                'Skor_Produktivitas': ':.2f',
+                'Kualitas_Tidur_Memburuk': ':.0f',
+                'Fokus_Label': True,
+                'Kategori_Konsumsi': True
+            },
+            labels={
+                'Kopi_per_Hari': 'Cangkir Kopi',
+                'Durasi_Belajar_Num': 'Durasi Belajar (jam)',
+                'Skor_Produktivitas': 'Skor Produktivitas',
+                'Kualitas_Tidur_Memburuk': 'Kualitas Tidur'
+            }
         )
-    )
-    
-    fig_3d_scatter.update_traces(
-        marker=dict(
-            opacity=0.85,
-            line=dict(color='rgba(255,255,255,0.5)', width=1)
-        ),
-        hovertemplate='<b>%{customdata[4]}</b><br>' +
-                      'Kategori: %{customdata[5]}<br>' +
-                      'Kopi: %{x} cangkir<br>' +
-                      'Durasi: %{y:.1f} jam<br>' +
-                      'Produktivitas: %{z:.2f}<br>' +
-                      'Tidur: %{customdata[3]:.0f}<extra></extra>'
-    )
-    
-    st.plotly_chart(fig_3d_scatter, use_container_width=True)
-    
-    st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
-    
-    # 3D SURFACE PLOT
-    st.markdown("### 🏔️ **3D Surface Plot: Produktivitas Landscape**")
-    st.markdown("""
-    <div class="info-box">
-        🗺️ <strong>Surface Plot:</strong> Menunjukkan "topografi" produktivitas berdasarkan kombinasi konsumsi kopi dan durasi belajar.
-        Area tinggi (warna cerah) = produktivitas tinggi.
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Binning untuk surface
-    kopi_bins = np.linspace(df_filtered['Kopi_per_Hari'].min(), df_filtered['Kopi_per_Hari'].max(), 10)
-    durasi_bins = np.linspace(df_filtered['Durasi_Belajar_Num'].min(), df_filtered['Durasi_Belajar_Num'].max(), 10)
-    
-    Z = np.zeros((len(kopi_bins), len(durasi_bins)))
-    for i, k in enumerate(kopi_bins):
-        for j, d in enumerate(durasi_bins):
-            mask = (
-                (np.abs(df_filtered['Kopi_per_Hari'] - k) < 0.6) &
-                (np.abs(df_filtered['Durasi_Belajar_Num'] - d) < 1.5)
+        
+        fig_3d_scatter.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', family='Space Grotesk'),
+            scene=dict(
+                xaxis=dict(
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False,
+                    zerolinecolor='rgba(255,255,255,0.2)',
+                    title='☕ Cangkir Kopi'
+                ),
+                yaxis=dict(
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False,
+                    zerolinecolor='rgba(255,255,255,0.2)',
+                    title='📚 Durasi Belajar'
+                ),
+                zaxis=dict(
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False,
+                    zerolinecolor='rgba(255,255,255,0.2)',
+                    title='⚡ Produktivitas'
+                ),
+                camera=dict(
+                    eye=dict(x=1.8, y=1.8, z=1.2),
+                    up=dict(x=0, y=0, z=1)
+                ),
+                aspectratio=dict(x=1.2, y=1.2, z=0.9)
+            ),
+            height=600,
+            margin=dict(l=20, r=20, t=20, b=20),
+            coloraxis_colorbar=dict(
+                title='Kualitas Tidur',
+                tickfont=dict(color='white'),
+                title_font=dict(color='white')
             )
-            if mask.sum() > 0:
-                Z[i, j] = df_filtered.loc[mask, 'Skor_Produktivitas'].mean()
-            else:
-                Z[i, j] = np.nan
-    
-    # Fill NaN dengan interpolasi sederhana
-    Z_filled = pd.DataFrame(Z).ffill().bfill().fillna(df_filtered['Skor_Produktivitas'].mean()).values
-    
-    fig_surface = go.Figure(data=[go.Surface(
-        z=Z_filled,
-        x=durasi_bins,
-        y=kopi_bins,
-        colorscale=[
-            [0, '#0f0524'],
-            [0.2, '#8338ec'],
-            [0.4, '#ff006e'],
-            [0.6, '#ffbe0b'],
-            [0.8, '#06ffa5'],
-            [1, '#ffffff']
-        ],
-        contours=dict(
-            z=dict(show=True, usecolormap=True, highlightcolor="white", project_z=True)
-        ),
-        opacity=0.95,
-        hovertemplate='<b>Durasi: %{x:.1f}h</b><br>' +
-                      'Kopi: %{y:.1f} cangkir<br>' +
-                      'Produktivitas: %{z:.2f}<extra></extra>'
-    )])
-    
-    fig_surface.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white', family='Space Grotesk'),
-        scene=dict(
+        )
+        
+        fig_3d_scatter.update_traces(
+            marker=dict(
+                opacity=0.85,
+                line=dict(color='rgba(255,255,255,0.5)', width=1)
+            ),
+            hovertemplate='<b>%{customdata[4]}</b><br>' +
+                          'Kategori: %{customdata[5]}<br>' +
+                          'Kopi: %{x} cangkir<br>' +
+                          'Durasi: %{y:.1f} jam<br>' +
+                          'Produktivitas: %{z:.2f}<br>' +
+                          'Tidur: %{customdata[3]:.0f}<extra></extra>'
+        )
+        
+        st.plotly_chart(fig_3d_scatter, use_container_width=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # 3D SURFACE PLOT
+        st.markdown("### 🏔️ **3D Surface Plot: Produktivitas Landscape**")
+        st.markdown("""
+        <div class="info-box">
+            🗺️ <strong>Surface Plot:</strong> Menunjukkan "topografi" produktivitas berdasarkan kombinasi konsumsi kopi dan durasi belajar.
+            Area tinggi (warna cerah) = produktivitas tinggi.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Binning untuk surface
+        kopi_bins = np.linspace(df_filtered['Kopi_per_Hari'].min(), df_filtered['Kopi_per_Hari'].max(), 10)
+        durasi_bins = np.linspace(df_filtered['Durasi_Belajar_Num'].min(), df_filtered['Durasi_Belajar_Num'].max(), 10)
+        
+        Z = np.zeros((len(kopi_bins), len(durasi_bins)))
+        for i, k in enumerate(kopi_bins):
+            for j, d in enumerate(durasi_bins):
+                mask = (
+                    (np.abs(df_filtered['Kopi_per_Hari'] - k) < 0.6) &
+                    (np.abs(df_filtered['Durasi_Belajar_Num'] - d) < 1.5)
+                )
+                if mask.sum() > 0:
+                    Z[i, j] = df_filtered.loc[mask, 'Skor_Produktivitas'].mean()
+                else:
+                    Z[i, j] = np.nan
+        
+        # Fill NaN dengan interpolasi sederhana
+        Z_filled = pd.DataFrame(Z).ffill().bfill().fillna(df_filtered['Skor_Produktivitas'].mean()).values
+        
+        fig_surface = go.Figure(data=[go.Surface(
+            z=Z_filled,
+            x=durasi_bins,
+            y=kopi_bins,
+            colorscale=[
+                [0, '#0f0524'],
+                [0.2, '#8338ec'],
+                [0.4, '#ff006e'],
+                [0.6, '#ffbe0b'],
+                [0.8, '#06ffa5'],
+                [1, '#ffffff']
+            ],
+            contours=dict(
+                z=dict(show=True, usecolormap=True, highlightcolor="white", project_z=True)
+            ),
+            opacity=0.95,
+            hovertemplate='<b>Durasi: %{x:.1f}h</b><br>' +
+                          'Kopi: %{y:.1f} cangkir<br>' +
+                          'Produktivitas: %{z:.2f}<extra></extra>'
+        )])
+        
+        fig_surface.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', family='Space Grotesk'),
+            scene=dict(
+                xaxis=dict(
+                    title='📚 Durasi Belajar (jam)',
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False
+                ),
+                yaxis=dict(
+                    title='☕ Cangkir Kopi',
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False
+                ),
+                zaxis=dict(
+                    title='⚡ Produktivitas',
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False,
+                    range=[1, 5]
+                ),
+                camera=dict(
+                    eye=dict(x=2, y=2, z=1.5)
+                )
+            ),
+            height=550,
+            margin=dict(l=20, r=20, t=20, b=20)
+        )
+        
+        st.plotly_chart(fig_surface, use_container_width=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # 3D CONTOUR PLOT
+        st.markdown("### 🌊 **3D Contour Plot: Density Mapping**")
+        
+        fig_contour = go.Figure()
+        
+        fig_contour.add_trace(go.Contour(
+            z=Z_filled,
+            x=durasi_bins,
+            y=kopi_bins,
+            colorscale='Viridis',
+            contours=dict(
+                coloring='heatmap',
+                showlabels=True,
+                labelfont=dict(size=12, color='white')
+            ),
+            line_smoothing=1.0,
+            hovertemplate='Durasi: %{x:.1f}h<br>Kopi: %{y:.1f}<br>Produktivitas: %{z:.2f}<extra></extra>'
+        ))
+        
+        fig_contour.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', family='Space Grotesk'),
             xaxis=dict(
                 title='📚 Durasi Belajar (jam)',
-                backgroundcolor='rgba(0,0,0,0)',
                 gridcolor='rgba(255,255,255,0.1)',
-                showbackground=False
+                color='white'
             ),
             yaxis=dict(
                 title='☕ Cangkir Kopi',
-                backgroundcolor='rgba(0,0,0,0)',
                 gridcolor='rgba(255,255,255,0.1)',
-                showbackground=False
+                color='white'
             ),
-            zaxis=dict(
-                title='⚡ Produktivitas',
-                backgroundcolor='rgba(0,0,0,0)',
-                gridcolor='rgba(255,255,255,0.1)',
-                showbackground=False,
-                range=[1, 5]
-            ),
-            camera=dict(
-                eye=dict(x=2, y=2, z=1.5)
+            height=500,
+            margin=dict(l=20, r=20, t=20, b=20),
+            coloraxis_colorbar=dict(
+                title='Produktivitas',
+                tickfont=dict(color='white'),
+                title_font=dict(color='white')
             )
-        ),
-        height=550,
-        margin=dict(l=20, r=20, t=20, b=20)
-    )
-    
-    st.plotly_chart(fig_surface, use_container_width=True)
-    
-    st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
-    
-    # 3D CONTOUR PLOT
-    st.markdown("### 🌊 **3D Contour Plot: Density Mapping**")
-    
-    fig_contour = go.Figure()
-    
-    fig_contour.add_trace(go.Contour(
-        z=Z_filled,
-        x=durasi_bins,
-        y=kopi_bins,
-        colorscale='Viridis',
-        contours=dict(
-            coloring='heatmap',
-            showlabels=True,
-            labelfont=dict(size=12, color='white')
-        ),
-        line_smoothing=1.0,
-        hovertemplate='Durasi: %{x:.1f}h<br>Kopi: %{y:.1f}<br>Produktivitas: %{z:.2f}<extra></extra>'
-    ))
-    
-    fig_contour.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white', family='Space Grotesk'),
-        xaxis=dict(
-            title='📚 Durasi Belajar (jam)',
-            gridcolor='rgba(255,255,255,0.1)',
-            color='white'
-        ),
-        yaxis=dict(
-            title='☕ Cangkir Kopi',
-            gridcolor='rgba(255,255,255,0.1)',
-            color='white'
-        ),
-        height=500,
-        margin=dict(l=20, r=20, t=20, b=20),
-        coloraxis_colorbar=dict(
-            title='Produktivitas',
-            tickfont=dict(color='white'),
-            title_font=dict(color='white')
         )
-    )
-    
-    st.plotly_chart(fig_contour, use_container_width=True)
-    
-    st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
-    
-    # 3D INSIGHTS
-    st.markdown("### 💎 **3D Insights & Pattern Discovery**")
-    
-    ins_col1, ins_col2, ins_col3, ins_col4 = st.columns(4)
-    
-    with ins_col1:
-        st.markdown("""
-        <div class="insight-card">
-            <div class="insight-icon">🎯</div>
-            <div class="insight-title">Sweet Spot Teridentifikasi</div>
-            <div class="insight-text">
-                Titik-titik <span class="metric-highlight">hijau neon</span> menunjukkan 
-                kombinasi optimal: <b>1 cangkir kopi + 5-7 jam belajar</b> menghasilkan 
-                produktivitas maksimal.
+        
+        st.plotly_chart(fig_contour, use_container_width=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        # 3D INSIGHTS
+        st.markdown("### 💎 **3D Insights & Pattern Discovery**")
+        
+        ins_col1, ins_col2, ins_col3, ins_col4 = st.columns(4)
+        
+        with ins_col1:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">🎯</div>
+                <div class="insight-title">Sweet Spot Teridentifikasi</div>
+                <div class="insight-text">
+                    Titik-titik <span class="metric-highlight">hijau neon</span> menunjukkan 
+                    kombinasi optimal: <b>1 cangkir kopi + 5-7 jam belajar</b> menghasilkan 
+                    produktivitas maksimal.
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with ins_col2:
-        st.markdown("""
-        <div class="insight-card">
-            <div class="insight-icon">⚠️</div>
-            <div class="insight-title">Trade-off Tidur</div>
-            <div class="insight-text">
-                Titik berwarna <span class="metric-highlight">merah muda</span> menunjukkan 
-                responden dengan <b>kualitas tidur buruk</b> - mereka cenderung konsumsi kopi 
-                lebih banyak (>1 cangkir/hari).
+            """, unsafe_allow_html=True)
+        
+        with ins_col2:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">⚠️</div>
+                <div class="insight-title">Trade-off Tidur</div>
+                <div class="insight-text">
+                    Titik berwarna <span class="metric-highlight">merah muda</span> menunjukkan 
+                    responden dengan <b>kualitas tidur buruk</b> - mereka cenderung konsumsi kopi 
+                    lebih banyak (>1 cangkir/hari).
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with ins_col3:
-        st.markdown("""
-        <div class="insight-card">
-            <div class="insight-icon">📈</div>
-            <div class="insight-title">Surface Peaks</div>
-            <div class="insight-text">
-                Permukaan 3D menunjukkan <span class="metric-highlight">"puncak"</span> di area 
-                tertentu, mengindikasikan adanya <b>threshold optimal</b> konsumsi kopi untuk 
-                produktivitas maksimal.
+            """, unsafe_allow_html=True)
+        
+        with ins_col3:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">📈</div>
+                <div class="insight-title">Surface Peaks</div>
+                <div class="insight-text">
+                    Permukaan 3D menunjukkan <span class="metric-highlight">"puncak"</span> di area 
+                    tertentu, mengindikasikan adanya <b>threshold optimal</b> konsumsi kopi untuk 
+                    produktivitas maksimal.
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with ins_col4:
-        st.markdown("""
-        <div class="insight-card">
-            <div class="insight-icon">🌊</div>
-            <div class="insight-title">Density Zones</div>
-            <div class="insight-text">
-                Contour plot menunjukkan <span class="metric-highlight">zona kepadatan</span> 
-                data, area dengan <b>kontur rapat</b> = variasi produktivitas tinggi.
+            """, unsafe_allow_html=True)
+        
+        with ins_col4:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">🌊</div>
+                <div class="insight-title">Density Zones</div>
+                <div class="insight-text">
+                    Contour plot menunjukkan <span class="metric-highlight">zona kepadatan</span> 
+                    data, area dengan <b>kontur rapat</b> = variasi produktivitas tinggi.
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+    else:
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter. Silakan ubah filter di sidebar.")
 
 # ===================== TAB 2: DESKRIPTIF =====================
 with tab2:
@@ -1057,180 +1063,186 @@ with tab2:
     </div>
     """, unsafe_allow_html=True)
     
-    col_a, col_b = st.columns(2)
-    
-    with col_a:
-        st.markdown("#### ☕ **Distribusi Konsumsi Kopi**")
-        kopi_counts = df_filtered['Kopi_per_Hari'].value_counts().sort_index()
-        fig_dist_kopi = px.bar(
-            x=kopi_counts.index,
-            y=kopi_counts.values,
-            labels={'x': 'Cangkir', 'y': 'Responden'},
-            color=kopi_counts.values,
-            color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff']
-        )
-        fig_dist_kopi.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            xaxis=dict(dtick=1, gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            margin=dict(l=20, r=20, t=20, b=20),
-            showlegend=False,
-            coloraxis_showscale=False
-        )
-        fig_dist_kopi.update_traces(
-            marker_line=dict(color='rgba(255,255,255,0.3)', width=1),
-            hovertemplate="<b>%{x} cangkir</b><br>Responden: %{y}<extra></extra>"
-        )
-        st.plotly_chart(fig_dist_kopi, use_container_width=True)
-    
-    with col_b:
-        st.markdown("#### ⚡ **Distribusi Skor Produktivitas**")
-        fig_hist_prod = px.histogram(
-            df_filtered,
-            x='Skor_Produktivitas',
-            nbins=15,
-            color_discrete_sequence=['#8338ec'],
-            marginal="violin"
-        )
-        fig_hist_prod.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            margin=dict(l=20, r=20, t=20, b=20),
-            showlegend=False
-        )
-        fig_hist_prod.update_traces(
-            marker=dict(
-                color='rgba(131, 56, 236, 0.7)',
-                line=dict(color='#8338ec', width=1)
-            ),
-            hovertemplate="<b>Skor: %{x:.2f}</b><br>Frekuensi: %{y}<extra></extra>"
-        )
-        st.plotly_chart(fig_hist_prod, use_container_width=True)
-    
-    col_c, col_d = st.columns(2)
-    
-    with col_c:
-        st.markdown("#### 🎯 **Boxplot: Produktivitas per Kelompok Kopi**")
-        fig_box = px.box(
-            df_filtered,
-            x='Kopi_per_Hari',
-            y='Skor_Produktivitas',
-            color='Kopi_per_Hari',
-            color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
-        )
-        fig_box.update_layout(
-            showlegend=False,
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
-        fig_box.update_traces(
-            hovertemplate="<b>%{x} cangkir</b><br>Skor: %{y:.2f}<extra></extra>"
-        )
-        st.plotly_chart(fig_box, use_container_width=True)
-    
-    with col_d:
-        st.markdown("#### 📊 **Rata-rata Durasi Belajar**")
-        durasi_mean = df_filtered.groupby('Kopi_per_Hari')['Durasi_Belajar_Num'].mean().reset_index()
-        fig_bar_durasi = px.bar(
-            durasi_mean,
-            x='Kopi_per_Hari',
-            y='Durasi_Belajar_Num',
-            color='Durasi_Belajar_Num',
-            color_continuous_scale=['#ff006e', '#ffbe0b', '#06ffa5']
-        )
-        fig_bar_durasi.update_layout(
-            coloraxis_showscale=False,
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
-        fig_bar_durasi.update_traces(
-            marker_line=dict(color='rgba(255,255,255,0.3)', width=1),
-            hovertemplate="<b>%{x} cangkir</b><br>Durasi: %{y:.1f}h<extra></extra>"
-        )
-        st.plotly_chart(fig_bar_durasi, use_container_width=True)
-    
-    col_e, col_f = st.columns(2)
-    
-    with col_e:
-        st.markdown("#### 🥧 **Distribusi Kategori Konsumsi**")
-        kategori_counts = df_filtered['Kategori_Konsumsi'].value_counts()
-        fig_pie = px.pie(
-            values=kategori_counts.values,
-            names=kategori_counts.index,
-            color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
-        )
-        fig_pie.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
-        fig_pie.update_traces(
-            textposition='inside',
-            textinfo='percent+label',
-            hovertemplate="<b>%{label}</b><br>Jumlah: %{value}<br>Persentase: %{percent}<extra></extra>"
-        )
-        st.plotly_chart(fig_pie, use_container_width=True)
-    
-    with col_f:
-        st.markdown("#### 📈 **Stacked Bar: Produktivitas Level per Kategori**")
-        stacked_data = pd.crosstab(
-            df_filtered['Kategori_Konsumsi'],
-            df_filtered['Produktivitas_Level'],
-            normalize='index'
-        ) * 100
+    if len(df_filtered) > 0:
+        col_a, col_b = st.columns(2)
         
-        fig_stacked = go.Figure()
-        for level in stacked_data.columns:
-            fig_stacked.add_trace(go.Bar(
-                name=level,
-                x=stacked_data.index,
-                y=stacked_data[level],
-                marker_color={'Low': '#ff006e', 'Medium': '#8338ec', 'High': '#06ffa5'}[level]
-            ))
+        with col_a:
+            st.markdown("#### ☕ **Distribusi Konsumsi Kopi**")
+            kopi_counts = df_filtered['Kopi_per_Hari'].value_counts().sort_index()
+            fig_dist_kopi = px.bar(
+                x=kopi_counts.index,
+                y=kopi_counts.values,
+                labels={'x': 'Cangkir', 'y': 'Responden'},
+                color=kopi_counts.values,
+                color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff']
+            )
+            fig_dist_kopi.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(dtick=1, gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=20, b=20),
+                showlegend=False,
+                coloraxis_showscale=False
+            )
+            fig_dist_kopi.update_traces(
+                marker_line=dict(color='rgba(255,255,255,0.3)', width=1),
+                hovertemplate="<b>%{x} cangkir</b><br>Responden: %{y}<extra></extra>"
+            )
+            st.plotly_chart(fig_dist_kopi, use_container_width=True)
         
-        fig_stacked.update_layout(
-            barmode='stack',
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(title='Persentase (%)', gridcolor='rgba(255,255,255,0.1)'),
-            margin=dict(l=20, r=20, t=20, b=20),
-            legend=dict(bgcolor='rgba(0,0,0,0)')
+        with col_b:
+            st.markdown("#### ⚡ **Distribusi Skor Produktivitas**")
+            fig_hist_prod = px.histogram(
+                df_filtered,
+                x='Skor_Produktivitas',
+                nbins=15,
+                color_discrete_sequence=['#8338ec'],
+                marginal="violin"
+            )
+            fig_hist_prod.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=20, b=20),
+                showlegend=False
+            )
+            fig_hist_prod.update_traces(
+                marker=dict(
+                    color='rgba(131, 56, 236, 0.7)',
+                    line=dict(color='#8338ec', width=1)
+                ),
+                hovertemplate="<b>Skor: %{x:.2f}</b><br>Frekuensi: %{y}<extra></extra>"
+            )
+            st.plotly_chart(fig_hist_prod, use_container_width=True)
+        
+        col_c, col_d = st.columns(2)
+        
+        with col_c:
+            st.markdown("#### 🎯 **Boxplot: Produktivitas per Kelompok Kopi**")
+            fig_box = px.box(
+                df_filtered,
+                x='Kopi_per_Hari',
+                y='Skor_Produktivitas',
+                color='Kopi_per_Hari',
+                color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
+            )
+            fig_box.update_layout(
+                showlegend=False,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            fig_box.update_traces(
+                hovertemplate="<b>%{x} cangkir</b><br>Skor: %{y:.2f}<extra></extra>"
+            )
+            st.plotly_chart(fig_box, use_container_width=True)
+        
+        with col_d:
+            st.markdown("#### 📊 **Rata-rata Durasi Belajar**")
+            durasi_mean = df_filtered.groupby('Kopi_per_Hari')['Durasi_Belajar_Num'].mean().reset_index()
+            fig_bar_durasi = px.bar(
+                durasi_mean,
+                x='Kopi_per_Hari',
+                y='Durasi_Belajar_Num',
+                color='Durasi_Belajar_Num',
+                color_continuous_scale=['#ff006e', '#ffbe0b', '#06ffa5']
+            )
+            fig_bar_durasi.update_layout(
+                coloraxis_showscale=False,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            fig_bar_durasi.update_traces(
+                marker_line=dict(color='rgba(255,255,255,0.3)', width=1),
+                hovertemplate="<b>%{x} cangkir</b><br>Durasi: %{y:.1f}h<extra></extra>"
+            )
+            st.plotly_chart(fig_bar_durasi, use_container_width=True)
+        
+        col_e, col_f = st.columns(2)
+        
+        with col_e:
+            st.markdown("#### 🥧 **Distribusi Kategori Konsumsi**")
+            kategori_counts = df_filtered['Kategori_Konsumsi'].value_counts()
+            fig_pie = px.pie(
+                values=kategori_counts.values,
+                names=kategori_counts.index,
+                color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
+            )
+            fig_pie.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            fig_pie.update_traces(
+                textposition='inside',
+                textinfo='percent+label',
+                hovertemplate="<b>%{label}</b><br>Jumlah: %{value}<br>Persentase: %{percent}<extra></extra>"
+            )
+            st.plotly_chart(fig_pie, use_container_width=True)
+        
+        with col_f:
+            st.markdown("#### 📈 **Stacked Bar: Produktivitas Level per Kategori**")
+            stacked_data = pd.crosstab(
+                df_filtered['Kategori_Konsumsi'],
+                df_filtered['Produktivitas_Level'],
+                normalize='index'
+            ) * 100
+            
+            fig_stacked = go.Figure()
+            for level in stacked_data.columns:
+                fig_stacked.add_trace(go.Bar(
+                    name=level,
+                    x=stacked_data.index,
+                    y=stacked_data[level],
+                    marker_color={'Low': '#ff006e', 'Medium': '#8338ec', 'High': '#06ffa5'}[level]
+                ))
+            
+            fig_stacked.update_layout(
+                barmode='stack',
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(title='Persentase (%)', gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=20, b=20),
+                legend=dict(bgcolor='rgba(0,0,0,0)')
+            )
+            st.plotly_chart(fig_stacked, use_container_width=True)
+        
+        st.markdown("#### 📋 **Statistical Summary**")
+        stats_df = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']].describe().round(3)
+        st.dataframe(
+            stats_df.style.background_gradient(cmap='viridis', axis=1),
+            use_container_width=True
         )
-        st.plotly_chart(fig_stacked, use_container_width=True)
-    
-    st.markdown("#### 📋 **Statistical Summary**")
-    stats_df = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']].describe().round(3)
-    st.dataframe(
-        stats_df.style.background_gradient(cmap='viridis', axis=1),
-        use_container_width=True
-    )
-    
-    # Additional Statistics
-    st.markdown("#### 📊 **Advanced Statistics**")
-    col_stat1, col_stat2, col_stat3 = st.columns(3)
-    
-    with col_stat1:
-        st.metric("Skewness (Produktivitas)", f"{df_filtered['Skor_Produktivitas'].skew():.3f}")
-    with col_stat2:
-        st.metric("Kurtosis (Produktivitas)", f"{df_filtered['Skor_Produktivitas'].kurtosis():.3f}")
-    with col_stat3:
-        st.metric("Coefficient of Variation", f"{(df_filtered['Skor_Produktivitas'].std() / df_filtered['Skor_Produktivitas'].mean() * 100):.2f}%")
+        
+        # Additional Statistics
+        st.markdown("#### 📊 **Advanced Statistics**")
+        col_stat1, col_stat2, col_stat3 = st.columns(3)
+        
+        with col_stat1:
+            st.metric("Skewness (Produktivitas)", f"{df_filtered['Skor_Produktivitas'].skew():.3f}")
+        with col_stat2:
+            st.metric("Kurtosis (Produktivitas)", f"{df_filtered['Skor_Produktivitas'].kurtosis():.3f}")
+        with col_stat3:
+            mean_prod = df_filtered['Skor_Produktivitas'].mean()
+            std_prod = df_filtered['Skor_Produktivitas'].std()
+            cv = (std_prod / mean_prod * 100) if mean_prod > 0 else 0
+            st.metric("Coefficient of Variation", f"{cv:.2f}%")
+    else:
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
 # ===================== TAB 3: KORELASI =====================
 with tab3:
@@ -1244,160 +1256,167 @@ with tab3:
     </div>
     """, unsafe_allow_html=True)
     
-    col_e, col_f = st.columns([1, 1])
-    
-    with col_e:
-        st.markdown("#### 🎨 **3D Correlation Heatmap**")
-        corr_cols = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']
-        corr_matrix = df_filtered[corr_cols].corr(method='pearson')
+    if len(df_filtered) > 1:
+        col_e, col_f = st.columns([1, 1])
         
-        fig_heatmap = px.imshow(
-            corr_matrix,
-            text_auto=".3f",
-            color_continuous_scale=['#0f0524', '#8338ec', '#ff006e', '#ffbe0b', '#06ffa5'],
-            zmin=-1, zmax=1
-        )
-        fig_heatmap.update_layout(
-            height=450,
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white', family='JetBrains Mono'),
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
-        fig_heatmap.update_traces(
-            hovertemplate="<b>%{y} vs %{x}</b><br>Correlation: %{z:.3f}<extra></extra>"
-        )
-        st.plotly_chart(fig_heatmap, use_container_width=True)
-    
-    with col_f:
-        st.markdown("#### 📈 **Scatter: Kopi vs Produktivitas**")
-        
-        if len(df_filtered) > 1:
-            p_coeff, p_value = pearsonr(df_filtered['Kopi_per_Hari'], df_filtered['Skor_Produktivitas'])
-            signifikansi = "Signifikan" if p_value < 0.05 else "Tidak Signifikan"
+        with col_e:
+            st.markdown("#### 🎨 **3D Correlation Heatmap**")
+            corr_cols = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']
+            corr_matrix = df_filtered[corr_cols].corr(method='pearson')
             
-            st.markdown(f"""
-            <div class="info-box">
-                📊 Koefisien Pearson: <span class="metric-highlight">r = {p_coeff:.4f}</span><br>
-                📉 P-Value: <span class="metric-highlight">{p_value:.4f}</span> ({signifikansi})
-            </div>
-            """, unsafe_allow_html=True)
-        
-        fig_scatter = px.scatter(
-            df_filtered,
-            x='Kopi_per_Hari',
-            y='Skor_Produktivitas',
-            trendline='ols' if len(df_filtered) > 2 else None,
-            color='Durasi_Belajar_Num',
-            color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff'],
-            size='Kualitas_Tidur_Memburuk',
-            size_max=20,
-            hover_data=['Fokus_Label', 'Kategori_Konsumsi']
-        )
-        fig_scatter.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
-        fig_scatter.update_traces(
-            marker=dict(
-                opacity=0.8,
-                line=dict(color='rgba(255,255,255,0.3)', width=1)
-            ),
-            hovertemplate="<b>%{x} cangkir</b><br>Produktivitas: %{y:.2f}<extra></extra>"
-        )
-        st.plotly_chart(fig_scatter, use_container_width=True)
-    
-    col_g, col_h = st.columns(2)
-    
-    with col_g:
-        st.markdown("#### 🔗 **Spearman Rank Correlation**")
-        if len(df_filtered) > 1:
-            spearman_cols = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']
-            spearman_matrix = df_filtered[spearman_cols].corr(method='spearman')
-            
-            fig_spearman = px.imshow(
-                spearman_matrix,
+            fig_heatmap = px.imshow(
+                corr_matrix,
                 text_auto=".3f",
-                color_continuous_scale=['#3a86ff', '#8338ec', '#ff006e'],
+                color_continuous_scale=['#0f0524', '#8338ec', '#ff006e', '#ffbe0b', '#06ffa5'],
                 zmin=-1, zmax=1
             )
-            fig_spearman.update_layout(
-                height=400,
+            fig_heatmap.update_layout(
+                height=450,
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', family='JetBrains Mono'),
                 margin=dict(l=20, r=20, t=20, b=20)
             )
-            st.plotly_chart(fig_spearman, use_container_width=True)
-    
-    with col_h:
-        st.markdown("#### 📊 **Correlation Matrix Details**")
+            fig_heatmap.update_traces(
+                hovertemplate="<b>%{y} vs %{x}</b><br>Correlation: %{z:.3f}<extra></extra>"
+            )
+            st.plotly_chart(fig_heatmap, use_container_width=True)
         
-        # Calculate all correlations
-        corr_details = []
-        for i, col1 in enumerate(corr_cols):
-            for j, col2 in enumerate(corr_cols):
-                if i < j:
-                    pearson_r, pearson_p = pearsonr(df_filtered[col1], df_filtered[col2])
-                    spearman_r, spearman_p = spearmanr(df_filtered[col1], df_filtered[col2])
-                    
-                    corr_details.append({
-                        'Variable 1': col1,
-                        'Variable 2': col2,
-                        'Pearson r': f"{pearson_r:.4f}",
-                        'Pearson p-value': f"{pearson_p:.4f}",
-                        'Spearman ρ': f"{spearman_r:.4f}",
-                        'Spearman p-value': f"{spearman_p:.4f}"
-                    })
+        with col_f:
+            st.markdown("#### 📈 **Scatter: Kopi vs Produktivitas**")
+            
+            if len(df_filtered) > 1:
+                p_coeff, p_value = pearsonr(df_filtered['Kopi_per_Hari'], df_filtered['Skor_Produktivitas'])
+                signifikansi = "Signifikan" if p_value < 0.05 else "Tidak Signifikan"
+                
+                st.markdown(f"""
+                <div class="info-box">
+                    📊 Koefisien Pearson: <span class="metric-highlight">r = {p_coeff:.4f}</span><br>
+                    📉 P-Value: <span class="metric-highlight">{p_value:.4f}</span> ({signifikansi})
+                </div>
+                """, unsafe_allow_html=True)
+            
+            fig_scatter = px.scatter(
+                df_filtered,
+                x='Kopi_per_Hari',
+                y='Skor_Produktivitas',
+                trendline='ols' if len(df_filtered) > 2 else None,
+                color='Durasi_Belajar_Num',
+                color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff'],
+                size='Kualitas_Tidur_Memburuk',
+                size_max=20,
+                hover_data=['Fokus_Label', 'Kategori_Konsumsi']
+            )
+            fig_scatter.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            fig_scatter.update_traces(
+                marker=dict(
+                    opacity=0.8,
+                    line=dict(color='rgba(255,255,255,0.3)', width=1)
+                ),
+                hovertemplate="<b>%{x} cangkir</b><br>Produktivitas: %{y:.2f}<extra></extra>"
+            )
+            st.plotly_chart(fig_scatter, use_container_width=True)
         
-        corr_df = pd.DataFrame(corr_details)
-        st.dataframe(
-            corr_df.style.background_gradient(cmap='YlOrRd', subset=['Pearson r', 'Spearman ρ']),
-            use_container_width=True
-        )
-    
-    st.markdown("### 💡 **Key Insights**")
-    i_col1, i_col2, i_col3 = st.columns(3)
-    
-    with i_col1:
-        st.markdown("""
-        <div class="insight-card">
-            <div class="insight-icon">☕⚡</div>
-            <div class="insight-title">Kopi ↔ Produktivitas</div>
-            <div class="insight-text">
-                Korelasi positif lemah menunjukkan kopi <b>sedikit meningkatkan</b> 
-                persepsi produktivitas mahasiswa.
+        col_g, col_h = st.columns(2)
+        
+        with col_g:
+            st.markdown("#### 🔗 **Spearman Rank Correlation**")
+            if len(df_filtered) > 1:
+                spearman_cols = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']
+                spearman_matrix = df_filtered[spearman_cols].corr(method='spearman')
+                
+                fig_spearman = px.imshow(
+                    spearman_matrix,
+                    text_auto=".3f",
+                    color_continuous_scale=['#3a86ff', '#8338ec', '#ff006e'],
+                    zmin=-1, zmax=1
+                )
+                fig_spearman.update_layout(
+                    height=400,
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white', family='JetBrains Mono'),
+                    margin=dict(l=20, r=20, t=20, b=20)
+                )
+                st.plotly_chart(fig_spearman, use_container_width=True)
+        
+        with col_h:
+            st.markdown("#### 📊 **Correlation Matrix Details**")
+            
+            # Calculate all correlations
+            corr_details = []
+            for i, col1 in enumerate(corr_cols):
+                for j, col2 in enumerate(corr_cols):
+                    if i < j:
+                        try:
+                            pearson_r, pearson_p = pearsonr(df_filtered[col1], df_filtered[col2])
+                            spearman_r, spearman_p = spearmanr(df_filtered[col1], df_filtered[col2])
+                            
+                            corr_details.append({
+                                'Variable 1': col1,
+                                'Variable 2': col2,
+                                'Pearson r': f"{pearson_r:.4f}",
+                                'Pearson p-value': f"{pearson_p:.4f}",
+                                'Spearman ρ': f"{spearman_r:.4f}",
+                                'Spearman p-value': f"{spearman_p:.4f}"
+                            })
+                        except:
+                            pass
+            
+            if len(corr_details) > 0:
+                corr_df = pd.DataFrame(corr_details)
+                st.dataframe(
+                    corr_df.style.background_gradient(cmap='YlOrRd', subset=['Pearson r', 'Spearman ρ']),
+                    use_container_width=True
+                )
+        
+        st.markdown("### 💡 **Key Insights**")
+        i_col1, i_col2, i_col3 = st.columns(3)
+        
+        with i_col1:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">☕⚡</div>
+                <div class="insight-title">Kopi ↔ Produktivitas</div>
+                <div class="insight-text">
+                    Korelasi positif lemah menunjukkan kopi <b>sedikit meningkatkan</b> 
+                    persepsi produktivitas mahasiswa.
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with i_col2:
-        st.markdown("""
-        <div class="insight-card">
-            <div class="insight-icon">☕😴</div>
-            <div class="insight-title">Kopi ↔ Kualitas Tidur</div>
-            <div class="insight-text">
-                Korelasi <b>negatif moderat</b> membuktikan trade-off: 
-                lebih banyak kopi = tidur lebih buruk.
+            """, unsafe_allow_html=True)
+        
+        with i_col2:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">☕😴</div>
+                <div class="insight-title">Kopi ↔ Kualitas Tidur</div>
+                <div class="insight-text">
+                    Korelasi <b>negatif moderat</b> membuktikan trade-off: 
+                    lebih banyak kopi = tidur lebih buruk.
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with i_col3:
-        st.markdown("""
-        <div class="insight-card">
-            <div class="insight-icon">☕📚</div>
-            <div class="insight-title">Kopi ↔ Durasi Belajar</div>
-            <div class="insight-text">
-                Korelasi positif menunjukkan <b>peminum kopi cenderung 
-                belajar lebih lama</b>.
+            """, unsafe_allow_html=True)
+        
+        with i_col3:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">☕📚</div>
+                <div class="insight-title">Kopi ↔ Durasi Belajar</div>
+                <div class="insight-text">
+                    Korelasi positif menunjukkan <b>peminum kopi cenderung 
+                    belajar lebih lama</b>.
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+    else:
+        st.warning("⚠️ Data tidak cukup untuk analisis korelasi (minimal 2 data point).")
 
 # ===================== TAB 4: PROBABILITAS =====================
 with tab4:
@@ -1411,124 +1430,130 @@ with tab4:
     </div>
     """, unsafe_allow_html=True)
     
-    col_g, col_h = st.columns([1, 1])
-    
-    with col_g:
-        st.markdown("#### 📊 **Tabel Kontingensi**")
-        kontingensi = pd.crosstab(
-            df_filtered['Is_Peminum_Kopi'],
-            df_filtered['Is_Fokus_Tinggi'],
-            margins=True
-        )
-        kontingensi.index = ['Non-Drinkers', 'Coffee Drinkers', 'Total']
-        kontingensi.columns = ['Low Focus', 'High Focus', 'Total']
-        st.dataframe(kontingensi, use_container_width=True)
+    if len(df_filtered) > 0:
+        col_g, col_h = st.columns([1, 1])
         
-        # Chi-square test
-        if len(df_filtered) > 0:
-            chi2, p_chi, dof, expected = chi2_contingency(
-                pd.crosstab(df_filtered['Is_Peminum_Kopi'], df_filtered['Is_Fokus_Tinggi'])
+        with col_g:
+            st.markdown("#### 📊 **Tabel Kontingensi**")
+            kontingensi = pd.crosstab(
+                df_filtered['Is_Peminum_Kopi'],
+                df_filtered['Is_Fokus_Tinggi'],
+                margins=True
             )
+            kontingensi.index = ['Non-Drinkers', 'Coffee Drinkers', 'Total'] if len(kontingensi) == 3 else [kontingensi.index[0], 'Total'] if len(kontingensi) == 2 else list(kontingensi.index)
+            kontingensi.columns = ['Low Focus', 'High Focus', 'Total'] if len(kontingensi.columns) == 3 else list(kontingensi.columns)
+            st.dataframe(kontingensi, use_container_width=True)
             
-            st.markdown(f"""
-            <div class="info-box">
-                📊 Chi-Square Test:<br>
-                χ² = <span class="metric-highlight">{chi2:.4f}</span><br>
-                p-value = <span class="metric-highlight">{p_chi:.4f}</span><br>
-                Degrees of Freedom = <span class="metric-highlight">{dof}</span><br>
-                Status: <b>{'Signifikan' if p_chi < 0.05 else 'Tidak Signifikan'}</b>
-            </div>
-            """, unsafe_allow_html=True)
+            # Chi-square test
+            try:
+                if len(df_filtered) > 0:
+                    ct_table = pd.crosstab(df_filtered['Is_Peminum_Kopi'], df_filtered['Is_Fokus_Tinggi'])
+                    if ct_table.shape[0] > 1 and ct_table.shape[1] > 1:
+                        chi2, p_chi, dof, expected = chi2_contingency(ct_table)
+                        
+                        st.markdown(f"""
+                        <div class="info-box">
+                            📊 Chi-Square Test:<br>
+                            χ² = <span class="metric-highlight">{chi2:.4f}</span><br>
+                            p-value = <span class="metric-highlight">{p_chi:.4f}</span><br>
+                            Degrees of Freedom = <span class="metric-highlight">{dof}</span><br>
+                            Status: <b>{'Signifikan' if p_chi < 0.05 else 'Tidak Signifikan'}</b>
+                        </div>
+                        """, unsafe_allow_html=True)
+            except:
+                pass
+            
+            st.markdown("#### 🎯 **Matriks Probabilitas**")
+            prob_bersyarat = pd.crosstab(
+                df_filtered['Is_Peminum_Kopi'],
+                df_filtered['Is_Fokus_Tinggi'],
+                normalize='index'
+            ) * 100
+            prob_bersyarat.index = ['Non-Drinkers', 'Coffee Drinkers'] if len(prob_bersyarat) == 2 else list(prob_bersyarat.index)
+            prob_bersyarat.columns = ['Low Focus (%)', 'High Focus (%)'] if len(prob_bersyarat.columns) == 2 else list(prob_bersyarat.columns)
+            st.dataframe(
+                prob_bersyarat.round(2).style.background_gradient(cmap='YlOrRd', axis=1),
+                use_container_width=True
+            )
         
-        st.markdown("#### 🎯 **Matriks Probabilitas**")
-        prob_bersyarat = pd.crosstab(
-            df_filtered['Is_Peminum_Kopi'],
+        with col_h:
+            st.markdown("#### 📈 **Probability Comparison**")
+            
+            if 1 in df_filtered['Is_Peminum_Kopi'].values and len(prob_bersyarat) > 1:
+                p_kopi = prob_bersyarat.iloc[-1, -1]  # Last row, last column (High Focus)
+            else:
+                p_kopi = 0
+
+            if 0 in df_filtered['Is_Peminum_Kopi'].values and len(prob_bersyarat) > 1:
+                p_non_kopi = prob_bersyarat.iloc[0, -1]  # First row, last column
+            else:
+                p_non_kopi = 0
+
+            fig_prob = go.Figure(data=[
+                go.Bar(
+                    name='High Focus',
+                    x=['Coffee Drinkers', 'Non-Drinkers'],
+                    y=[p_kopi, p_non_kopi],
+                    marker=dict(
+                        color=['#ff006e', '#3a86ff'],
+                        line=dict(color='rgba(255,255,255,0.3)', width=2)
+                    ),
+                    text=[f'{p_kopi:.1f}%', f'{p_non_kopi:.1f}%'],
+                    textposition='auto',
+                    textfont=dict(color='white', size=18, family='JetBrains Mono')
+                )
+            ])
+            fig_prob.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                yaxis=dict(title="Probability (%)", range=[0, 100], gridcolor='rgba(255,255,255,0.1)'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=40, b=20)
+            )
+            fig_prob.update_traces(
+                hovertemplate="<b>%{x}</b><br>Probability: %{y:.1f}%<extra></extra>"
+            )
+            st.plotly_chart(fig_prob, use_container_width=True)
+            
+            if p_kopi > p_non_kopi and p_non_kopi > 0:
+                st.success(f"📈 Coffee drinkers have **{p_kopi/p_non_kopi:.1f}x higher** chance of achieving high focus!")
+            
+            # Odds Ratio
+            if p_non_kopi > 0 and p_non_kopi < 100 and p_kopi < 100:
+                odds_kopi = p_kopi / (100 - p_kopi) if p_kopi < 100 else float('inf')
+                odds_non = p_non_kopi / (100 - p_non_kopi)
+                odds_ratio = odds_kopi / odds_non if odds_non > 0 else float('inf')
+                
+                st.markdown(f"""
+                <div class="glass-card">
+                    <h4>📊 Odds Ratio Analysis</h4>
+                    <p>Odds Ratio: <span class="metric-highlight">{odds_ratio:.2f}</span></p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        Coffee drinkers have {odds_ratio:.2f}x higher odds of achieving high focus compared to non-drinkers.
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+        
+        # Additional Probability Analysis
+        st.markdown("#### 🎲 **Bayesian Probability Matrix**")
+        
+        # Calculate P(Focus | Coffee Amount)
+        prob_matrix = pd.crosstab(
+            df_filtered['Kopi_per_Hari'],
             df_filtered['Is_Fokus_Tinggi'],
             normalize='index'
         ) * 100
-        prob_bersyarat.index = ['Non-Drinkers', 'Coffee Drinkers']
-        prob_bersyarat.columns = ['Low Focus (%)', 'High Focus (%)']
+        
+        prob_matrix.columns = ['P(Low Focus)', 'P(High Focus)'] if len(prob_matrix.columns) == 2 else list(prob_matrix.columns)
+        prob_matrix.index = [f'{i} Cangkir' for i in prob_matrix.index]
+        
         st.dataframe(
-            prob_bersyarat.round(2).style.background_gradient(cmap='YlOrRd', axis=1),
+            prob_matrix.round(2).style.background_gradient(cmap='RdYlGn', axis=1),
             use_container_width=True
         )
-    
-    with col_h:
-        st.markdown("#### 📈 **Probability Comparison**")
-        
-        if 1 in df_filtered['Is_Peminum_Kopi'].values:
-            p_kopi = prob_bersyarat.loc['Coffee Drinkers', 'High Focus (%)']
-        else:
-            p_kopi = 0
-
-        if 0 in df_filtered['Is_Peminum_Kopi'].values:
-            p_non_kopi = prob_bersyarat.loc['Non-Drinkers', 'High Focus (%)']
-        else:
-            p_non_kopi = 0
-
-        fig_prob = go.Figure(data=[
-            go.Bar(
-                name='High Focus',
-                x=['Coffee Drinkers', 'Non-Drinkers'],
-                y=[p_kopi, p_non_kopi],
-                marker=dict(
-                    color=['#ff006e', '#3a86ff'],
-                    line=dict(color='rgba(255,255,255,0.3)', width=2)
-                ),
-                text=[f'{p_kopi:.1f}%', f'{p_non_kopi:.1f}%'],
-                textposition='auto',
-                textfont=dict(color='white', size=18, family='JetBrains Mono')
-            )
-        ])
-        fig_prob.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            yaxis=dict(title="Probability (%)", range=[0, 100], gridcolor='rgba(255,255,255,0.1)'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            margin=dict(l=20, r=20, t=40, b=20)
-        )
-        fig_prob.update_traces(
-            hovertemplate="<b>%{x}</b><br>Probability: %{y:.1f}%<extra></extra>"
-        )
-        st.plotly_chart(fig_prob, use_container_width=True)
-        
-        if p_kopi > p_non_kopi and p_non_kopi > 0:
-            st.success(f"📈 Coffee drinkers have **{p_kopi/p_non_kopi:.1f}x higher** chance of achieving high focus!")
-        
-        # Odds Ratio
-        if p_non_kopi > 0 and p_non_kopi < 100:
-            odds_kopi = p_kopi / (100 - p_kopi) if p_kopi < 100 else float('inf')
-            odds_non = p_non_kopi / (100 - p_non_kopi)
-            odds_ratio = odds_kopi / odds_non if odds_non > 0 else float('inf')
-            
-            st.markdown(f"""
-            <div class="glass-card">
-                <h4>📊 Odds Ratio Analysis</h4>
-                <p>Odds Ratio: <span class="metric-highlight">{odds_ratio:.2f}</span></p>
-                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
-                    Coffee drinkers have {odds_ratio:.2f}x higher odds of achieving high focus compared to non-drinkers.
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    # Additional Probability Analysis
-    st.markdown("#### 🎲 **Bayesian Probability Matrix**")
-    
-    # Calculate P(Focus | Coffee Amount)
-    prob_matrix = pd.crosstab(
-        df_filtered['Kopi_per_Hari'],
-        df_filtered['Is_Fokus_Tinggi'],
-        normalize='index'
-    ) * 100
-    
-    prob_matrix.columns = ['P(Low Focus)', 'P(High Focus)']
-    prob_matrix.index = [f'{i} Cangkir' for i in prob_matrix.index]
-    
-    st.dataframe(
-        prob_matrix.round(2).style.background_gradient(cmap='RdYlGn', axis=1),
-        use_container_width=True
-    )
+    else:
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
 # ===================== TAB 5: MONTE CARLO =====================
 with tab5:
@@ -1573,6 +1598,8 @@ with tab5:
                     for pilihan in simulasi_kopi:
                         mean_val = stats_by_group.loc[pilihan, 'mean']
                         std_val = stats_by_group.loc[pilihan, 'std']
+                        if np.isnan(std_val):
+                            std_val = overall_std
                         skor_acak = np.clip(np.random.normal(mean_val, std_val), 1.0, 5.0)
                         skor_kelas.append(skor_acak)
                     hasil_rata_rata.append(np.mean(skor_kelas))
@@ -1673,209 +1700,226 @@ with tab6:
     </div>
     """, unsafe_allow_html=True)
     
-    col_adv1, col_adv2 = st.columns(2)
-    
-    with col_adv1:
-        st.markdown("#### 🕸️ **Radar Chart: Multi-dimensional Profile**")
+    if len(df_filtered) > 0:
+        col_adv1, col_adv2 = st.columns(2)
         
-        # Calculate average metrics per category
-        radar_data = df_filtered.groupby('Kategori_Konsumsi').agg({
-            'Kopi_per_Hari': 'mean',
-            'Durasi_Belajar_Num': 'mean',
-            'Skor_Produktivitas': 'mean',
-            'Kualitas_Tidur_Memburuk': 'mean'
-        }).round(2)
+        with col_adv1:
+            st.markdown("#### 🕸️ **Radar Chart: Multi-dimensional Profile**")
+            
+            # Calculate average metrics per category
+            radar_data = df_filtered.groupby('Kategori_Konsumsi').agg({
+                'Kopi_per_Hari': 'mean',
+                'Durasi_Belajar_Num': 'mean',
+                'Skor_Produktivitas': 'mean',
+                'Kualitas_Tidur_Memburuk': 'mean'
+            }).round(2)
+            
+            if len(radar_data) > 0:
+                # Normalize data for radar chart
+                radar_min = radar_data.min()
+                radar_max = radar_data.max()
+                radar_range = radar_max - radar_min + 0.001
+                radar_normalized = (radar_data - radar_min) / radar_range
+                
+                categories = ['Coffee Consumption', 'Study Duration', 'Productivity', 'Sleep Quality']
+                
+                fig_radar = go.Figure()
+                
+                for idx, category in enumerate(radar_normalized.index):
+                    vals = radar_normalized.loc[category].values.tolist()
+                    vals.append(vals[0])  # Close the polygon
+                    theta = categories + [categories[0]]
+                    
+                    fig_radar.add_trace(go.Scatterpolar(
+                        r=vals,
+                        theta=theta,
+                        fill='toself',
+                        name=category,
+                        line=dict(width=2)
+                    ))
+                
+                fig_radar.update_layout(
+                    polar=dict(
+                        radialaxis=dict(
+                            visible=True,
+                            range=[0, 1],
+                            gridcolor='rgba(255,255,255,0.1)',
+                            tickfont=dict(color='white')
+                        ),
+                        angularaxis=dict(
+                            gridcolor='rgba(255,255,255,0.1)',
+                            tickfont=dict(color='white', size=12)
+                        ),
+                        bgcolor='rgba(0,0,0,0)'
+                    ),
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white', family='Space Grotesk'),
+                    showlegend=True,
+                    legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                    height=500,
+                    margin=dict(l=80, r=80, t=50, b=50)
+                )
+                
+                st.plotly_chart(fig_radar, use_container_width=True)
         
-        # Normalize data for radar chart
-        radar_normalized = (radar_data - radar_data.min()) / (radar_data.max() - radar_data.min() + 0.001)
-        
-        categories = ['Coffee Consumption', 'Study Duration', 'Productivity', 'Sleep Quality']
-        
-        fig_radar = go.Figure()
-        
-        for idx, category in enumerate(radar_normalized.index):
-            fig_radar.add_trace(go.Scatterpolar(
-                r=radar_normalized.loc[category].values.tolist() + [radar_normalized.loc[category].values[0]],
-                theta=categories + [categories[0]],
-                fill='toself',
-                name=category,
-                line=dict(width=2)
-            ))
-        
-        fig_radar.update_layout(
-            polar=dict(
-                radialaxis=dict(
-                    visible=True,
-                    range=[0, 1],
-                    gridcolor='rgba(255,255,255,0.1)',
-                    tickfont=dict(color='white')
-                ),
-                angularaxis=dict(
-                    gridcolor='rgba(255,255,255,0.1)',
-                    tickfont=dict(color='white', size=12)
-                ),
-                bgcolor='rgba(0,0,0,0)'
-            ),
-            paper_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white', family='Space Grotesk'),
-            showlegend=True,
-            legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
-            height=500,
-            margin=dict(l=80, r=80, t=50, b=50)
-        )
-        
-        st.plotly_chart(fig_radar, use_container_width=True)
-    
-    with col_adv2:
-        st.markdown("#### 📊 **Parallel Coordinates: Multi-variable Analysis**")
-        
-        fig_parallel = px.parallel_coordinates(
-            df_filtered,
-            dimensions=['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk'],
-            color='Skor_Produktivitas',
-            color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5'],
-            labels={
-                'Kopi_per_Hari': 'Coffee',
-                'Durasi_Belajar_Num': 'Study Hours',
-                'Skor_Produktivitas': 'Productivity',
-                'Kualitas_Tidur_Memburuk': 'Sleep Quality'
-            }
-        )
-        
-        fig_parallel.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white', family='Space Grotesk'),
-            height=500,
-            margin=dict(l=20, r=20, t=20, b=20),
-            coloraxis_colorbar=dict(
-                title='Productivity',
-                tickfont=dict(color='white'),
-                title_font=dict(color='white')
+        with col_adv2:
+            st.markdown("#### 📊 **Parallel Coordinates: Multi-variable Analysis**")
+            
+            fig_parallel = px.parallel_coordinates(
+                df_filtered,
+                dimensions=['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk'],
+                color='Skor_Produktivitas',
+                color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5'],
+                labels={
+                    'Kopi_per_Hari': 'Coffee',
+                    'Durasi_Belajar_Num': 'Study Hours',
+                    'Skor_Produktivitas': 'Productivity',
+                    'Kualitas_Tidur_Memburuk': 'Sleep Quality'
+                }
             )
-        )
-        
-        st.plotly_chart(fig_parallel, use_container_width=True)
-    
-    col_adv3, col_adv4 = st.columns(2)
-    
-    with col_adv3:
-        st.markdown("#### 📈 **Violin Plot: Distribution by Category**")
-        
-        fig_violin = px.violin(
-            df_filtered,
-            x='Kategori_Konsumsi',
-            y='Skor_Produktivitas',
-            color='Kategori_Konsumsi',
-            box=True,
-            points='outliers',
-            color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
-        )
-        
-        fig_violin.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white'),
-            xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-            yaxis=dict(title='Productivity Score', gridcolor='rgba(255,255,255,0.1)'),
-            showlegend=False,
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
-        
-        st.plotly_chart(fig_violin, use_container_width=True)
-    
-    with col_adv4:
-        st.markdown("#### 🌡️ **Heatmap: Productivity by Coffee & Study Duration**")
-        
-        # Create heatmap data
-        heatmap_data = df_filtered.groupby(['Kopi_per_Hari', 'Durasi_Belajar_Num'])['Skor_Produktivitas'].mean().reset_index()
-        heatmap_pivot = heatmap_data.pivot(index='Kopi_per_Hari', columns='Durasi_Belajar_Num', values='Skor_Produktivitas')
-        
-        fig_heatmap_adv = px.imshow(
-            heatmap_pivot,
-            text_auto=".2f",
-            color_continuous_scale=['#0f0524', '#8338ec', '#ff006e', '#ffbe0b', '#06ffa5'],
-            labels=dict(x="Study Duration (h)", y="Coffee Cups", color="Productivity")
-        )
-        
-        fig_heatmap_adv.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white', family='JetBrains Mono'),
-            height=500,
-            margin=dict(l=20, r=20, t=20, b=20),
-            coloraxis_colorbar=dict(
-                title='Productivity',
-                tickfont=dict(color='white'),
-                title_font=dict(color='white')
+            
+            fig_parallel.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white', family='Space Grotesk'),
+                height=500,
+                margin=dict(l=20, r=20, t=20, b=20),
+                coloraxis_colorbar=dict(
+                    title='Productivity',
+                    tickfont=dict(color='white'),
+                    title_font=dict(color='white')
+                )
             )
-        )
-        
-        st.plotly_chart(fig_heatmap_adv, use_container_width=True)
-    
-    # Statistical Tests
-    st.markdown("#### 🧪 **Hypothesis Testing**")
-    
-    test_col1, test_col2, test_col3 = st.columns(3)
-    
-    with test_col1:
-        st.markdown("##### T-Test: Drinkers vs Non-Drinkers")
-        drinkers = df_filtered[df_filtered['Is_Peminum_Kopi'] == 1]['Skor_Produktivitas']
-        non_drinkers = df_filtered[df_filtered['Is_Peminum_Kopi'] == 0]['Skor_Produktivitas']
-        
-        if len(drinkers) > 1 and len(non_drinkers) > 1:
-            from scipy.stats import ttest_ind
-            t_stat, p_t = ttest_ind(drinkers, non_drinkers)
             
-            st.markdown(f"""
-            <div class="glass-card">
-                <p>t-statistic: <span class="metric-highlight">{t_stat:.4f}</span></p>
-                <p>p-value: <span class="metric-highlight">{p_t:.4f}</span></p>
-                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
-                    {'✓ Significant difference' if p_t < 0.05 else '✗ No significant difference'}
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    with test_col2:
-        st.markdown("##### ANOVA: Multiple Groups")
-        from scipy.stats import f_oneway
+            st.plotly_chart(fig_parallel, use_container_width=True)
         
-        groups = []
-        for cups in df_filtered['Kopi_per_Hari'].unique():
-            group_data = df_filtered[df_filtered['Kopi_per_Hari'] == cups]['Skor_Produktivitas']
-            if len(group_data) > 1:
-                groups.append(group_data)
+        col_adv3, col_adv4 = st.columns(2)
         
-        if len(groups) >= 2:
-            f_stat, p_anova = f_oneway(*groups)
+        with col_adv3:
+            st.markdown("#### 📈 **Violin Plot: Distribution by Category**")
             
-            st.markdown(f"""
-            <div class="glass-card">
-                <p>F-statistic: <span class="metric-highlight">{f_stat:.4f}</span></p>
-                <p>p-value: <span class="metric-highlight">{p_anova:.4f}</span></p>
-                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
-                    {'✓ Significant difference' if p_anova < 0.05 else '✗ No significant difference'}
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
-    
-    with test_col3:
-        st.markdown("##### Mann-Whitney U Test")
-        from scipy.stats import mannwhitneyu
-        
-        if len(drinkers) > 1 and len(non_drinkers) > 1:
-            u_stat, p_mw = mannwhitneyu(drinkers, non_drinkers, alternative='two-sided')
+            fig_violin = px.violin(
+                df_filtered,
+                x='Kategori_Konsumsi',
+                y='Skor_Produktivitas',
+                color='Kategori_Konsumsi',
+                box=True,
+                points='outliers',
+                color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
+            )
             
-            st.markdown(f"""
-            <div class="glass-card">
-                <p>U-statistic: <span class="metric-highlight">{u_stat:.4f}</span></p>
-                <p>p-value: <span class="metric-highlight">{p_mw:.4f}</span></p>
-                <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
-                    {'✓ Significant difference' if p_mw < 0.05 else '✗ No significant difference'}
-                </p>
-            </div>
-            """, unsafe_allow_html=True)
+            fig_violin.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(title='Productivity Score', gridcolor='rgba(255,255,255,0.1)'),
+                showlegend=False,
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            
+            st.plotly_chart(fig_violin, use_container_width=True)
+        
+        with col_adv4:
+            st.markdown("#### 🌡️ **Heatmap: Productivity by Coffee & Study Duration**")
+            
+            # Create heatmap data
+            heatmap_data = df_filtered.groupby(['Kopi_per_Hari', 'Durasi_Belajar_Num'])['Skor_Produktivitas'].mean().reset_index()
+            heatmap_pivot = heatmap_data.pivot(index='Kopi_per_Hari', columns='Durasi_Belajar_Num', values='Skor_Produktivitas')
+            
+            fig_heatmap_adv = px.imshow(
+                heatmap_pivot,
+                text_auto=".2f",
+                color_continuous_scale=['#0f0524', '#8338ec', '#ff006e', '#ffbe0b', '#06ffa5'],
+                labels=dict(x="Study Duration (h)", y="Coffee Cups", color="Productivity")
+            )
+            
+            fig_heatmap_adv.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white', family='JetBrains Mono'),
+                height=500,
+                margin=dict(l=20, r=20, t=20, b=20),
+                coloraxis_colorbar=dict(
+                    title='Productivity',
+                    tickfont=dict(color='white'),
+                    title_font=dict(color='white')
+                )
+            )
+            
+            st.plotly_chart(fig_heatmap_adv, use_container_width=True)
+        
+        # Statistical Tests
+        st.markdown("#### 🧪 **Hypothesis Testing**")
+        
+        test_col1, test_col2, test_col3 = st.columns(3)
+        
+        with test_col1:
+            st.markdown("##### T-Test: Drinkers vs Non-Drinkers")
+            drinkers = df_filtered[df_filtered['Is_Peminum_Kopi'] == 1]['Skor_Produktivitas']
+            non_drinkers = df_filtered[df_filtered['Is_Peminum_Kopi'] == 0]['Skor_Produktivitas']
+            
+            if len(drinkers) > 1 and len(non_drinkers) > 1:
+                from scipy.stats import ttest_ind
+                t_stat, p_t = ttest_ind(drinkers, non_drinkers)
+                
+                st.markdown(f"""
+                <div class="glass-card">
+                    <p>t-statistic: <span class="metric-highlight">{t_stat:.4f}</span></p>
+                    <p>p-value: <span class="metric-highlight">{p_t:.4f}</span></p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        {'✓ Significant difference' if p_t < 0.05 else '✗ No significant difference'}
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("⚠️ Data tidak cukup")
+        
+        with test_col2:
+            st.markdown("##### ANOVA: Multiple Groups")
+            from scipy.stats import f_oneway
+            
+            groups = []
+            for cups in df_filtered['Kopi_per_Hari'].unique():
+                group_data = df_filtered[df_filtered['Kopi_per_Hari'] == cups]['Skor_Produktivitas']
+                if len(group_data) > 1:
+                    groups.append(group_data)
+            
+            if len(groups) >= 2:
+                f_stat, p_anova = f_oneway(*groups)
+                
+                st.markdown(f"""
+                <div class="glass-card">
+                    <p>F-statistic: <span class="metric-highlight">{f_stat:.4f}</span></p>
+                    <p>p-value: <span class="metric-highlight">{p_anova:.4f}</span></p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        {'✓ Significant difference' if p_anova < 0.05 else '✗ No significant difference'}
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("⚠️ Data tidak cukup")
+        
+        with test_col3:
+            st.markdown("##### Mann-Whitney U Test")
+            from scipy.stats import mannwhitneyu
+            
+            if len(drinkers) > 1 and len(non_drinkers) > 1:
+                u_stat, p_mw = mannwhitneyu(drinkers, non_drinkers, alternative='two-sided')
+                
+                st.markdown(f"""
+                <div class="glass-card">
+                    <p>U-statistic: <span class="metric-highlight">{u_stat:.4f}</span></p>
+                    <p>p-value: <span class="metric-highlight">{p_mw:.4f}</span></p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        {'✓ Significant difference' if p_mw < 0.05 else '✗ No significant difference'}
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("⚠️ Data tidak cukup")
+    else:
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
 # ===================== TAB 7: AI INSIGHTS =====================
 with tab7:
@@ -1889,188 +1933,214 @@ with tab7:
     </div>
     """, unsafe_allow_html=True)
     
-    # Generate AI Insights
-    st.markdown("### 🤖 **Automated Analysis**")
-    
-    # Insight 1: Optimal Coffee Consumption
-    optimal_coffee = df_filtered.groupby('Kopi_per_Hari')['Skor_Produktivitas'].mean().idxmax()
-    optimal_score = df_filtered.groupby('Kopi_per_Hari')['Skor_Produktivitas'].mean().max()
-    
-    st.markdown(f"""
-    <div class="insight-card">
-        <div class="insight-icon">🏆</div>
-        <div class="insight-title">Optimal Coffee Consumption</div>
-        <div class="insight-text">
-            Based on our analysis, the optimal coffee consumption for maximum productivity is 
-            <span class="metric-highlight">{optimal_coffee} cups per day</span>, achieving an average 
-            productivity score of <span class="metric-highlight">{optimal_score:.2f}</span>.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Insight 2: Study Duration Sweet Spot
-    durasi_bins = pd.cut(df_filtered['Durasi_Belajar_Num'], bins=[0, 2, 4, 6, 8, 10])
-    durasi_productivity = df_filtered.groupby(durasi_bins)['Skor_Produktivitas'].mean()
-    optimal_durasi = durasi_productivity.idxmax()
-    
-    st.markdown(f"""
-    <div class="insight-card">
-        <div class="insight-icon">⏰</div>
-        <div class="insight-title">Study Duration Sweet Spot</div>
-        <div class="insight-text">
-            The most productive study duration range is <span class="metric-highlight">{optimal_durasi}</span>, 
-            with an average productivity score of <span class="metric-highlight">{durasi_productivity.max():.2f}</span>.
-            Consider structuring your study sessions within this timeframe.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Insight 3: Sleep Quality Impact
-    sleep_corr = df_filtered['Kualitas_Tidur_Memburuk'].corr(df_filtered['Skor_Produktivitas'])
-    
-    st.markdown(f"""
-    <div class="insight-card">
-        <div class="insight-icon">😴</div>
-        <div class="insight-title">Sleep Quality Impact</div>
-        <div class="insight-text">
-            Sleep quality shows a <span class="metric-highlight">{'positive' if sleep_corr > 0 else 'negative'}</span> 
-            correlation with productivity (r = {sleep_corr:.3f}). 
-            {'Better sleep quality is associated with higher productivity.' if sleep_corr > 0 else 'Poorer sleep quality is associated with lower productivity.'}
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Insight 4: Risk Factors
-    high_coffee_low_sleep = df_filtered[(df_filtered['Kopi_per_Hari'] >= 2) & (df_filtered['Kualitas_Tidur_Memburuk'] >= 4)]
-    risk_percentage = (len(high_coffee_low_sleep) / len(df_filtered)) * 100
-    
-    st.markdown(f"""
-    <div class="insight-card">
-        <div class="insight-icon">⚠️</div>
-        <div class="insight-title">Risk Factor Alert</div>
-        <div class="insight-text">
-            <span class="metric-highlight">{risk_percentage:.1f}%</span> of respondents show a high-risk pattern: 
-            consuming 2+ cups of coffee daily with poor sleep quality (≥4). This combination may lead to 
-            long-term health issues and decreased cognitive performance.
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Recommendations
-    st.markdown("### 💡 **Personalized Recommendations**")
-    
-    rec_col1, rec_col2, rec_col3 = st.columns(3)
-    
-    with rec_col1:
-        st.markdown("""
-        <div class="glass-card">
-            <h4 style="color: #06ffa5;">☕ For Light Drinkers</h4>
-            <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
-                <li>✓ Maintain 1 cup/day routine</li>
-                <li>✓ Consume before study sessions</li>
-                <li>✓ Avoid after 4 PM</li>
-                <li>✓ Monitor sleep quality</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with rec_col2:
-        st.markdown("""
-        <div class="glass-card">
-            <h4 style="color: #ffbe0b;">⚡ For Moderate Drinkers</h4>
-            <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
-                <li>⚠ Consider reducing to 1 cup</li>
-                <li>⚠ Track productivity changes</li>
-                <li>⚠ Implement coffee breaks</li>
-                <li>⚠ Prioritize sleep hygiene</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with rec_col3:
-        st.markdown("""
-        <div class="glass-card">
-            <h4 style="color: #ff006e;">🚨 For Heavy Drinkers</h4>
-            <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
-                <li>🚨 Reduce consumption gradually</li>
-                <li>🚨 Consult health professional</li>
-                <li>🚨 Implement detox periods</li>
-                <li>🚨 Focus on sleep recovery</li>
-            </ul>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    # Predictive Model Summary
-    st.markdown("### 📊 **Predictive Model Summary**")
-    
-    # Simple linear regression summary
-    from sklearn.linear_model import LinearRegression
-    from sklearn.metrics import r2_score, mean_squared_error
-    
-    X = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk']]
-    y = df_filtered['Skor_Produktivitas']
-    
-    model = LinearRegression()
-    model.fit(X, y)
-    y_pred = model.predict(X)
-    
-    r2 = r2_score(y, y_pred)
-    rmse = np.sqrt(mean_squared_error(y, y_pred))
-    
-    st.markdown(f"""
-    <div class="glass-card">
-        <h4>🤖 Linear Regression Model</h4>
-        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
-            <div>
-                <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">R² Score</p>
-                <p class="metric-highlight" style="font-size: 1.5rem;">{r2:.4f}</p>
-            </div>
-            <div>
-                <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">RMSE</p>
-                <p class="metric-highlight" style="font-size: 1.5rem;">{rmse:.4f}</p>
-            </div>
-            <div>
-                <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">Model Accuracy</p>
-                <p class="metric-highlight" style="font-size: 1.5rem;">{r2*100:.1f}%</p>
+    if len(df_filtered) > 0:
+        # Generate AI Insights
+        st.markdown("### 🤖 **Automated Analysis**")
+        
+        # Insight 1: Optimal Coffee Consumption
+        prod_by_coffee = df_filtered.groupby('Kopi_per_Hari')['Skor_Produktivitas'].mean()
+        if len(prod_by_coffee) > 0:
+            optimal_coffee = prod_by_coffee.idxmax()
+            optimal_score = prod_by_coffee.max()
+        else:
+            optimal_coffee = 0
+            optimal_score = 0
+        
+        st.markdown(f"""
+        <div class="insight-card">
+            <div class="insight-icon">🏆</div>
+            <div class="insight-title">Optimal Coffee Consumption</div>
+            <div class="insight-text">
+                Based on our analysis, the optimal coffee consumption for maximum productivity is 
+                <span class="metric-highlight">{optimal_coffee} cups per day</span>, achieving an average 
+                productivity score of <span class="metric-highlight">{optimal_score:.2f}</span>.
             </div>
         </div>
-        <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-top: 1rem;">
-            <strong>Coefficients:</strong><br>
-            Coffee: {model.coef_[0]:.4f} | Study Duration: {model.coef_[1]:.4f} | Sleep Quality: {model.coef_[2]:.4f}
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Feature Importance
-    st.markdown("### 📈 **Feature Importance**")
-    
-    feature_importance = pd.DataFrame({
-        'Feature': ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk'],
-        'Importance': np.abs(model.coef_)
-    }).sort_values('Importance', ascending=False)
-    
-    fig_importance = px.bar(
-        feature_importance,
-        x='Importance',
-        y='Feature',
-        orientation='h',
-        color='Importance',
-        color_continuous_scale=['#06ffa5', '#8338ec', '#ff006e']
-    )
-    
-    fig_importance.update_layout(
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        font=dict(color='white'),
-        xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-        yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
-        showlegend=False,
-        coloraxis_showscale=False,
-        height=300,
-        margin=dict(l=20, r=20, t=20, b=20)
-    )
-    
-    st.plotly_chart(fig_importance, use_container_width=True)
+        """, unsafe_allow_html=True)
+        
+        # Insight 2: Study Duration Sweet Spot
+        durasi_bins = pd.cut(df_filtered['Durasi_Belajar_Num'], bins=[0, 2, 4, 6, 8, 10])
+        durasi_productivity = df_filtered.groupby(durasi_bins, observed=True)['Skor_Produktivitas'].mean()
+        if len(durasi_productivity) > 0:
+            optimal_durasi = durasi_productivity.idxmax()
+            optimal_durasi_score = durasi_productivity.max()
+        else:
+            optimal_durasi = "N/A"
+            optimal_durasi_score = 0
+        
+        st.markdown(f"""
+        <div class="insight-card">
+            <div class="insight-icon">⏰</div>
+            <div class="insight-title">Study Duration Sweet Spot</div>
+            <div class="insight-text">
+                The most productive study duration range is <span class="metric-highlight">{optimal_durasi}</span>, 
+                with an average productivity score of <span class="metric-highlight">{optimal_durasi_score:.2f}</span>.
+                Consider structuring your study sessions within this timeframe.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Insight 3: Sleep Quality Impact
+        sleep_corr = df_filtered['Kualitas_Tidur_Memburuk'].corr(df_filtered['Skor_Produktivitas'])
+        
+        st.markdown(f"""
+        <div class="insight-card">
+            <div class="insight-icon">😴</div>
+            <div class="insight-title">Sleep Quality Impact</div>
+            <div class="insight-text">
+                Sleep quality shows a <span class="metric-highlight">{'positive' if sleep_corr > 0 else 'negative'}</span> 
+                correlation with productivity (r = {sleep_corr:.3f}). 
+                {'Better sleep quality is associated with higher productivity.' if sleep_corr > 0 else 'Poorer sleep quality is associated with lower productivity.'}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Insight 4: Risk Factors
+        high_coffee_low_sleep = df_filtered[(df_filtered['Kopi_per_Hari'] >= 2) & (df_filtered['Kualitas_Tidur_Memburuk'] >= 4)]
+        risk_percentage = (len(high_coffee_low_sleep) / len(df_filtered)) * 100
+        
+        st.markdown(f"""
+        <div class="insight-card">
+            <div class="insight-icon">⚠️</div>
+            <div class="insight-title">Risk Factor Alert</div>
+            <div class="insight-text">
+                <span class="metric-highlight">{risk_percentage:.1f}%</span> of respondents show a high-risk pattern: 
+                consuming 2+ cups of coffee daily with poor sleep quality (≥4). This combination may lead to 
+                long-term health issues and decreased cognitive performance.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        # Recommendations
+        st.markdown("### 💡 **Personalized Recommendations**")
+        
+        rec_col1, rec_col2, rec_col3 = st.columns(3)
+        
+        with rec_col1:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #06ffa5;">☕ For Light Drinkers</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                    <li>✓ Maintain 1 cup/day routine</li>
+                    <li>✓ Consume before study sessions</li>
+                    <li>✓ Avoid after 4 PM</li>
+                    <li>✓ Monitor sleep quality</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with rec_col2:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #ffbe0b;">⚡ For Moderate Drinkers</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                    <li>⚠ Consider reducing to 1 cup</li>
+                    <li>⚠ Track productivity changes</li>
+                    <li>⚠ Implement coffee breaks</li>
+                    <li>⚠ Prioritize sleep hygiene</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with rec_col3:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #ff006e;">🚨 For Heavy Drinkers</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                    <li>🚨 Reduce consumption gradually</li>
+                    <li>🚨 Consult health professional</li>
+                    <li>🚨 Implement detox periods</li>
+                    <li>🚨 Focus on sleep recovery</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        # Predictive Model Summary - USING NUMPY INSTEAD OF SKLEARN
+        st.markdown("### 📊 **Predictive Model Summary**")
+        
+        try:
+            X = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk']].values
+            y = df_filtered['Skor_Produktivitas'].values
+            
+            # Add intercept column (column of ones)
+            X_with_intercept = np.column_stack([np.ones(len(X)), X])
+            
+            # Compute coefficients using normal equation: β = (X^T X)^(-1) X^T y
+            # Using numpy's lstsq for numerical stability
+            beta, residuals, rank, s = np.linalg.lstsq(X_with_intercept, y, rcond=None)
+            y_pred = X_with_intercept @ beta
+            
+            # Calculate R² score
+            ss_res = np.sum((y - y_pred) ** 2)
+            ss_tot = np.sum((y - np.mean(y)) ** 2)
+            r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
+            
+            # Calculate RMSE
+            rmse = np.sqrt(np.mean((y - y_pred) ** 2))
+            
+            # Coefficients (without intercept)
+            coef = beta[1:]
+            
+            st.markdown(f"""
+            <div class="glass-card">
+                <h4>🤖 Linear Regression Model (NumPy)</h4>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">R² Score</p>
+                        <p class="metric-highlight" style="font-size: 1.5rem;">{r2:.4f}</p>
+                    </div>
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">RMSE</p>
+                        <p class="metric-highlight" style="font-size: 1.5rem;">{rmse:.4f}</p>
+                    </div>
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">Model Fit</p>
+                        <p class="metric-highlight" style="font-size: 1.5rem;">{r2*100:.1f}%</p>
+                    </div>
+                </div>
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-top: 1rem;">
+                    <strong>Coefficients:</strong><br>
+                    Coffee: {coef[0]:.4f} | Study Duration: {coef[1]:.4f} | Sleep Quality: {coef[2]:.4f}
+                </p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            # Feature Importance
+            st.markdown("### 📈 **Feature Importance**")
+            
+            feature_importance = pd.DataFrame({
+                'Feature': ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk'],
+                'Importance': np.abs(coef)
+            }).sort_values('Importance', ascending=False)
+            
+            fig_importance = px.bar(
+                feature_importance,
+                x='Importance',
+                y='Feature',
+                orientation='h',
+                color='Importance',
+                color_continuous_scale=['#06ffa5', '#8338ec', '#ff006e']
+            )
+            
+            fig_importance.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                showlegend=False,
+                coloraxis_showscale=False,
+                height=300,
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            
+            st.plotly_chart(fig_importance, use_container_width=True)
+            
+        except Exception as e:
+            st.error(f"⚠️ Error in regression model: {str(e)}")
+            st.info("Pastikan data memiliki cukup variasi untuk analisis regresi.")
+    else:
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
 # --- FOOTER ---
 st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
