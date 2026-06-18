@@ -4,874 +4,364 @@ import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from scipy.stats import (
-    pearsonr, spearmanr, chi2_contingency, 
-    ttest_ind, f_oneway, mannwhitneyu, shapiro,
-    kruskal, skew, kurtosis
-)
-from sklearn.cluster import KMeans
-from sklearn.preprocessing import StandardScaler
-from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, confusion_matrix, roc_curve, auc
+from scipy.stats import pearsonr, spearmanr, chi2_contingency
 import warnings
 warnings.filterwarnings('ignore')
 
 # --- KONFIGURASI HALAMAN ---
 st.set_page_config(
-    page_title="Coffee Analytics 4D Pro ☕",
+    page_title="Coffee Analytics 3D Pro ☕",
     page_icon="☕",
     layout="wide",
     initial_sidebar_state="expanded"
 )
 
-# --- CSS PREMIUM 4D EDITION V4 + ENHANCED ANIMATIONS ---
+# --- CSS PREMIUM 3D EDITION V3 + ANIMATIONS ---
 st.markdown("""
 <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@400;500;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
     
-    :root {
-        --primary-pink: #ff006e;
-        --primary-purple: #8338ec;
-        --primary-blue: #3a86ff;
-        --primary-green: #06ffa5;
-        --primary-yellow: #ffbe0b;
-        --bg-dark: #050212;
-        --bg-mid: #0f0524;
-        --bg-light: #1a0b2e;
-    }
-    
+    /* Global Dark Theme */
     .stApp {
-        background: radial-gradient(ellipse at top, var(--bg-light) 0%, var(--bg-mid) 40%, var(--bg-dark) 100%);
+        background: radial-gradient(ellipse at top, #1a0b2e 0%, #0f0524 40%, #050212 100%);
         font-family: 'Space Grotesk', sans-serif;
         overflow-x: hidden;
     }
     
+    /* Hide Streamlit chrome */
     #MainMenu, header, footer {visibility: hidden;}
     
+    /* Custom Scrollbar */
     ::-webkit-scrollbar {width: 10px;}
-    ::-webkit-scrollbar-track {background: var(--bg-mid);}
+    ::-webkit-scrollbar-track {background: #0f0524;}
     ::-webkit-scrollbar-thumb {
-        background: linear-gradient(180deg, var(--primary-pink), var(--primary-purple), var(--primary-blue));
+        background: linear-gradient(180deg, #ff006e, #8338ec, #3a86ff);
         border-radius: 10px;
     }
     
-    /* ===== AURORA BACKGROUND ===== */
-    .aurora-bg {
+    /* ============================================ */
+    /* ANIMATED FLOATING ORBS BACKGROUND             */
+    /* ============================================ */
+    .floating-orbs {
         position: fixed;
         top: 0;
         left: 0;
         width: 100%;
         height: 100%;
         pointer-events: none;
-        z-index: -2;
+        z-index: 0;
         overflow: hidden;
     }
     
-    .aurora {
+    .orb {
         position: absolute;
-        width: 200%;
-        height: 200%;
-        background: conic-gradient(
-            from 0deg,
-            transparent,
-            rgba(255, 0, 110, 0.05),
-            transparent,
-            rgba(131, 56, 236, 0.05),
-            transparent,
-            rgba(58, 134, 255, 0.05),
-            transparent,
-            rgba(6, 255, 165, 0.05),
-            transparent
-        );
-        animation: aurora-spin 30s linear infinite;
-        filter: blur(80px);
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.3;
+        animation: float-orb 20s infinite ease-in-out;
     }
     
-    @keyframes aurora-spin {
-        0% { transform: rotate(0deg) translate(-25%, -25%); }
-        100% { transform: rotate(360deg) translate(-25%, -25%); }
+    .orb1 {
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, #ff006e, transparent);
+        top: 10%;
+        left: 5%;
+        animation-delay: 0s;
     }
     
-    /* ===== HOLOGRAPHIC TITLE ===== */
-    .holo-title {
-        font-family: 'Orbitron', sans-serif;
-        font-weight: 900;
-        font-size: 5rem;
-        background: linear-gradient(
-            135deg, 
-            var(--primary-pink) 0%, 
-            var(--primary-yellow) 20%, 
-            var(--primary-green) 40%,
-            var(--primary-blue) 60%,
-            var(--primary-purple) 80%,
-            var(--primary-pink) 100%
-        );
-        background-size: 300% 300%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        animation: holo-shift 6s ease infinite, holo-glow 3s ease-in-out infinite;
-        letter-spacing: -2px;
-        margin: 0;
-        line-height: 1;
+    .orb2 {
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, #8338ec, transparent);
+        top: 60%;
+        right: 10%;
+        animation-delay: -5s;
     }
     
-    @keyframes holo-shift {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
+    .orb3 {
+        width: 250px;
+        height: 250px;
+        background: radial-gradient(circle, #3a86ff, transparent);
+        bottom: 10%;
+        left: 40%;
+        animation-delay: -10s;
     }
     
-    @keyframes holo-glow {
-        0%, 100% { filter: drop-shadow(0 0 20px rgba(131, 56, 236, 0.4)); }
-        50% { filter: drop-shadow(0 0 40px rgba(255, 0, 110, 0.6)); }
+    .orb4 {
+        width: 350px;
+        height: 350px;
+        background: radial-gradient(circle, #06ffa5, transparent);
+        top: 30%;
+        right: 30%;
+        animation-delay: -15s;
     }
     
-    /* ===== HERO V4 ===== */
-    .hero-v4 {
+    @keyframes float-orb {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        25% { transform: translate(100px, -50px) scale(1.1); }
+        50% { transform: translate(-50px, 100px) scale(0.9); }
+        75% { transform: translate(-100px, -100px) scale(1.05); }
+    }
+    
+    /* ============================================ */
+    /* ANIMATED GRID BACKGROUND                    */
+    /* ============================================ */
+    .animated-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+        background-image: 
+            linear-gradient(rgba(131, 56, 236, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(131, 56, 236, 0.03) 1px, transparent 1px);
+        background-size: 50px 50px;
+        animation: grid-move 20s linear infinite;
+    }
+    
+    @keyframes grid-move {
+        0% { background-position: 0 0; }
+        100% { background-position: 50px 50px; }
+    }
+    
+    /* ============================================ */
+    /* HERO SECTION ENHANCED                       */
+    /* ============================================ */
+    .hero-container {
         position: relative;
-        padding: 5rem 2rem;
+        padding: 4rem 2rem;
         text-align: center;
-        background: 
-            radial-gradient(circle at 20% 50%, rgba(255, 0, 110, 0.15) 0%, transparent 50%),
-            radial-gradient(circle at 80% 50%, rgba(131, 56, 236, 0.15) 0%, transparent 50%),
-            linear-gradient(135deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.2) 100%);
-        border-radius: 40px;
+        background: linear-gradient(135deg, rgba(255, 0, 110, 0.1) 0%, rgba(131, 56, 236, 0.1) 50%, rgba(58, 134, 255, 0.1) 100%);
+        border-radius: 30px;
         overflow: hidden;
         margin-bottom: 2rem;
         border: 1px solid rgba(255, 255, 255, 0.1);
-        backdrop-filter: blur(30px);
-        animation: hero-v4-entrance 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    }
-    
-    @keyframes hero-v4-entrance {
-        0% { opacity: 0; transform: translateY(80px) scale(0.8); filter: blur(20px); }
-        100% { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
-    }
-    
-    .hero-v4::before {
-        content: '';
-        position: absolute;
-        top: -100%;
-        left: -100%;
-        width: 300%;
-        height: 300%;
-        background: conic-gradient(
-            from 0deg,
-            transparent,
-            rgba(255, 0, 110, 0.3),
-            transparent,
-            rgba(131, 56, 236, 0.3),
-            transparent,
-            rgba(6, 255, 165, 0.3),
-            transparent
-        );
-        animation: rotate 15s linear infinite;
-    }
-    
-    .hero-v4::after {
-        content: '';
-        position: absolute;
-        inset: 0;
-        background: 
-            repeating-linear-gradient(
-                90deg,
-                transparent 0px,
-                transparent 2px,
-                rgba(255,255,255,0.03) 2px,
-                rgba(255,255,255,0.03) 4px
-            );
-        pointer-events: none;
-    }
-    
-    .hero-content-v4 {
-        position: relative;
-        z-index: 2;
-    }
-    
-    .hero-emoji-3d {
-        font-size: 6rem;
-        display: inline-block;
-        animation: emoji-3d 4s ease-in-out infinite;
-        filter: drop-shadow(0 10px 20px rgba(255, 0, 110, 0.5));
-    }
-    
-    @keyframes emoji-3d {
-        0%, 100% { transform: translateY(0) rotateY(0deg) rotateZ(0deg); }
-        25% { transform: translateY(-30px) rotateY(180deg) rotateZ(15deg); }
-        50% { transform: translateY(-10px) rotateY(360deg) rotateZ(0deg); }
-        75% { transform: translateY(-25px) rotateY(540deg) rotateZ(-15deg); }
-    }
-    
-    .hero-subtitle-v4 {
-        font-size: 1.4rem;
-        color: rgba(255, 255, 255, 0.8);
-        margin-top: 1.5rem;
-        font-weight: 300;
-        letter-spacing: 2px;
-        text-transform: uppercase;
-    }
-    
-    .hero-badges {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        margin-top: 2rem;
-        flex-wrap: wrap;
-    }
-    
-    .hero-badge-v4 {
-        padding: 0.6rem 1.5rem;
-        background: rgba(255, 255, 255, 0.05);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 50px;
-        color: var(--primary-green);
-        font-size: 0.8rem;
-        font-family: 'JetBrains Mono', monospace;
-        letter-spacing: 2px;
-        backdrop-filter: blur(10px);
-        transition: all 0.3s ease;
-        animation: badge-pulse-v4 3s ease-in-out infinite;
-    }
-    
-    .hero-badge-v4:hover {
-        transform: translateY(-5px) scale(1.05);
-        border-color: var(--primary-green);
-        box-shadow: 0 10px 30px rgba(6, 255, 165, 0.3);
-    }
-    
-    @keyframes badge-pulse-v4 {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(6, 255, 165, 0.4); }
-        50% { box-shadow: 0 0 0 10px rgba(6, 255, 165, 0); }
-    }
-    
-    /* ===== DATA QUALITY METER ===== */
-    .dq-meter {
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem 1.5rem;
-        background: linear-gradient(135deg, rgba(6, 255, 165, 0.1), rgba(58, 134, 255, 0.1));
-        border: 1px solid rgba(6, 255, 165, 0.3);
-        border-radius: 16px;
-        margin: 1rem 0;
-        backdrop-filter: blur(10px);
-    }
-    
-    .dq-score {
-        font-size: 2rem;
-        font-weight: 700;
-        color: var(--primary-green);
-        font-family: 'JetBrains Mono', monospace;
-    }
-    
-    .dq-bar {
-        flex: 1;
-        height: 8px;
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        overflow: hidden;
-    }
-    
-    .dq-bar-fill {
-        height: 100%;
-        background: linear-gradient(90deg, var(--primary-pink), var(--primary-yellow), var(--primary-green));
-        border-radius: 10px;
-        animation: dq-fill 2s ease-out;
-    }
-    
-    @keyframes dq-fill {
-        from { width: 0%; }
-    }
-    
-    /* ===== KPI CARDS V4 ===== */
-    .kpi-grid-v4 {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-        gap: 1.5rem;
-        margin: 2rem 0;
-    }
-    
-    .kpi-card-v4 {
-        position: relative;
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 24px;
-        padding: 2rem 1.5rem;
-        overflow: hidden;
-        transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         backdrop-filter: blur(20px);
-        animation: kpi-slide-in 0.8s ease-out backwards;
+        animation: hero-entrance 1s ease-out;
     }
     
-    .kpi-card-v4:nth-child(1) { animation-delay: 0.1s; }
-    .kpi-card-v4:nth-child(2) { animation-delay: 0.2s; }
-    .kpi-card-v4:nth-child(3) { animation-delay: 0.3s; }
-    .kpi-card-v4:nth-child(4) { animation-delay: 0.4s; }
-    .kpi-card-v4:nth-child(5) { animation-delay: 0.5s; }
-    .kpi-card-v4:nth-child(6) { animation-delay: 0.6s; }
-    
-    @keyframes kpi-slide-in {
-        from { opacity: 0; transform: translateY(40px) scale(0.9); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    
-    .kpi-card-v4::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 4px;
-        background: linear-gradient(90deg, var(--primary-pink), var(--primary-purple), var(--primary-blue), var(--primary-green));
-        background-size: 300% 100%;
-        animation: gradient-shift 4s linear infinite;
-    }
-    
-    .kpi-card-v4::after {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-        animation: shimmer 4s infinite;
-    }
-    
-    .kpi-card-v4:hover {
-        transform: translateY(-10px) rotateX(5deg) scale(1.03);
-        box-shadow: 
-            0 25px 75px rgba(131, 56, 236, 0.4),
-            0 0 0 1px rgba(131, 56, 236, 0.5) inset;
-    }
-    
-    .kpi-icon-v4 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        display: inline-block;
-        animation: icon-bounce-v4 3s ease-in-out infinite;
-        filter: drop-shadow(0 5px 15px rgba(131, 56, 236, 0.4));
-    }
-    
-    @keyframes icon-bounce-v4 {
-        0%, 100% { transform: translateY(0) rotate(0deg); }
-        25% { transform: translateY(-8px) rotate(-5deg); }
-        75% { transform: translateY(-8px) rotate(5deg); }
-    }
-    
-    .kpi-value-v4 {
-        font-size: 3rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 0;
-        line-height: 1;
-        font-family: 'JetBrains Mono', monospace;
-    }
-    
-    .kpi-label-v4 {
-        font-size: 0.75rem;
-        color: rgba(255, 255, 255, 0.5);
-        text-transform: uppercase;
-        letter-spacing: 2px;
-        margin-top: 1rem;
-        font-weight: 600;
-    }
-    
-    .kpi-delta-v4 {
-        display: inline-block;
-        padding: 0.4rem 1rem;
-        background: rgba(6, 255, 165, 0.15);
-        border: 1px solid rgba(6, 255, 165, 0.4);
-        border-radius: 20px;
-        color: var(--primary-green);
-        font-size: 0.7rem;
-        margin-top: 0.8rem;
-        font-family: 'JetBrains Mono', monospace;
-        font-weight: 600;
-    }
-    
-    .kpi-ci {
-        font-size: 0.7rem;
-        color: rgba(255, 255, 255, 0.6);
-        margin-top: 0.5rem;
-        font-family: 'JetBrains Mono', monospace;
-    }
-    
-    /* ===== SECTION HEADERS V4 ===== */
-    .section-header-v4 {
-        display: flex;
-        align-items: center;
-        gap: 1.5rem;
-        margin: 3rem 0 2rem 0;
-        padding-bottom: 1.5rem;
-        border-bottom: 2px solid transparent;
-        background-image: linear-gradient(var(--bg-mid), var(--bg-mid)), 
-                         linear-gradient(90deg, var(--primary-pink), var(--primary-purple), var(--primary-blue), var(--primary-green));
-        background-origin: border-box;
-        background-clip: padding-box, border-box;
-        position: relative;
-    }
-    
-    .section-header-v4::after {
-        content: '';
-        position: absolute;
-        bottom: -2px;
-        left: 0;
-        width: 100%;
-        height: 2px;
-        background: linear-gradient(90deg, var(--primary-pink), var(--primary-purple), var(--primary-blue), var(--primary-green));
-        background-size: 200% 100%;
-        animation: gradient-shift 4s linear infinite;
-    }
-    
-    .section-number-v4 {
-        font-size: 3.5rem;
-        font-weight: 900;
-        background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-family: 'Orbitron', sans-serif;
-        line-height: 1;
-        animation: number-pulse-v4 3s ease-in-out infinite;
-    }
-    
-    @keyframes number-pulse-v4 {
-        0%, 100% { 
-            transform: scale(1);
-            filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.5));
+    @keyframes hero-entrance {
+        0% {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
         }
-        50% { 
-            transform: scale(1.05);
-            filter: drop-shadow(0 0 25px rgba(131, 56, 236, 0.9));
+        100% {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
     }
     
-    .section-title-v4 {
-        font-size: 2rem;
-        font-weight: 700;
-        color: #fff;
-        margin: 0;
-        letter-spacing: -0.5px;
-    }
-    
-    .section-subtitle-v4 {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.6);
-        margin-top: 0.3rem;
-        font-family: 'JetBrains Mono', monospace;
-    }
-    
-    /* ===== GLASS CARDS V4 ===== */
-    .glass-card-v4 {
-        background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%);
-        backdrop-filter: blur(25px);
-        -webkit-backdrop-filter: blur(25px);
-        border: 1px solid rgba(255, 255, 255, 0.15);
-        border-radius: 24px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .glass-card-v4:hover {
-        transform: translateY(-5px) scale(1.01);
-        border-color: rgba(131, 56, 236, 0.5);
-        box-shadow: 0 20px 50px rgba(131, 56, 236, 0.25);
-    }
-    
-    .glass-card-v4::before {
+    .hero-container::before {
         content: '';
         position: absolute;
         top: -50%;
         left: -50%;
         width: 200%;
         height: 200%;
-        background: radial-gradient(circle, rgba(131, 56, 236, 0.1) 0%, transparent 70%);
-        opacity: 0;
-        transition: opacity 0.4s ease;
-        pointer-events: none;
+        background: conic-gradient(from 0deg, transparent, rgba(255, 0, 110, 0.3), transparent, rgba(131, 56, 236, 0.3), transparent);
+        animation: rotate 20s linear infinite;
     }
     
-    .glass-card-v4:hover::before {
-        opacity: 1;
+    @keyframes rotate {
+        100% { transform: rotate(360deg); }
     }
     
-    /* ===== INSIGHT CARDS V4 ===== */
-    .insight-card-v4 {
-        background: linear-gradient(135deg, rgba(255, 0, 110, 0.1) 0%, rgba(131, 56, 236, 0.1) 100%);
-        border: 1px solid rgba(131, 56, 236, 0.3);
-        border-radius: 20px;
-        padding: 2rem;
-        margin-bottom: 1.5rem;
-        position: relative;
-        overflow: hidden;
-        transition: all 0.4s ease;
-        animation: insight-float-v4 5s ease-in-out infinite;
-    }
-    
-    @keyframes insight-float-v4 {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-8px); }
-    }
-    
-    .insight-card-v4:hover {
-        transform: translateY(-10px) scale(1.02);
-        box-shadow: 0 25px 60px rgba(131, 56, 236, 0.4);
-        border-color: var(--primary-pink);
-    }
-    
-    .insight-icon-v4 {
-        font-size: 2.5rem;
-        margin-bottom: 1rem;
-        display: inline-block;
-        animation: icon-dance-v4 3s ease-in-out infinite;
-    }
-    
-    @keyframes icon-dance-v4 {
-        0%, 100% { transform: rotate(0deg) scale(1); }
-        25% { transform: rotate(-15deg) scale(1.15); }
-        75% { transform: rotate(15deg) scale(1.15); }
-    }
-    
-    .insight-title-v4 {
-        color: #fff;
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin-bottom: 0.8rem;
-    }
-    
-    .insight-text-v4 {
-        color: rgba(255, 255, 255, 0.8);
-        font-size: 0.95rem;
-        line-height: 1.7;
-    }
-    
-    /* ===== INFO BOX V4 ===== */
-    .info-box-v4 {
-        background: linear-gradient(135deg, rgba(58, 134, 255, 0.15) 0%, rgba(6, 255, 165, 0.1) 100%);
-        border-left: 4px solid var(--primary-blue);
-        border-radius: 16px;
-        padding: 1.2rem 1.8rem;
-        margin: 1.5rem 0;
-        color: rgba(255, 255, 255, 0.95);
-        font-family: 'JetBrains Mono', monospace;
-        font-size: 0.9rem;
-        position: relative;
-        overflow: hidden;
-    }
-    
-    .info-box-v4::before {
-        content: '💡';
-        position: absolute;
-        top: -10px;
-        right: -10px;
-        font-size: 4rem;
-        opacity: 0.1;
-    }
-    
-    /* ===== METRIC HIGHLIGHT V4 ===== */
-    .metric-highlight-v4 {
-        font-family: 'JetBrains Mono', monospace;
-        color: var(--primary-green);
-        font-weight: 700;
-        position: relative;
-        display: inline-block;
-        padding: 0 0.3rem;
-        background: rgba(6, 255, 165, 0.1);
-        border-radius: 4px;
-    }
-    
-    .metric-highlight-v4::after {
+    /* Animated particles inside hero */
+    .hero-container::after {
         content: '';
         position: absolute;
-        bottom: -2px;
+        top: 0;
         left: 0;
         width: 100%;
-        height: 2px;
-        background: linear-gradient(90deg, var(--primary-green), var(--primary-blue));
-    }
-    
-    /* ===== BADGE 4D ===== */
-    .badge-4d {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.5rem;
-        padding: 0.5rem 1.2rem;
-        background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple), var(--primary-blue));
-        background-size: 200% 200%;
-        animation: badge-4d-shift 3s ease infinite;
-        border-radius: 20px;
-        color: white;
-        font-size: 0.75rem;
-        font-weight: 700;
-        letter-spacing: 1.5px;
-        text-transform: uppercase;
-        margin-left: 1rem;
-        box-shadow: 0 5px 25px rgba(255, 0, 110, 0.5);
-        font-family: 'Orbitron', sans-serif;
-    }
-    
-    @keyframes badge-4d-shift {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-    }
-    
-    /* ===== TABS V4 ===== */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 10px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 20px;
-        padding: 10px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        backdrop-filter: blur(10px);
-    }
-    
-    .stTabs [data-baseweb="tab"] {
-        background: transparent;
-        border-radius: 14px;
-        color: rgba(255, 255, 255, 0.6);
-        font-weight: 600;
-        padding: 14px 28px;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        font-family: 'Space Grotesk', sans-serif;
-        position: relative;
-        overflow: hidden;
-        font-size: 0.95rem;
-    }
-    
-    .stTabs [data-baseweb="tab"]:hover {
-        background: rgba(131, 56, 236, 0.15);
-        color: #fff;
-        transform: translateY(-3px);
-    }
-    
-    .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple), var(--primary-blue));
-        background-size: 200% 200%;
-        animation: badge-4d-shift 3s ease infinite;
-        color: #fff;
-        box-shadow: 0 8px 30px rgba(131, 56, 236, 0.5);
-    }
-    
-    /* ===== BUTTONS V4 ===== */
-    .stButton > button {
-        background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple), var(--primary-blue));
-        background-size: 200% 200%;
-        color: white;
-        border: none;
-        border-radius: 14px;
-        padding: 0.8rem 2rem;
-        font-weight: 700;
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        font-family: 'Space Grotesk', sans-serif;
-        letter-spacing: 1px;
-        position: relative;
-        overflow: hidden;
-        animation: btn-gradient 4s ease infinite;
-    }
-    
-    @keyframes btn-gradient {
-        0%, 100% { background-position: 0% 50%; }
-        50% { background-position: 100% 50%; }
-    }
-    
-    .stButton > button:hover {
-        transform: translateY(-3px) scale(1.02);
-        box-shadow: 0 15px 40px rgba(255, 0, 110, 0.5);
-    }
-    
-    /* ===== PROGRESS V4 ===== */
-    .progress-v4 {
-        height: 10px;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-        overflow: hidden;
-        position: relative;
-    }
-    
-    .progress-bar-v4 {
         height: 100%;
-        background: linear-gradient(90deg, var(--primary-pink), var(--primary-yellow), var(--primary-green));
-        background-size: 200% 100%;
-        border-radius: 10px;
-        animation: progress-shine-v4 3s linear infinite;
-    }
-    
-    @keyframes progress-shine-v4 {
-        0% { background-position: 0% 50%; }
-        100% { background-position: 200% 50%; }
-    }
-    
-    /* ===== FOOTER V4 ===== */
-    .premium-footer-v4 {
-        text-align: center;
-        padding: 3rem;
-        margin-top: 4rem;
-        background: 
-            radial-gradient(circle at 50% 0%, rgba(131, 56, 236, 0.2) 0%, transparent 70%),
-            linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
-        border-radius: 30px;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        position: relative;
-        overflow: hidden;
-        backdrop-filter: blur(20px);
-    }
-    
-    .footer-brand-v4 {
-        background: linear-gradient(135deg, var(--primary-pink), var(--primary-yellow), var(--primary-green), var(--primary-blue), var(--primary-purple));
-        background-size: 300% 300%;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-weight: 900;
-        font-size: 1.5rem;
-        font-family: 'Orbitron', sans-serif;
-        animation: holo-shift 6s ease infinite;
-    }
-    
-    /* ===== CLUSTER LABELS ===== */
-    .cluster-badge {
-        display: inline-block;
-        padding: 0.3rem 0.8rem;
-        border-radius: 15px;
-        font-size: 0.75rem;
-        font-weight: 700;
-        font-family: 'JetBrains Mono', monospace;
-        letter-spacing: 1px;
-    }
-    
-    .cluster-0 { background: rgba(255, 0, 110, 0.2); color: var(--primary-pink); border: 1px solid var(--primary-pink); }
-    .cluster-1 { background: rgba(131, 56, 236, 0.2); color: var(--primary-purple); border: 1px solid var(--primary-purple); }
-    .cluster-2 { background: rgba(58, 134, 255, 0.2); color: var(--primary-blue); border: 1px solid var(--primary-blue); }
-    .cluster-3 { background: rgba(6, 255, 165, 0.2); color: var(--primary-green); border: 1px solid var(--primary-green); }
-    
-    /* ===== ANOMALY ALERT ===== */
-    .anomaly-alert {
-        background: linear-gradient(135deg, rgba(255, 0, 110, 0.15), rgba(255, 190, 11, 0.1));
-        border: 2px solid var(--primary-pink);
-        border-radius: 16px;
-        padding: 1.5rem;
-        margin: 1rem 0;
-        animation: alert-pulse 2s ease-in-out infinite;
-    }
-    
-    @keyframes alert-pulse {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(255, 0, 110, 0.4); }
-        50% { box-shadow: 0 0 0 15px rgba(255, 0, 110, 0); }
-    }
-    
-    /* ===== COMPARISON MODE ===== */
-    .compare-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 1rem 1.5rem;
-        background: rgba(255, 255, 255, 0.05);
-        border-radius: 12px;
-        margin-bottom: 1rem;
-    }
-    
-    .vs-badge {
-        background: linear-gradient(135deg, var(--primary-pink), var(--primary-purple));
-        color: white;
-        padding: 0.5rem 1.2rem;
-        border-radius: 20px;
-        font-weight: 700;
-        font-size: 0.9rem;
-        font-family: 'Orbitron', sans-serif;
-    }
-    
-    /* ===== NETWORK NODES ===== */
-    .network-container {
-        position: relative;
-        padding: 2rem;
-    }
-    
-    /* ===== SCENARIO PANEL ===== */
-    .scenario-panel {
-        background: linear-gradient(135deg, rgba(255, 190, 11, 0.1), rgba(255, 0, 110, 0.1));
-        border: 1px solid rgba(255, 190, 11, 0.3);
-        border-radius: 20px;
-        padding: 2rem;
-        margin: 1.5rem 0;
-    }
-    
-    .scenario-result {
-        font-size: 2.5rem;
-        font-weight: 900;
-        background: linear-gradient(135deg, var(--primary-yellow), var(--primary-pink));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        font-family: 'Orbitron', sans-serif;
-    }
-    
-    /* ===== TOOLTIP CUSTOM ===== */
-    [data-tooltip] {
-        position: relative;
-        cursor: help;
-    }
-    
-    [data-tooltip]:hover::after {
-        content: attr(data-tooltip);
-        position: absolute;
-        bottom: 100%;
-        left: 50%;
-        transform: translateX(-50%);
-        background: rgba(0, 0, 0, 0.9);
-        color: white;
-        padding: 0.5rem 1rem;
-        border-radius: 8px;
-        font-size: 0.8rem;
-        white-space: nowrap;
-        z-index: 1000;
+        background-image: 
+            radial-gradient(circle at 20% 30%, rgba(255, 0, 110, 0.4) 0%, transparent 1%),
+            radial-gradient(circle at 80% 70%, rgba(131, 56, 236, 0.4) 0%, transparent 1%),
+            radial-gradient(circle at 50% 50%, rgba(58, 134, 255, 0.4) 0%, transparent 1%),
+            radial-gradient(circle at 30% 80%, rgba(6, 255, 165, 0.4) 0%, transparent 1%),
+            radial-gradient(circle at 70% 20%, rgba(255, 190, 11, 0.4) 0%, transparent 1%);
+        background-size: 100% 100%;
+        animation: particles-float 15s ease-in-out infinite;
         pointer-events: none;
     }
     
-    /* ===== RESPONSIVE ===== */
-    @media (max-width: 768px) {
-        .holo-title { font-size: 3rem; }
-        .hero-v4 { padding: 3rem 1rem; }
-        .kpi-value-v4 { font-size: 2rem; }
+    @keyframes particles-float {
+        0%, 100% { transform: translate(0, 0); opacity: 0.6; }
+        50% { transform: translate(20px, -20px); opacity: 1; }
     }
     
-    /* ===== MARQUEE V4 ===== */
-    .marquee-v4 {
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .hero-emoji {
+        font-size: 5rem;
+        display: inline-block;
+        margin-bottom: 1rem;
+        animation: float-emoji 3s ease-in-out infinite, spin-slow 8s linear infinite;
+    }
+    
+    @keyframes float-emoji {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-30px) rotate(15deg); }
+    }
+    
+    @keyframes spin-slow {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+    
+    .hero-title {
+        font-size: 4.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff006e 0%, #ffbe0b 25%, #8338ec 50%, #3a86ff 75%, #06ffa5 100%);
+        background-size: 200% 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+        letter-spacing: -3px;
+        line-height: 1.1;
+        animation: gradient-flow 5s ease infinite, title-glow 3s ease-in-out infinite;
+    }
+    
+    @keyframes gradient-flow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    @keyframes title-glow {
+        0%, 100% { text-shadow: 0 0 20px rgba(131, 56, 236, 0.5); }
+        50% { text-shadow: 0 0 40px rgba(255, 0, 110, 0.8); }
+    }
+    
+    /* TYPING ANIMATION FOR SUBTITLE */
+    .hero-subtitle {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.7);
+        margin-top: 1rem;
+        font-weight: 400;
+        letter-spacing: 1px;
         overflow: hidden;
         white-space: nowrap;
-        background: linear-gradient(90deg, 
-            rgba(255, 0, 110, 0.1), 
-            rgba(131, 56, 236, 0.1), 
-            rgba(58, 134, 255, 0.1),
-            rgba(6, 255, 165, 0.1));
-        padding: 1rem 0;
-        border-radius: 16px;
-        margin: 1.5rem 0;
-        border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-    
-    .marquee-content-v4 {
+        border-right: 3px solid #06ffa5;
+        animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        max-width: 100%;
         display: inline-block;
-        animation: marquee-v4 40s linear infinite;
-        color: rgba(255, 255, 255, 0.8);
+    }
+    
+    @keyframes typing {
+        from { width: 0 }
+        to { width: 100% }
+    }
+    
+    @keyframes blink-caret {
+        from, to { border-color: transparent }
+        50% { border-color: #06ffa5 }
+    }
+    
+    .hero-badge {
+        display: inline-block;
+        padding: 0.5rem 1.5rem;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 50px;
+        color: #06ffa5;
+        font-size: 0.85rem;
+        margin-top: 1.5rem;
         font-family: 'JetBrains Mono', monospace;
-        font-size: 0.9rem;
         letter-spacing: 2px;
-        font-weight: 600;
+        animation: badge-pulse 2s ease-in-out infinite, badge-float 3s ease-in-out infinite;
     }
     
-    @keyframes marquee-v4 {
-        0% { transform: translateX(100%); }
-        100% { transform: translateX(-100%); }
+    @keyframes badge-pulse {
+        0%, 100% { 
+            box-shadow: 0 0 20px rgba(6, 255, 165, 0.3);
+            transform: scale(1);
+        }
+        50% { 
+            box-shadow: 0 0 40px rgba(6, 255, 165, 0.8);
+            transform: scale(1.05);
+        }
     }
     
-    /* ===== GRADIENT BORDER ANIMATION ===== */
+    @keyframes badge-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    
+    /* ============================================ */
+    /* KPI CARDS - ENHANCED WITH SHIMMER            */
+    /* ============================================ */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        margin: 2rem 0;
+    }
+    
+    .kpi-card {
+        position: relative;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 1.8rem;
+        overflow: hidden;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        backdrop-filter: blur(10px);
+        animation: card-entrance 0.8s ease-out backwards;
+    }
+    
+    .kpi-card:nth-child(1) { animation-delay: 0.1s; }
+    .kpi-card:nth-child(2) { animation-delay: 0.2s; }
+    .kpi-card:nth-child(3) { animation-delay: 0.3s; }
+    .kpi-card:nth-child(4) { animation-delay: 0.4s; }
+    .kpi-card:nth-child(5) { animation-delay: 0.5s; }
+    
+    @keyframes card-entrance {
+        from {
+            opacity: 0;
+            transform: translateY(30px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+    
+    .kpi-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+        background-size: 300% 100%;
+        animation: gradient-shift 3s linear infinite;
+    }
+    
+    /* Shimmer effect */
+    .kpi-card::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 255, 255, 0.1),
+            transparent
+        );
+        animation: shimmer 3s infinite;
+    }
+    
     @keyframes gradient-shift {
         0% { background-position: 0% 50%; }
         100% { background-position: 300% 50%; }
@@ -882,62 +372,846 @@ st.markdown("""
         100% { left: 100%; }
     }
     
-    @keyframes rotate {
+    .kpi-card:hover {
+        transform: translateY(-8px) scale(1.02) rotateX(5deg);
+        box-shadow: 0 20px 60px rgba(131, 56, 236, 0.3);
+        border-color: rgba(131, 56, 236, 0.5);
+    }
+    
+    .kpi-icon {
+        font-size: 2rem;
+        margin-bottom: 0.8rem;
+        display: inline-block;
+        animation: icon-bounce 2s ease-in-out infinite;
+    }
+    
+    @keyframes icon-bounce {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        25% { transform: translateY(-5px) rotate(-5deg); }
+        75% { transform: translateY(-5px) rotate(5deg); }
+    }
+    
+    .kpi-value {
+        font-size: 2.8rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #fff 0%, #c4b5fd 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 0;
+        line-height: 1;
+        font-family: 'JetBrains Mono', monospace;
+        animation: value-glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes value-glow {
+        0%, 100% { filter: brightness(1) drop-shadow(0 0 5px rgba(131, 56, 236, 0.3)); }
+        50% { filter: brightness(1.2) drop-shadow(0 0 15px rgba(131, 56, 236, 0.8)); }
+    }
+    
+    .kpi-label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.5);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-top: 0.8rem;
+        font-weight: 500;
+    }
+    
+    .kpi-delta {
+        display: inline-block;
+        padding: 0.3rem 0.8rem;
+        background: rgba(6, 255, 165, 0.1);
+        border: 1px solid rgba(6, 255, 165, 0.3);
+        border-radius: 20px;
+        color: #06ffa5;
+        font-size: 0.75rem;
+        margin-top: 0.5rem;
+        font-family: 'JetBrains Mono', monospace;
+        animation: delta-slide 3s ease-in-out infinite;
+    }
+    
+    @keyframes delta-slide {
+        0%, 100% { transform: translateX(0); }
+        50% { transform: translateX(5px); }
+    }
+    
+    /* ============================================ */
+    /* SECTION HEADERS ENHANCED                     */
+    /* ============================================ */
+    .section-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin: 2.5rem 0 1.5rem 0;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        animation: header-slide 0.8s ease-out;
+    }
+    
+    @keyframes header-slide {
+        from {
+            opacity: 0;
+            transform: translateX(-50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    .section-number {
+        font-size: 3rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #ff006e, #8338ec);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-family: 'JetBrains Mono', monospace;
+        line-height: 1;
+        animation: number-pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes number-pulse {
+        0%, 100% { 
+            transform: scale(1);
+            filter: drop-shadow(0 0 10px rgba(255, 0, 110, 0.5));
+        }
+        50% { 
+            transform: scale(1.1);
+            filter: drop-shadow(0 0 20px rgba(131, 56, 236, 0.8));
+        }
+    }
+    
+    .section-title {
+        font-size: 1.8rem;
+        font-weight: 600;
+        color: #fff;
+        margin: 0;
+        letter-spacing: -0.5px;
+    }
+    
+    .section-subtitle {
+        font-size: 0.9rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin-top: 0.2rem;
+        font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* ============================================ */
+    /* GLASS CARDS ENHANCED                        */
+    /* ============================================ */
+    .glass-card {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.01) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+        animation: glass-appear 0.6s ease-out;
+    }
+    
+    @keyframes glass-appear {
+        from {
+            opacity: 0;
+            transform: scale(0.95);
+        }
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+    
+    .glass-card:hover {
+        transform: translateY(-3px) scale(1.01);
+        border-color: rgba(131, 56, 236, 0.4);
+        box-shadow: 0 15px 40px rgba(131, 56, 236, 0.15);
+    }
+    
+    .glass-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: radial-gradient(circle, rgba(131, 56, 236, 0.1) 0%, transparent 70%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        pointer-events: none;
+    }
+    
+    .glass-card:hover::after {
+        opacity: 1;
+    }
+    
+    /* ============================================ */
+    /* 3D BADGE ENHANCED                            */
+    /* ============================================ */
+    .badge-3d {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.4rem 1rem;
+        background: linear-gradient(135deg, #ff006e, #8338ec);
+        border-radius: 20px;
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
+        margin-left: 1rem;
+        box-shadow: 0 5px 20px rgba(255, 0, 110, 0.4);
+        font-family: 'JetBrains Mono', monospace;
+        animation: badge-glow 2s ease-in-out infinite;
+    }
+    
+    @keyframes badge-glow {
+        0%, 100% { 
+            box-shadow: 0 5px 20px rgba(255, 0, 110, 0.4);
+            transform: scale(1);
+        }
+        50% { 
+            box-shadow: 0 5px 30px rgba(255, 0, 110, 0.8);
+            transform: scale(1.05);
+        }
+    }
+    
+    /* ============================================ */
+    /* SIDEBAR ENHANCED                             */
+    /* ============================================ */
+    .stSidebar {
+        background: rgba(15, 5, 36, 0.95);
+        backdrop-filter: blur(20px);
+    }
+    
+    .stSidebar .sidebar-content {
+        background: transparent;
+    }
+    
+    /* ============================================ */
+    /* TABS ENHANCED                                */
+    /* ============================================ */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        padding: 8px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        background: transparent;
+        border-radius: 12px;
+        color: rgba(255, 255, 255, 0.6);
+        font-weight: 500;
+        padding: 12px 24px;
+        transition: all 0.3s ease;
+        font-family: 'Space Grotesk', sans-serif;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stTabs [data-baseweb="tab"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(131, 56, 236, 0.2), transparent);
+        transition: left 0.5s ease;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover::before {
+        left: 100%;
+    }
+    
+    .stTabs [data-baseweb="tab"]:hover {
+        background: rgba(131, 56, 236, 0.1);
+        color: #fff;
+        transform: translateY(-2px);
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: linear-gradient(135deg, #ff006e, #8338ec);
+        color: #fff;
+        box-shadow: 0 5px 20px rgba(131, 56, 236, 0.4);
+        animation: tab-active 0.3s ease;
+    }
+    
+    @keyframes tab-active {
+        from { transform: scale(0.95); }
+        to { transform: scale(1); }
+    }
+    
+    /* ============================================ */
+    /* BUTTONS ENHANCED                             */
+    /* ============================================ */
+    .stButton > button {
+        background: linear-gradient(135deg, #ff006e, #8338ec);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 0.7rem 1.8rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-family: 'Space Grotesk', sans-serif;
+        letter-spacing: 0.5px;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .stButton > button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s ease, height 0.6s ease;
+    }
+    
+    .stButton > button:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+    
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(255, 0, 110, 0.4);
+    }
+    
+    /* ============================================ */
+    /* DIVIDER ENHANCED                             */
+    /* ============================================ */
+    .fancy-divider {
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(131, 56, 236, 0.5), transparent);
+        margin: 3rem 0;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .fancy-divider::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, #ff006e, transparent);
+        animation: divider-shine 3s linear infinite;
+    }
+    
+    @keyframes divider-shine {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+    
+    /* ============================================ */
+    /* INSIGHT CARDS ENHANCED                       */
+    /* ============================================ */
+    .insight-card {
+        background: linear-gradient(135deg, rgba(255, 0, 110, 0.08) 0%, rgba(131, 56, 236, 0.08) 100%);
+        border: 1px solid rgba(131, 56, 236, 0.3);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        animation: insight-float 4s ease-in-out infinite;
+    }
+    
+    @keyframes insight-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+    
+    .insight-card:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 50px rgba(131, 56, 236, 0.3);
+        border-color: rgba(255, 0, 110, 0.5);
+    }
+    
+    .insight-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+        transition: left 0.6s ease;
+    }
+    
+    .insight-card:hover::before {
+        left: 100%;
+    }
+    
+    .insight-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+        display: inline-block;
+        animation: icon-dance 2s ease-in-out infinite;
+    }
+    
+    @keyframes icon-dance {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        25% { transform: rotate(-10deg) scale(1.1); }
+        75% { transform: rotate(10deg) scale(1.1); }
+    }
+    
+    .insight-title {
+        color: #fff;
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+    
+    .insight-text {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 0.9rem;
+        line-height: 1.6;
+    }
+    
+    /* ============================================ */
+    /* INFO BOX ENHANCED                            */
+    /* ============================================ */
+    .info-box {
+        background: linear-gradient(135deg, rgba(58, 134, 255, 0.15) 0%, rgba(6, 255, 165, 0.1) 100%);
+        border-left: 4px solid #3a86ff;
+        border-radius: 12px;
+        padding: 1rem 1.5rem;
+        margin: 1rem 0;
+        color: rgba(255, 255, 255, 0.9);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        animation: info-slide 0.6s ease-out;
+    }
+    
+    @keyframes info-slide {
+        from {
+            opacity: 0;
+            transform: translateX(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+    
+    /* ============================================ */
+    /* METRIC HIGHLIGHT ENHANCED                    */
+    /* ============================================ */
+    .metric-highlight {
+        font-family: 'JetBrains Mono', monospace;
+        color: #06ffa5;
+        font-weight: 600;
+        position: relative;
+        display: inline-block;
+    }
+    
+    .metric-highlight::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: linear-gradient(90deg, #06ffa5, #3a86ff);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.3s ease;
+    }
+    
+    .metric-highlight:hover::after {
+        transform: scaleX(1);
+    }
+    
+    /* ============================================ */
+    /* FOOTER ENHANCED                              */
+    /* ============================================ */
+    .premium-footer {
+        text-align: center;
+        padding: 2rem;
+        margin-top: 3rem;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.02) 0%, rgba(255, 255, 255, 0.01) 100%);
+        border-radius: 20px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .premium-footer::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: conic-gradient(from 0deg, transparent, rgba(131, 56, 236, 0.1), transparent);
+        animation: rotate 30s linear infinite;
+    }
+    
+    .footer-text {
+        color: rgba(255, 255, 255, 0.5);
+        font-size: 0.85rem;
+        margin: 0.3rem 0;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .footer-brand {
+        background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+        font-size: 1rem;
+        position: relative;
+        z-index: 1;
+        animation: gradient-flow 5s ease infinite;
+        background-size: 200% 200%;
+    }
+    
+    /* ============================================ */
+    /* ANIMATED NUMBER EFFECT                       */
+    /* ============================================ */
+    @keyframes pulse-glow {
+        0%, 100% { 
+            box-shadow: 0 0 20px rgba(131, 56, 236, 0.3);
+        }
+        50% { 
+            box-shadow: 0 0 40px rgba(131, 56, 236, 0.6);
+        }
+    }
+    
+    .pulse-card {
+        animation: pulse-glow 3s ease-in-out infinite;
+    }
+    
+    /* ============================================ */
+    /* PROGRESS BAR ENHANCED                        */
+    /* ============================================ */
+    .progress-container {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 0.5rem;
+        margin: 0.5rem 0;
+    }
+    
+    .progress-bar {
+        height: 8px;
+        background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+        background-size: 200% 100%;
+        border-radius: 10px;
+        transition: width 0.5s ease;
+        animation: progress-shine 2s linear infinite;
+    }
+    
+    @keyframes progress-shine {
+        0% { background-position: 0% 50%; }
+        100% { background-position: 200% 50%; }
+    }
+    
+    /* ============================================ */
+    /* MARQUEE SCROLLING TEXT                       */
+    /* ============================================ */
+    .marquee-container {
+        overflow: hidden;
+        white-space: nowrap;
+        background: linear-gradient(90deg, rgba(255, 0, 110, 0.05), rgba(131, 56, 236, 0.05), rgba(58, 134, 255, 0.05));
+        padding: 0.8rem 0;
+        border-radius: 12px;
+        margin: 1rem 0;
+        border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    
+    .marquee-content {
+        display: inline-block;
+        animation: marquee-scroll 30s linear infinite;
+        color: rgba(255, 255, 255, 0.7);
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 0.85rem;
+        letter-spacing: 1px;
+    }
+    
+    @keyframes marquee-scroll {
+        0% { transform: translateX(100%); }
+        100% { transform: translateX(-100%); }
+    }
+    
+    /* ============================================ */
+    /* WAVE ANIMATION                               */
+    /* ============================================ */
+    .wave-container {
+        position: relative;
+        height: 50px;
+        overflow: hidden;
+        margin: 2rem 0;
+    }
+    
+    .wave {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 200%;
+        height: 100%;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(131, 56, 236, 0.2) 25%, 
+            rgba(255, 0, 110, 0.2) 50%, 
+            rgba(131, 56, 236, 0.2) 75%, 
+            transparent 100%
+        );
+        animation: wave-move 4s ease-in-out infinite;
+    }
+    
+    @keyframes wave-move {
+        0%, 100% { transform: translateX(-50%); }
+        50% { transform: translateX(0%); }
+    }
+    
+    /* ============================================ */
+    /* NEON TEXT EFFECT                             */
+    /* ============================================ */
+    .neon-text {
+        color: #fff;
+        text-shadow: 
+            0 0 5px #fff,
+            0 0 10px #fff,
+            0 0 20px #ff006e,
+            0 0 40px #ff006e,
+            0 0 80px #ff006e;
+        animation: neon-flicker 3s infinite alternate;
+    }
+    
+    @keyframes neon-flicker {
+        0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+            text-shadow: 
+                0 0 5px #fff,
+                0 0 10px #fff,
+                0 0 20px #ff006e,
+                0 0 40px #ff006e,
+                0 0 80px #ff006e;
+        }
+        20%, 24%, 55% {
+            text-shadow: none;
+        }
+    }
+    
+    /* ============================================ */
+    /* RIPPLE EFFECT                                */
+    /* ============================================ */
+    .ripple {
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .ripple::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        border-radius: 50%;
+        background: rgba(131, 56, 236, 0.5);
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+    
+    .ripple:active::after {
+        width: 300px;
+        height: 300px;
+    }
+    
+    /* ============================================ */
+    /* FLOATING COFFEE BEANS                        */
+    /* ============================================ */
+    .coffee-bean {
+        position: fixed;
+        font-size: 2rem;
+        opacity: 0.3;
+        pointer-events: none;
+        z-index: 1;
+        animation: bean-float 15s linear infinite;
+    }
+    
+    .bean-1 { top: 20%; left: 10%; animation-delay: 0s; }
+    .bean-2 { top: 40%; right: 15%; animation-delay: -3s; }
+    .bean-3 { top: 60%; left: 25%; animation-delay: -6s; }
+    .bean-4 { top: 80%; right: 30%; animation-delay: -9s; }
+    .bean-5 { top: 15%; left: 60%; animation-delay: -12s; }
+    
+    @keyframes bean-float {
+        0% {
+            transform: translateY(0) rotate(0deg);
+            opacity: 0.3;
+        }
+        50% {
+            opacity: 0.6;
+        }
+        100% {
+            transform: translateY(-100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+    
+    /* ============================================ */
+    /* DATAFRAME ANIMATIONS                         */
+    /* ============================================ */
+    .stDataFrame {
+        animation: dataframe-appear 0.5s ease-out;
+    }
+    
+    @keyframes dataframe-appear {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* ============================================ */
+    /* SPINNER ENHANCED                             */
+    /* ============================================ */
+    .stSpinner > div {
+        border-top-color: #ff006e !important;
+        animation: spin 1s linear infinite !important;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
         100% { transform: rotate(360deg); }
+    }
+    
+    /* ============================================ */
+    /* METRIC CARDS ANIMATION                       */
+    /* ============================================ */
+    [data-testid="stMetric"] {
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    [data-testid="stMetric"]:hover {
+        transform: translateY(-3px);
+        border-color: rgba(131, 56, 236, 0.4);
+        box-shadow: 0 10px 30px rgba(131, 56, 236, 0.2);
+    }
+    
+    [data-testid="stMetric"]::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+        animation: shimmer 4s infinite;
+    }
+    
+    /* ============================================ */
+    /* SCROLL INDICATOR                             */
+    /* ============================================ */
+    .scroll-indicator {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 3px;
+        background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+        z-index: 9999;
+        transition: width 0.1s ease;
+    }
+    
+    /* ============================================ */
+    /* GRADIENT BORDER ANIMATION                    */
+    /* ============================================ */
+    .gradient-border {
+        position: relative;
+        background: rgba(15, 5, 36, 0.8);
+        border-radius: 20px;
+        padding: 2px;
+    }
+    
+    .gradient-border::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border-radius: 20px;
+        padding: 2px;
+        background: linear-gradient(135deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+        background-size: 200% 200%;
+        animation: gradient-border-flow 3s ease infinite;
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+    }
+    
+    @keyframes gradient-border-flow {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
     }
 </style>
 """, unsafe_allow_html=True)
 
-# --- AURORA BACKGROUND ---
-st.markdown('<div class="aurora-bg"><div class="aurora"></div></div>', unsafe_allow_html=True)
+# --- ANIMATED BACKGROUND ELEMENTS ---
+st.markdown("""
+<div class="animated-grid"></div>
+<div class="floating-orbs">
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
+    <div class="orb orb3"></div>
+    <div class="orb orb4"></div>
+</div>
+<div class="coffee-bean bean-1">☕</div>
+<div class="coffee-bean bean-2">🫘</div>
+<div class="coffee-bean bean-3">☕</div>
+<div class="coffee-bean bean-4">🫘</div>
+<div class="coffee-bean bean-5">☕</div>
+""", unsafe_allow_html=True)
 
-# --- FUNGSI LOAD & PREPROCESS DATA (Enhanced) ---
+# --- FUNGSI LOAD & PREPROCESS DATA ---
 @st.cache_data
 def load_data():
-    try:
-        df = pd.read_csv('data.csv', sep=';')
-    except:
-        # Fallback: generate synthetic data for demo
-        np.random.seed(42)
-        n = 100
-        df = pd.DataFrame({
-            'Timestamp': pd.date_range('2024-01-01', periods=n, freq='D'),
-            'Nama': [f'Responden_{i}' for i in range(n)],
-            'Umur': np.random.randint(18, 25, n),
-            'Gender': np.random.choice(['L', 'P'], n),
-            'Kopi_per_Hari': np.random.choice(['0', '1', '2 cangkir', '3+'], n),
-            'Jenis_Kopi': np.random.choice(['Arabica', 'Robusta', 'Blend'], n),
-            'Waktu_Minum': np.random.choice(['Pagi', 'Siang', 'Sore', 'Malam'], n),
-            'Durasi_Belajar': np.random.choice(['< 2 jam', '2-4 jam', '5-7 jam', '> 7 jam'], n),
-            'Fokus_Subjektif': np.random.randint(1, 6, n),
-            'Produktivitas_1': np.random.randint(1, 6, n),
-            'Produktivitas_2': np.random.randint(1, 6, n),
-            'Produktivitas_3': np.random.randint(1, 6, n),
-            'Produktivitas_4': np.random.randint(1, 6, n),
-            'Efek_Samping': np.random.choice(['Tidak Ada', 'Gelisah', 'Jantung Berdebar'], n),
-            'Kafein_Sensitif': np.random.choice(['Ya', 'Tidak'], n),
-            'Kualitas_Tidur_Memburuk': np.random.randint(1, 6, n),
-        })
-    
+    df = pd.read_csv('data.csv', sep=';')
     df_clean = df.copy()
-    
-    # Extract numeric coffee
+
     df_clean['Kopi_per_Hari'] = df_clean.iloc[:, 4].astype(str).str.extract(r'(\d+)').fillna(0).astype(int)
-    df_clean.loc[df_clean.iloc[:, 4].astype(str).str.contains('3\+|\+', na=False, regex=True), 'Kopi_per_Hari'] = 3
-    
+
     hours_mapping = {
         '< 2 jam': 1.0,
         '2-4 jam': 3.0,
         '5-7 jam': 6.0,
         '> 7 jam': 8.5
     }
-    df_clean['Durasi_Belajar_Num'] = df_clean.iloc[:, 7].map(hours_mapping).fillna(3.0)
-    
+    df_clean['Durasi_Belajar_Num'] = df_clean.iloc[:, 7].map(hours_mapping).fillna(df_clean.iloc[:, 7].mode()[0])
+
     likert_cols = [df_clean.columns[9], df_clean.columns[10], df_clean.columns[11], df_clean.columns[12]]
     df_clean['Skor_Produktivitas'] = df_clean[likert_cols].mean(axis=1)
-    
+
     df_clean['Kualitas_Tidur_Memburuk'] = pd.to_numeric(df_clean.iloc[:, 15], errors='coerce').fillna(3)
-    
+
     df_clean['Is_Fokus_Tinggi'] = (df_clean['Skor_Produktivitas'] > 3.0).astype(int)
     df_clean['Is_Peminum_Kopi'] = (df_clean['Kopi_per_Hari'] > 0).astype(int)
     
@@ -945,87 +1219,58 @@ def load_data():
     df_clean['Kopi_Label'] = df_clean['Kopi_per_Hari'].apply(lambda x: f'{x} Cangkir')
     
     def categorize_kopi(x):
-        if x == 0: return 'Non-Drinker'
-        elif x <= 1: return 'Light (1 cup)'
-        elif x <= 2: return 'Moderate (2 cups)'
-        else: return 'Heavy (3+ cups)'
+        if x == 0:
+            return 'Non-Drinker'
+        elif x <= 1:
+            return 'Light (1 cup)'
+        elif x <= 2:
+            return 'Moderate (2 cups)'
+        else:
+            return 'Heavy (3+ cups)'
     
     df_clean['Kategori_Konsumsi'] = df_clean['Kopi_per_Hari'].apply(categorize_kopi)
     
     def categorize_produktivitas(x):
-        if x < 2.5: return 'Low'
-        elif x < 3.5: return 'Medium'
-        else: return 'High'
+        if x < 2.5:
+            return 'Low'
+        elif x < 3.5:
+            return 'Medium'
+        else:
+            return 'High'
     
     df_clean['Produktivitas_Level'] = df_clean['Skor_Produktivitas'].apply(categorize_produktivitas)
-    
-    # New: Efficiency Score (Productivity per hour of study)
-    df_clean['Efficiency_Score'] = df_clean['Skor_Produktivitas'] / df_clean['Durasi_Belajar_Num'].replace(0, 1)
-    
-    # New: Risk Score
-    df_clean['Risk_Score'] = (
-        (df_clean['Kopi_per_Hari'] >= 3).astype(int) * 2 +
-        (df_clean['Kualitas_Tidur_Memburuk'] >= 4).astype(int) * 2 +
-        (df_clean['Skor_Produktivitas'] < 2.5).astype(int)
-    )
-    
+
     return df_clean
 
 df = load_data()
 
-# --- DATA QUALITY CALCULATION ---
-def calculate_data_quality(df_filtered):
-    total_cells = df_filtered.size
-    null_cells = df_filtered.isnull().sum().sum()
-    completeness = 1 - (null_cells / total_cells) if total_cells > 0 else 0
-    
-    # Consistency check
-    numeric_cols = df_filtered.select_dtypes(include=[np.number]).columns
-    consistency = 1.0
-    for col in numeric_cols:
-        if df_filtered[col].std() == 0:
-            consistency -= 0.05
-    consistency = max(0, consistency)
-    
-    # Volume check
-    volume_score = min(1.0, len(df_filtered) / 50)
-    
-    dq_score = (completeness * 0.4 + consistency * 0.3 + volume_score * 0.3) * 100
-    return dq_score, completeness, consistency, volume_score
-
-# --- HERO SECTION V4 ---
+# --- HERO SECTION ---
 st.markdown("""
-<div class="hero-v4">
-    <div class="hero-content-v4">
-        <div class="hero-emoji-3d">☕</div>
-        <h1 class="holo-title">COFFEE ANALYTICS 4D</h1>
-        <p class="hero-subtitle-v4">Next-Gen Neuroscience & Productivity Intelligence Platform</p>
-        <div class="hero-badges">
-            <span class="hero-badge-v4">◆ v4.0 QUANTUM EDITION</span>
-            <span class="hero-badge-v4">◆ AI-POWERED INSIGHTS</span>
-            <span class="hero-badge-v4">◆ ML CLUSTERING</span>
-            <span class="hero-badge-v4">◆ STOCHASTIC SIMULATION</span>
-            <span class="hero-badge-v4">◆ 4D VISUALIZATION</span>
-        </div>
+<div class="hero-container">
+    <div class="hero-content">
+        <span class="hero-emoji">☕</span>
+        <h1 class="hero-title">Coffee Analytics Pro</h1>
+        <p class="hero-subtitle">Advanced 3D Neuroscience & Productivity Intelligence Platform</p>
+        <span class="hero-badge">◆ PREMIUM EDITION v3.0 ◆ AI-POWERED INSIGHTS ◆</span>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# --- MARQUEE ---
+# --- MARQUEE SCROLLING TEXT ---
 st.markdown("""
-<div class="marquee-v4">
-    <div class="marquee-content-v4">
-        ☕ COFFEE ANALYTICS 4D • 🧠 NEUROSCIENCE • 📊 DATA SCIENCE • 🎯 MACHINE LEARNING • 🎲 MONTE CARLO • 🌐 3D VISUALIZATION • 🤖 AI INSIGHTS • 📈 PREDICTIVE ANALYTICS • 🔗 CORRELATION • ⚡ REAL-TIME STATS • ☕ COFFEE ANALYTICS 4D • 🧠 NEUROSCIENCE • 📊 DATA SCIENCE • 🎯 MACHINE LEARNING • 🎲 MONTE CARLO • 🌐 3D VISUALIZATION •
+<div class="marquee-container">
+    <div class="marquee-content">
+        ☕ COFFEE ANALYTICS • 📊 DATA SCIENCE • 🧠 NEUROSCIENCE • 📈 PRODUCTIVITY • 🎯 3D VISUALIZATION • 🤖 AI INSIGHTS • 🎲 MONTE CARLO • 📉 CORRELATION • ☕ COFFEE ANALYTICS • 📊 DATA SCIENCE • 🧠 NEUROSCIENCE • 📈 PRODUCTIVITY • 🎯 3D VISUALIZATION • 🤖 AI INSIGHTS • 🎲 MONTE CARLO • 📉 CORRELATION •
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# --- SIDEBAR FILTERS (Enhanced) ---
+# --- SIDEBAR FILTERS ---
 with st.sidebar:
-    st.markdown("### 🎛️ **Command Center**")
+    st.markdown("### 🎛️ **Control Panel**")
     st.markdown("---")
-    
-    st.markdown("#### 🔍 **Smart Filters**")
+
+    st.markdown("#### 🔍 **Data Filters**")
     
     kopi_filter = st.multiselect(
         "☕ Cangkir per Hari",
@@ -1033,14 +1278,14 @@ with st.sidebar:
         default=sorted(df['Kopi_per_Hari'].unique()),
         help="Pilih jumlah cangkir kopi yang ingin ditampilkan"
     )
-    
+
     kategori_filter = st.multiselect(
         "📊 Kategori Konsumsi",
         options=sorted(df['Kategori_Konsumsi'].unique()),
         default=sorted(df['Kategori_Konsumsi'].unique()),
         help="Filter berdasarkan kategori konsumsi kopi"
     )
-    
+
     durasi_options = df['Durasi_Belajar_Num'].unique()
     if len(durasi_options) > 0:
         durasi_range = st.slider(
@@ -1052,7 +1297,7 @@ with st.sidebar:
         )
     else:
         durasi_range = (0.0, 10.0)
-    
+
     fokus_filter = st.selectbox(
         "🎯 Status Fokus",
         options=["Semua", "High Focus (>3.0)", "Low Focus (≤3.0)"],
@@ -1065,493 +1310,441 @@ with st.sidebar:
         default=sorted(df['Produktivitas_Level'].unique()),
         help="Filter berdasarkan level produktivitas"
     )
-    
-    # New: Risk Filter
-    risk_filter = st.select_slider(
-        "⚠️ Max Risk Score",
-        options=[0, 1, 2, 3, 4, 5],
-        value=5,
-        help="Filter berdasarkan tingkat risiko kesehatan"
-    )
-    
+
     df_filtered = df[
         (df['Kopi_per_Hari'].isin(kopi_filter)) &
         (df['Kategori_Konsumsi'].isin(kategori_filter)) &
         (df['Durasi_Belajar_Num'] >= durasi_range[0]) &
         (df['Durasi_Belajar_Num'] <= durasi_range[1]) &
-        (df['Produktivitas_Level'].isin(produktivitas_filter)) &
-        (df['Risk_Score'] <= risk_filter)
+        (df['Produktivitas_Level'].isin(produktivitas_filter))
     ]
-    
+
     if fokus_filter == "High Focus (>3.0)":
         df_filtered = df_filtered[df_filtered['Is_Fokus_Tinggi'] == 1]
     elif fokus_filter == "Low Focus (≤3.0)":
         df_filtered = df_filtered[df_filtered['Is_Fokus_Tinggi'] == 0]
-    
+
     st.markdown("---")
     
     st.markdown("#### 📈 **Live Statistics**")
     st.markdown(f"""
-    <div class="glass-card-v4" style="text-align: center; padding: 1.5rem;">
-        <span class="kpi-icon-v4" style="font-size: 2rem;">👥</span>
-        <p class="kpi-value-v4" style="font-size: 2.5rem;">{len(df_filtered)}</p>
-        <p class="kpi-label-v4">Responden Aktif</p>
+    <div class="glass-card pulse-card" style="text-align: center;">
+        <span class="kpi-icon">👥</span>
+        <p class="kpi-value">{len(df_filtered)}</p>
+        <p class="kpi-label">Responden Aktif</p>
     </div>
     """, unsafe_allow_html=True)
     
     pct_filtered = (len(df_filtered) / len(df)) * 100 if len(df) > 0 else 0
     st.markdown(f"""
-    <div style="margin: 1rem 0;">
-        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
-            <span style="color: rgba(255,255,255,0.7); font-size: 0.85rem;">Data Coverage</span>
-            <span style="color: var(--primary-green); font-size: 0.85rem; font-weight: 700;">{pct_filtered:.1f}%</span>
+    <div class="progress-container">
+        <div style="display: flex; justify-content: space-between; margin-bottom: 0.3rem;">
+            <span style="color: rgba(255,255,255,0.7); font-size: 0.8rem;">Data Filtered</span>
+            <span style="color: #06ffa5; font-size: 0.8rem; font-weight: 600;">{pct_filtered:.1f}%</span>
         </div>
-        <div class="progress-v4">
-            <div class="progress-bar-v4" style="width: {pct_filtered}%;"></div>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Data Quality Meter
-    dq_score, completeness, consistency, volume = calculate_data_quality(df_filtered)
-    st.markdown(f"""
-    <div class="dq-meter">
-        <div class="dq-score">{dq_score:.0f}</div>
-        <div style="flex: 1;">
-            <div style="color: rgba(255,255,255,0.8); font-weight: 600; margin-bottom: 0.5rem;">Data Quality Score</div>
-            <div class="dq-bar">
-                <div class="dq-bar-fill" style="width: {dq_score}%;"></div>
-            </div>
-            <div style="font-size: 0.7rem; color: rgba(255,255,255,0.6); margin-top: 0.3rem;">
-                Completeness: {completeness*100:.0f}% | Consistency: {consistency*100:.0f}%
-            </div>
-        </div>
+        <div class="progress-bar" style="width: {pct_filtered}%;"></div>
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("---")
     
-    st.markdown("#### 💾 **Export & Actions**")
+    st.markdown("#### 💾 **Export Data**")
     
     csv = df_filtered.to_csv(index=False).encode('utf-8')
     st.download_button(
-        label="📥 Download Data (CSV)",
+        label="📥 Download Filtered Data (CSV)",
         data=csv,
-        file_name="coffee_analytics_v4.csv",
+        file_name="coffee_analytics_filtered.csv",
         mime="text/csv",
         use_container_width=True
     )
     
-    # Export report
-    if st.button("📄 Generate Report", use_container_width=True):
-        st.success("✅ Report generation started!")
-    
     if st.button("🔄 Reset All Filters", use_container_width=True):
         st.rerun()
 
-# --- KPI CARDS V4 (Enhanced dengan Bootstrap CI) ---
+# --- KPI CARDS ---
 st.markdown("""
-<div class="section-header-v4">
-    <span class="section-number-v4">01</span>
+<div class="section-header">
+    <span class="section-number">01</span>
     <div>
-        <h2 class="section-title-v4">Key Performance Metrics</h2>
-        <p class="section-subtitle-v4">Real-time statistics dengan Bootstrap Confidence Intervals</p>
+        <h2 class="section-title">Key Performance Metrics</h2>
+        <p class="section-subtitle">Real-time statistics from filtered data</p>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-if len(df_filtered) > 0:
-    # Bootstrap CI function
-    def bootstrap_ci(data, n_bootstrap=1000, ci=0.95):
-        if len(data) == 0:
-            return 0, 0, 0
-        means = []
-        for _ in range(n_bootstrap):
-            sample = np.random.choice(data, size=len(data), replace=True)
-            means.append(np.mean(sample))
-        lower = np.percentile(means, (1-ci)/2 * 100)
-        upper = np.percentile(means, (1+ci)/2 * 100)
-        return np.mean(data), lower, upper
-    
-    cols = st.columns(6)
-    
-    with cols[0]:
-        mean_kopi, ci_lo_kopi, ci_hi_kopi = bootstrap_ci(df_filtered['Kopi_per_Hari'].values)
-        st.markdown(f"""
-        <div class="kpi-card-v4">
-            <span class="kpi-icon-v4">☕</span>
-            <p class="kpi-value-v4">{mean_kopi:.2f}</p>
-            <p class="kpi-label-v4">Avg Cups / Day</p>
-            <span class="kpi-delta-v4">σ = {df_filtered['Kopi_per_Hari'].std():.2f}</span>
-            <p class="kpi-ci">CI 95%: [{ci_lo_kopi:.2f}, {ci_hi_kopi:.2f}]</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with cols[1]:
-        mean_durasi, ci_lo_durasi, ci_hi_durasi = bootstrap_ci(df_filtered['Durasi_Belajar_Num'].values)
-        st.markdown(f"""
-        <div class="kpi-card-v4">
-            <span class="kpi-icon-v4">📚</span>
-            <p class="kpi-value-v4">{mean_durasi:.1f}h</p>
-            <p class="kpi-label-v4">Study Duration</p>
-            <span class="kpi-delta-v4">σ = {df_filtered['Durasi_Belajar_Num'].std():.1f}h</span>
-            <p class="kpi-ci">CI 95%: [{ci_lo_durasi:.1f}, {ci_hi_durasi:.1f}]</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with cols[2]:
-        mean_prod, ci_lo_prod, ci_hi_prod = bootstrap_ci(df_filtered['Skor_Produktivitas'].values)
-        st.markdown(f"""
-        <div class="kpi-card-v4">
-            <span class="kpi-icon-v4">⚡</span>
-            <p class="kpi-value-v4">{mean_prod:.2f}</p>
-            <p class="kpi-label-v4">Productivity</p>
-            <span class="kpi-delta-v4">out of 5.0</span>
-            <p class="kpi-ci">CI 95%: [{ci_lo_prod:.2f}, {ci_hi_prod:.2f}]</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with cols[3]:
-        fokus_pct = df_filtered['Is_Fokus_Tinggi'].mean() * 100
-        st.markdown(f"""
-        <div class="kpi-card-v4">
-            <span class="kpi-icon-v4">🎯</span>
-            <p class="kpi-value-v4">{fokus_pct:.0f}%</p>
-            <p class="kpi-label-v4">High Focus Rate</p>
-            <span class="kpi-delta-v4">{len(df_filtered[df_filtered['Is_Fokus_Tinggi']==1])} students</span>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with cols[4]:
-        mean_eff, ci_lo_eff, ci_hi_eff = bootstrap_ci(df_filtered['Efficiency_Score'].values)
-        st.markdown(f"""
-        <div class="kpi-card-v4">
-            <span class="kpi-icon-v4">🚀</span>
-            <p class="kpi-value-v4">{mean_eff:.2f}</p>
-            <p class="kpi-label-v4">Efficiency Score</p>
-            <span class="kpi-delta-v4">Prod/Hours</span>
-            <p class="kpi-ci">CI 95%: [{ci_lo_eff:.2f}, {ci_hi_eff:.2f}]</p>
-        </div>
-        """, unsafe_allow_html=True)
-    
-    with cols[5]:
-        mean_risk = df_filtered['Risk_Score'].mean()
-        high_risk_pct = (df_filtered['Risk_Score'] >= 3).mean() * 100
-        st.markdown(f"""
-        <div class="kpi-card-v4">
-            <span class="kpi-icon-v4">⚠️</span>
-            <p class="kpi-value-v4">{mean_risk:.1f}</p>
-            <p class="kpi-label-v4">Risk Score</p>
-            <span class="kpi-delta-v4">{high_risk_pct:.0f}% High Risk</span>
-        </div>
-        """, unsafe_allow_html=True)
-else:
-    st.warning("⚠️ Tidak ada data. Silakan ubah filter.")
+col1, col2, col3, col4, col5 = st.columns(5)
 
-# --- TABS V4 (8 Tabs) ---
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8 = st.tabs([
-    "🌐 3D/4D Visualization",
-    "📊 Descriptive",
-    "🔗 Correlation",
-    "🎯 Probability",
-    "🎲 Monte Carlo",
-    "🤖 Predictive ML",
-    "📈 Advanced",
-    "🧠 AI Insights"
+with col1:
+    st.markdown(f"""
+    <div class="kpi-card">
+        <span class="kpi-icon">☕</span>
+        <p class="kpi-value">{df_filtered['Kopi_per_Hari'].mean():.2f}</p>
+        <p class="kpi-label">Avg Cups / Day</p>
+        <span class="kpi-delta">σ = {df_filtered['Kopi_per_Hari'].std():.2f}</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col2:
+    st.markdown(f"""
+    <div class="kpi-card">
+        <span class="kpi-icon">📚</span>
+        <p class="kpi-value">{df_filtered['Durasi_Belajar_Num'].mean():.1f}h</p>
+        <p class="kpi-label">Study Duration</p>
+        <span class="kpi-delta">σ = {df_filtered['Durasi_Belajar_Num'].std():.1f}h</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col3:
+    st.markdown(f"""
+    <div class="kpi-card">
+        <span class="kpi-icon">⚡</span>
+        <p class="kpi-value">{df_filtered['Skor_Produktivitas'].mean():.2f}</p>
+        <p class="kpi-label">Productivity Score</p>
+        <span class="kpi-delta">out of 5.0</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col4:
+    fokus_pct = df_filtered['Is_Fokus_Tinggi'].mean() * 100
+    st.markdown(f"""
+    <div class="kpi-card">
+        <span class="kpi-icon">🎯</span>
+        <p class="kpi-value">{fokus_pct:.0f}%</p>
+        <p class="kpi-label">High Focus Rate</p>
+        <span class="kpi-delta">{len(df_filtered[df_filtered['Is_Fokus_Tinggi']==1])} students</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+with col5:
+    tidur_mean = df_filtered['Kualitas_Tidur_Memburuk'].mean()
+    st.markdown(f"""
+    <div class="kpi-card">
+        <span class="kpi-icon">😴</span>
+        <p class="kpi-value">{tidur_mean:.1f}</p>
+        <p class="kpi-label">Sleep Quality</p>
+        <span class="kpi-delta">1-5 scale</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+# --- WAVE DIVIDER ---
+st.markdown("""
+<div class="wave-container">
+    <div class="wave"></div>
+</div>
+""", unsafe_allow_html=True)
+
+# --- TABS ---
+tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs([
+    "🌐 3D Visualization",
+    "📊 Descriptive Analytics",
+    "🔗 Correlation Analysis",
+    "🎯 Conditional Probability",
+    "🎲 Monte Carlo Simulation",
+    "📈 Advanced Analytics",
+    "🤖 AI Insights"
 ])
 
-# ===================== TAB 1: 3D/4D VISUALIZATION =====================
+# ===================== TAB 1: 3D VISUALIZATION =====================
 with tab1:
     st.markdown("""
-    <div class="section-header-v4">
-        <span class="section-number-v4">3D</span>
+    <div class="section-header">
+        <span class="section-number">3D</span>
         <div>
-            <h2 class="section-title-v4">Multi-Dimensional Visualization <span class="badge-4d">✦ 4D</span></h2>
-            <p class="section-subtitle-v4">Interactive 3D plots dengan dimensi ke-4 (size/color)</p>
+            <h2 class="section-title">Interactive 3D Visualization <span class="badge-3d">✦ PREMIUM</span></h2>
+            <p class="section-subtitle">Multi-dimensional data exploration in three dimensions</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
     if len(df_filtered) > 0:
-        # Subtabs untuk variasi 3D
-        sub1, sub2, sub3, sub4 = st.tabs(["🌌 3D Scatter", "🏔️ Surface Plot", "🫧 3D Bubble", "🌊 Contour 3D"])
+        st.markdown("### 🌌 **3D Scatter Plot: Kopi × Durasi × Produktivitas**")
+        st.markdown("""
+        <div class="info-box">
+            💡 <strong>Tip:</strong> Klik dan drag untuk memutar, scroll untuk zoom, double-click untuk reset view.
+            Arahkan kursor ke titik untuk melihat detail responden.
+        </div>
+        """, unsafe_allow_html=True)
         
-        with sub1:
-            st.markdown("### 🌌 **3D Scatter Plot Multi-Dimensional**")
-            st.markdown("""
-            <div class="info-box-v4">
-                💡 <strong>Interaksi:</strong> Drag untuk rotate, scroll untuk zoom, double-click untuk reset. 
-                Arahkan kursor ke titik untuk detail lengkap. <b>Size = Efficiency</b>, <b>Color = Sleep Quality</b>.
-            </div>
-            """, unsafe_allow_html=True)
-            
-            fig_3d = px.scatter_3d(
-                df_filtered,
-                x='Kopi_per_Hari',
-                y='Durasi_Belajar_Num',
-                z='Skor_Produktivitas',
-                color='Kualitas_Tidur_Memburuk',
-                size='Efficiency_Score',
-                size_max=30,
-                color_continuous_scale=['#06ffa5', '#ffbe0b', '#ff006e'],
-                hover_data={
-                    'Kopi_per_Hari': ':.0f',
-                    'Durasi_Belajar_Num': ':.1f',
-                    'Skor_Produktivitas': ':.2f',
-                    'Kualitas_Tidur_Memburuk': ':.0f',
-                    'Efficiency_Score': ':.2f',
-                    'Fokus_Label': True,
-                    'Kategori_Konsumsi': True
-                },
-                labels={
-                    'Kopi_per_Hari': '☕ Cangkir Kopi',
-                    'Durasi_Belajar_Num': '📚 Durasi (jam)',
-                    'Skor_Produktivitas': '⚡ Produktivitas',
-                    'Kualitas_Tidur_Memburuk': '😴 Kualitas Tidur'
-                }
-            )
-            
-            fig_3d.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', family='Space Grotesk'),
-                scene=dict(
-                    xaxis=dict(
-                        backgroundcolor='rgba(0,0,0,0)',
-                        gridcolor='rgba(255,255,255,0.15)',
-                        showbackground=False,
-                        zerolinecolor='rgba(255,255,255,0.3)',
-                        title='☕ Cangkir Kopi'
-                    ),
-                    yaxis=dict(
-                        backgroundcolor='rgba(0,0,0,0)',
-                        gridcolor='rgba(255,255,255,0.15)',
-                        showbackground=False,
-                        zerolinecolor='rgba(255,255,255,0.3)',
-                        title='📚 Durasi (jam)'
-                    ),
-                    zaxis=dict(
-                        backgroundcolor='rgba(0,0,0,0)',
-                        gridcolor='rgba(255,255,255,0.15)',
-                        showbackground=False,
-                        zerolinecolor='rgba(255,255,255,0.3)',
-                        title='⚡ Produktivitas'
-                    ),
-                    camera=dict(
-                        eye=dict(x=1.8, y=1.8, z=1.2),
-                        up=dict(x=0, y=0, z=1)
-                    ),
-                    aspectratio=dict(x=1.2, y=1.2, z=0.9)
-                ),
-                height=650,
-                margin=dict(l=20, r=20, t=20, b=20),
-                coloraxis_colorbar=dict(
-                    title='Kualitas Tidur',
-                    tickfont=dict(color='white'),
-                    title_font=dict(color='white')
-                )
-            )
-            
-            fig_3d.update_traces(
-                marker=dict(
-                    opacity=0.9,
-                    line=dict(color='rgba(255,255,255,0.6)', width=1.5)
-                ),
-                hovertemplate='<b>%{customdata[5]}</b><br>' +
-                              'Kategori: %{customdata[6]}<br>' +
-                              'Kopi: %{x} cangkir<br>' +
-                              'Durasi: %{y:.1f} jam<br>' +
-                              'Produktivitas: %{z:.2f}<br>' +
-                              'Tidur: %{customdata[3]:.0f}<br>' +
-                              'Efficiency: %{customdata[4]:.2f}<extra></extra>'
-            )
-            
-            st.plotly_chart(fig_3d, use_container_width=True)
-        
-        with sub2:
-            st.markdown("### 🏔️ **3D Surface: Produktivitas Landscape**")
-            
-            kopi_bins = np.linspace(df_filtered['Kopi_per_Hari'].min(), df_filtered['Kopi_per_Hari'].max(), 15)
-            durasi_bins = np.linspace(df_filtered['Durasi_Belajar_Num'].min(), df_filtered['Durasi_Belajar_Num'].max(), 15)
-            
-            Z = np.zeros((len(kopi_bins), len(durasi_bins)))
-            for i, k in enumerate(kopi_bins):
-                for j, d in enumerate(durasi_bins):
-                    mask = (
-                        (np.abs(df_filtered['Kopi_per_Hari'] - k) < 0.5) &
-                        (np.abs(df_filtered['Durasi_Belajar_Num'] - d) < 1.0)
-                    )
-                    if mask.sum() > 0:
-                        Z[i, j] = df_filtered.loc[mask, 'Skor_Produktivitas'].mean()
-                    else:
-                        Z[i, j] = np.nan
-            
-            Z_filled = pd.DataFrame(Z).ffill().bfill().fillna(df_filtered['Skor_Produktivitas'].mean()).values
-            
-            fig_surface = go.Figure(data=[go.Surface(
-                z=Z_filled,
-                x=durasi_bins,
-                y=kopi_bins,
-                colorscale=[
-                    [0, '#0f0524'],
-                    [0.2, '#8338ec'],
-                    [0.4, '#ff006e'],
-                    [0.6, '#ffbe0b'],
-                    [0.8, '#06ffa5'],
-                    [1, '#ffffff']
-                ],
-                contours=dict(
-                    z=dict(show=True, usecolormap=True, highlightcolor="white", project_z=True)
-                ),
-                opacity=0.95,
-                hovertemplate='<b>Durasi: %{x:.1f}h</b><br>' +
-                              'Kopi: %{y:.1f} cangkir<br>' +
-                              'Produktivitas: %{z:.2f}<extra></extra>'
-            )])
-            
-            fig_surface.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', family='Space Grotesk'),
-                scene=dict(
-                    xaxis=dict(title='📚 Durasi (jam)', backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)'),
-                    yaxis=dict(title='☕ Cangkir Kopi', backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)'),
-                    zaxis=dict(title='⚡ Produktivitas', backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)', range=[1, 5]),
-                    camera=dict(eye=dict(x=2, y=2, z=1.5))
-                ),
-                height=600,
-                margin=dict(l=20, r=20, t=20, b=20)
-            )
-            
-            st.plotly_chart(fig_surface, use_container_width=True)
-        
-        with sub3:
-            st.markdown("### 🫧 **3D Bubble Chart: Multi-Feature Analysis**")
-            st.markdown("""
-            <div class="info-box-v4">
-                🎨 <strong>Dimensi ke-4:</strong> Setiap bubble mewakili kombinasi fitur. 
-                <b>Size</b> = jumlah responden di area tersebut, <b>Color</b> = kategori konsumsi.
-            </div>
-            """, unsafe_allow_html=True)
-            
-            bubble_data = df_filtered.groupby(['Kopi_per_Hari', 'Kategori_Konsumsi']).agg({
-                'Skor_Produktivitas': 'mean',
-                'Durasi_Belajar_Num': 'mean',
-                'Kualitas_Tidur_Memburuk': 'mean',
-                'Is_Fokus_Tinggi': 'count'
-            }).reset_index()
-            bubble_data.columns = ['Kopi', 'Kategori', 'Produktivitas', 'Durasi', 'Tidur', 'Count']
-            
-            fig_bubble = go.Figure()
-            
-            color_map = {
-                'Non-Drinker': '#ff006e',
-                'Light (1 cup)': '#8338ec',
-                'Moderate (2 cups)': '#3a86ff',
-                'Heavy (3+ cups)': '#06ffa5'
+        fig_3d_scatter = px.scatter_3d(
+            df_filtered,
+            x='Kopi_per_Hari',
+            y='Durasi_Belajar_Num',
+            z='Skor_Produktivitas',
+            color='Kualitas_Tidur_Memburuk',
+            size=df_filtered['Is_Fokus_Tinggi'].apply(lambda x: 15 if x == 1 else 8),
+            color_continuous_scale=['#06ffa5', '#ffbe0b', '#ff006e'],
+            hover_data={
+                'Kopi_per_Hari': ':.0f',
+                'Durasi_Belajar_Num': ':.1f',
+                'Skor_Produktivitas': ':.2f',
+                'Kualitas_Tidur_Memburuk': ':.0f',
+                'Fokus_Label': True,
+                'Kategori_Konsumsi': True
+            },
+            labels={
+                'Kopi_per_Hari': 'Cangkir Kopi',
+                'Durasi_Belajar_Num': 'Durasi Belajar (jam)',
+                'Skor_Produktivitas': 'Skor Produktivitas',
+                'Kualitas_Tidur_Memburuk': 'Kualitas Tidur'
             }
-            
-            for kategori in bubble_data['Kategori'].unique():
-                subset = bubble_data[bubble_data['Kategori'] == kategori]
-                fig_bubble.add_trace(go.Scatter3d(
-                    x=subset['Kopi'],
-                    y=subset['Durasi'],
-                    z=subset['Produktivitas'],
-                    mode='markers',
-                    marker=dict(
-                        size=subset['Count'] * 2 + 10,
-                        color=color_map.get(kategori, '#ffffff'),
-                        opacity=0.8,
-                        line=dict(color='white', width=1.5)
-                    ),
-                    name=kategori,
-                    hovertemplate=f'<b>{kategori}</b><br>Kopi: %{{x}}<br>Durasi: %{{y:.1f}}h<br>Produktivitas: %{{z:.2f}}<br>Count: %{{customdata}}<extra></extra>',
-                    customdata=subset['Count']
-                ))
-            
-            fig_bubble.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', family='Space Grotesk'),
-                scene=dict(
-                    xaxis=dict(title='☕ Cangkir Kopi', backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)'),
-                    yaxis=dict(title='📚 Durasi (jam)', backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)'),
-                    zaxis=dict(title='⚡ Produktivitas', backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)')
+        )
+        
+        fig_3d_scatter.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', family='Space Grotesk'),
+            scene=dict(
+                xaxis=dict(
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False,
+                    zerolinecolor='rgba(255,255,255,0.2)',
+                    title='☕ Cangkir Kopi'
                 ),
-                legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
-                height=600,
-                margin=dict(l=20, r=20, t=20, b=20)
-            )
-            
-            st.plotly_chart(fig_bubble, use_container_width=True)
-        
-        with sub4:
-            st.markdown("### 🌊 **3D Contour Density**")
-            
-            fig_contour = go.Figure()
-            fig_contour.add_trace(go.Contour(
-                z=Z_filled,
-                x=durasi_bins,
-                y=kopi_bins,
-                colorscale='Viridis',
-                contours=dict(
-                    coloring='heatmap',
-                    showlabels=True,
-                    labelfont=dict(size=12, color='white')
+                yaxis=dict(
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False,
+                    zerolinecolor='rgba(255,255,255,0.2)',
+                    title='📚 Durasi Belajar'
                 ),
-                line_smoothing=1.2,
-                hovertemplate='Durasi: %{x:.1f}h<br>Kopi: %{y:.1f}<br>Produktivitas: %{z:.2f}<extra></extra>'
-            ))
-            
-            fig_contour.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', family='Space Grotesk'),
-                xaxis=dict(title='📚 Durasi (jam)', gridcolor='rgba(255,255,255,0.15)', color='white'),
-                yaxis=dict(title='☕ Cangkir Kopi', gridcolor='rgba(255,255,255,0.15)', color='white'),
-                height=550,
-                margin=dict(l=20, r=20, t=20, b=20)
+                zaxis=dict(
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False,
+                    zerolinecolor='rgba(255,255,255,0.2)',
+                    title='⚡ Produktivitas'
+                ),
+                camera=dict(
+                    eye=dict(x=1.8, y=1.8, z=1.2),
+                    up=dict(x=0, y=0, z=1)
+                ),
+                aspectratio=dict(x=1.2, y=1.2, z=0.9)
+            ),
+            height=600,
+            margin=dict(l=20, r=20, t=20, b=20),
+            coloraxis_colorbar=dict(
+                title='Kualitas Tidur',
+                tickfont=dict(color='white'),
+                title_font=dict(color='white')
             )
-            
-            st.plotly_chart(fig_contour, use_container_width=True)
+        )
         
-        # Insight Cards
-        st.markdown("### 💎 **Pattern Discovery**")
-        ins_cols = st.columns(4)
+        fig_3d_scatter.update_traces(
+            marker=dict(
+                opacity=0.85,
+                line=dict(color='rgba(255,255,255,0.5)', width=1)
+            ),
+            hovertemplate='<b>%{customdata[4]}</b><br>' +
+                          'Kategori: %{customdata[5]}<br>' +
+                          'Kopi: %{x} cangkir<br>' +
+                          'Durasi: %{y:.1f} jam<br>' +
+                          'Produktivitas: %{z:.2f}<br>' +
+                          'Tidur: %{customdata[3]:.0f}<extra></extra>'
+        )
         
-        insights = [
-            ("🎯", "Sweet Spot", "Kombinasi optimal: <b>1 cangkir + 5-7 jam</b> = produktivitas maksimal"),
-            ("⚠️", "Trade-off Tidur", "Konsumsi >2 cangkir berkorelasi dengan <b>kualitas tidur menurun</b>"),
-            ("📈", "Diminishing Returns", "Setelah 2 cangkir, <b>produktivitas plateau</b> tapi risiko meningkat"),
-            ("🌊", "Density Clusters", "3 klaster utama: Non-drinkers, Optimal drinkers, Heavy users")
-        ]
+        st.plotly_chart(fig_3d_scatter, use_container_width=True)
         
-        for i, (icon, title, text) in enumerate(insights):
-            with ins_cols[i]:
-                st.markdown(f"""
-                <div class="insight-card-v4">
-                    <div class="insight-icon-v4">{icon}</div>
-                    <div class="insight-title-v4">{title}</div>
-                    <div class="insight-text-v4">{text}</div>
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        st.markdown("### 🏔️ **3D Surface Plot: Produktivitas Landscape**")
+        st.markdown("""
+        <div class="info-box">
+            🗺️ <strong>Surface Plot:</strong> Menunjukkan "topografi" produktivitas berdasarkan kombinasi konsumsi kopi dan durasi belajar.
+            Area tinggi (warna cerah) = produktivitas tinggi.
+        </div>
+        """, unsafe_allow_html=True)
+        
+        kopi_bins = np.linspace(df_filtered['Kopi_per_Hari'].min(), df_filtered['Kopi_per_Hari'].max(), 10)
+        durasi_bins = np.linspace(df_filtered['Durasi_Belajar_Num'].min(), df_filtered['Durasi_Belajar_Num'].max(), 10)
+        
+        Z = np.zeros((len(kopi_bins), len(durasi_bins)))
+        for i, k in enumerate(kopi_bins):
+            for j, d in enumerate(durasi_bins):
+                mask = (
+                    (np.abs(df_filtered['Kopi_per_Hari'] - k) < 0.6) &
+                    (np.abs(df_filtered['Durasi_Belajar_Num'] - d) < 1.5)
+                )
+                if mask.sum() > 0:
+                    Z[i, j] = df_filtered.loc[mask, 'Skor_Produktivitas'].mean()
+                else:
+                    Z[i, j] = np.nan
+        
+        Z_filled = pd.DataFrame(Z).ffill().bfill().fillna(df_filtered['Skor_Produktivitas'].mean()).values
+        
+        fig_surface = go.Figure(data=[go.Surface(
+            z=Z_filled,
+            x=durasi_bins,
+            y=kopi_bins,
+            colorscale=[
+                [0, '#0f0524'],
+                [0.2, '#8338ec'],
+                [0.4, '#ff006e'],
+                [0.6, '#ffbe0b'],
+                [0.8, '#06ffa5'],
+                [1, '#ffffff']
+            ],
+            contours=dict(
+                z=dict(show=True, usecolormap=True, highlightcolor="white", project_z=True)
+            ),
+            opacity=0.95,
+            hovertemplate='<b>Durasi: %{x:.1f}h</b><br>' +
+                          'Kopi: %{y:.1f} cangkir<br>' +
+                          'Produktivitas: %{z:.2f}<extra></extra>'
+        )])
+        
+        fig_surface.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', family='Space Grotesk'),
+            scene=dict(
+                xaxis=dict(
+                    title='📚 Durasi Belajar (jam)',
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False
+                ),
+                yaxis=dict(
+                    title='☕ Cangkir Kopi',
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False
+                ),
+                zaxis=dict(
+                    title='⚡ Produktivitas',
+                    backgroundcolor='rgba(0,0,0,0)',
+                    gridcolor='rgba(255,255,255,0.1)',
+                    showbackground=False,
+                    range=[1, 5]
+                ),
+                camera=dict(
+                    eye=dict(x=2, y=2, z=1.5)
+                )
+            ),
+            height=550,
+            margin=dict(l=20, r=20, t=20, b=20)
+        )
+        
+        st.plotly_chart(fig_surface, use_container_width=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        st.markdown("### 🌊 **3D Contour Plot: Density Mapping**")
+        
+        fig_contour = go.Figure()
+        
+        fig_contour.add_trace(go.Contour(
+            z=Z_filled,
+            x=durasi_bins,
+            y=kopi_bins,
+            colorscale='Viridis',
+            contours=dict(
+                coloring='heatmap',
+                showlabels=True,
+                labelfont=dict(size=12, color='white')
+            ),
+            line_smoothing=1.0,
+            hovertemplate='Durasi: %{x:.1f}h<br>Kopi: %{y:.1f}<br>Produktivitas: %{z:.2f}<extra></extra>'
+        ))
+        
+        fig_contour.update_layout(
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)',
+            font=dict(color='white', family='Space Grotesk'),
+            xaxis=dict(
+                title='📚 Durasi Belajar (jam)',
+                gridcolor='rgba(255,255,255,0.1)',
+                color='white'
+            ),
+            yaxis=dict(
+                title='☕ Cangkir Kopi',
+                gridcolor='rgba(255,255,255,0.1)',
+                color='white'
+            ),
+            height=500,
+            margin=dict(l=20, r=20, t=20, b=20),
+            coloraxis_colorbar=dict(
+                title='Produktivitas',
+                tickfont=dict(color='white'),
+                title_font=dict(color='white')
+            )
+        )
+        
+        st.plotly_chart(fig_contour, use_container_width=True)
+        
+        st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
+        
+        st.markdown("### 💎 **3D Insights & Pattern Discovery**")
+        
+        ins_col1, ins_col2, ins_col3, ins_col4 = st.columns(4)
+        
+        with ins_col1:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">🎯</div>
+                <div class="insight-title">Sweet Spot Teridentifikasi</div>
+                <div class="insight-text">
+                    Titik-titik <span class="metric-highlight">hijau neon</span> menunjukkan 
+                    kombinasi optimal: <b>1 cangkir kopi + 5-7 jam belajar</b> menghasilkan 
+                    produktivitas maksimal.
                 </div>
-                """, unsafe_allow_html=True)
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with ins_col2:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">⚠️</div>
+                <div class="insight-title">Trade-off Tidur</div>
+                <div class="insight-text">
+                    Titik berwarna <span class="metric-highlight">merah muda</span> menunjukkan 
+                    responden dengan <b>kualitas tidur buruk</b> - mereka cenderung konsumsi kopi 
+                    lebih banyak (>1 cangkir/hari).
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with ins_col3:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">📈</div>
+                <div class="insight-title">Surface Peaks</div>
+                <div class="insight-text">
+                    Permukaan 3D menunjukkan <span class="metric-highlight">"puncak"</span> di area 
+                    tertentu, mengindikasikan adanya <b>threshold optimal</b> konsumsi kopi untuk 
+                    produktivitas maksimal.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with ins_col4:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">🌊</div>
+                <div class="insight-title">Density Zones</div>
+                <div class="insight-text">
+                    Contour plot menunjukkan <span class="metric-highlight">zona kepadatan</span> 
+                    data, area dengan <b>kontur rapat</b> = variasi produktivitas tinggi.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
     else:
-        st.warning("⚠️ Data kosong. Ubah filter untuk menampilkan visualisasi.")
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter. Silakan ubah filter di sidebar.")
 
 # ===================== TAB 2: DESKRIPTIF =====================
 with tab2:
     st.markdown("""
-    <div class="section-header-v4">
-        <span class="section-number-v4">02</span>
+    <div class="section-header">
+        <span class="section-number">02</span>
         <div>
-            <h2 class="section-title-v4">Descriptive Analytics</h2>
-            <p class="section-subtitle-v4">Statistical distribution dengan advanced tests</p>
+            <h2 class="section-title">Descriptive Analytics</h2>
+            <p class="section-subtitle">Statistical distribution and pattern analysis</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
     if len(df_filtered) > 0:
-        # Distribution Row 1
         col_a, col_b = st.columns(2)
         
         with col_a:
@@ -1562,17 +1755,21 @@ with tab2:
                 y=kopi_counts.values,
                 labels={'x': 'Cangkir', 'y': 'Responden'},
                 color=kopi_counts.values,
-                color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
+                color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff']
             )
             fig_dist_kopi.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white'),
-                xaxis=dict(dtick=1, gridcolor='rgba(255,255,255,0.15)'),
-                yaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
+                xaxis=dict(dtick=1, gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
                 margin=dict(l=20, r=20, t=20, b=20),
                 showlegend=False,
                 coloraxis_showscale=False
+            )
+            fig_dist_kopi.update_traces(
+                marker_line=dict(color='rgba(255,255,255,0.3)', width=1),
+                hovertemplate="<b>%{x} cangkir</b><br>Responden: %{y}<extra></extra>"
             )
             st.plotly_chart(fig_dist_kopi, use_container_width=True)
         
@@ -1581,7 +1778,7 @@ with tab2:
             fig_hist_prod = px.histogram(
                 df_filtered,
                 x='Skor_Produktivitas',
-                nbins=20,
+                nbins=15,
                 color_discrete_sequence=['#8338ec'],
                 marginal="violin"
             )
@@ -1589,23 +1786,29 @@ with tab2:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white'),
-                xaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
-                yaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
                 margin=dict(l=20, r=20, t=20, b=20),
                 showlegend=False
             )
+            fig_hist_prod.update_traces(
+                marker=dict(
+                    color='rgba(131, 56, 236, 0.7)',
+                    line=dict(color='#8338ec', width=1)
+                ),
+                hovertemplate="<b>Skor: %{x:.2f}</b><br>Frekuensi: %{y}<extra></extra>"
+            )
             st.plotly_chart(fig_hist_prod, use_container_width=True)
         
-        # Distribution Row 2
         col_c, col_d = st.columns(2)
         
         with col_c:
-            st.markdown("#### 🎯 **Boxplot: Produktivitas per Kelompok**")
+            st.markdown("#### 🎯 **Boxplot: Produktivitas per Kelompok Kopi**")
             fig_box = px.box(
                 df_filtered,
-                x='Kategori_Konsumsi',
+                x='Kopi_per_Hari',
                 y='Skor_Produktivitas',
-                color='Kategori_Konsumsi',
+                color='Kopi_per_Hari',
                 color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
             )
             fig_box.update_layout(
@@ -1613,177 +1816,153 @@ with tab2:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white'),
-                xaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
-                yaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
                 margin=dict(l=20, r=20, t=20, b=20)
+            )
+            fig_box.update_traces(
+                hovertemplate="<b>%{x} cangkir</b><br>Skor: %{y:.2f}<extra></extra>"
             )
             st.plotly_chart(fig_box, use_container_width=True)
         
         with col_d:
-            st.markdown("#### 📊 **Radar: Profile per Kategori**")
+            st.markdown("#### 📊 **Rata-rata Durasi Belajar**")
+            durasi_mean = df_filtered.groupby('Kopi_per_Hari')['Durasi_Belajar_Num'].mean().reset_index()
+            fig_bar_durasi = px.bar(
+                durasi_mean,
+                x='Kopi_per_Hari',
+                y='Durasi_Belajar_Num',
+                color='Durasi_Belajar_Num',
+                color_continuous_scale=['#ff006e', '#ffbe0b', '#06ffa5']
+            )
+            fig_bar_durasi.update_layout(
+                coloraxis_showscale=False,
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            fig_bar_durasi.update_traces(
+                marker_line=dict(color='rgba(255,255,255,0.3)', width=1),
+                hovertemplate="<b>%{x} cangkir</b><br>Durasi: %{y:.1f}h<extra></extra>"
+            )
+            st.plotly_chart(fig_bar_durasi, use_container_width=True)
+        
+        col_e, col_f = st.columns(2)
+        
+        with col_e:
+            st.markdown("#### 🥧 **Distribusi Kategori Konsumsi**")
+            kategori_counts = df_filtered['Kategori_Konsumsi'].value_counts()
+            fig_pie = px.pie(
+                values=kategori_counts.values,
+                names=kategori_counts.index,
+                color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
+            )
+            fig_pie.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            fig_pie.update_traces(
+                textposition='inside',
+                textinfo='percent+label',
+                hovertemplate="<b>%{label}</b><br>Jumlah: %{value}<br>Persentase: %{percent}<extra></extra>"
+            )
+            st.plotly_chart(fig_pie, use_container_width=True)
+        
+        with col_f:
+            st.markdown("#### 📈 **Stacked Bar: Produktivitas Level per Kategori**")
+            stacked_data = pd.crosstab(
+                df_filtered['Kategori_Konsumsi'],
+                df_filtered['Produktivitas_Level'],
+                normalize='index'
+            ) * 100
             
-            radar_data = df_filtered.groupby('Kategori_Konsumsi').agg({
-                'Kopi_per_Hari': 'mean',
-                'Durasi_Belajar_Num': 'mean',
-                'Skor_Produktivitas': 'mean',
-                'Kualitas_Tidur_Memburuk': 'mean',
-                'Efficiency_Score': 'mean'
-            }).round(2)
-            
-            radar_min = radar_data.min()
-            radar_max = radar_data.max()
-            radar_range = radar_max - radar_min + 0.001
-            radar_normalized = (radar_data - radar_min) / radar_range
-            
-            categories = ['Coffee', 'Study', 'Productivity', 'Sleep', 'Efficiency']
-            fig_radar = go.Figure()
-            
-            for idx, category in enumerate(radar_normalized.index):
-                vals = radar_normalized.loc[category].values.tolist()
-                vals.append(vals[0])
-                theta = categories + [categories[0]]
-                
-                fig_radar.add_trace(go.Scatterpolar(
-                    r=vals,
-                    theta=theta,
-                    fill='toself',
-                    name=category,
-                    line=dict(width=2)
+            fig_stacked = go.Figure()
+            for level in stacked_data.columns:
+                fig_stacked.add_trace(go.Bar(
+                    name=level,
+                    x=stacked_data.index,
+                    y=stacked_data[level],
+                    marker_color={'Low': '#ff006e', 'Medium': '#8338ec', 'High': '#06ffa5'}[level]
                 ))
             
-            fig_radar.update_layout(
-                polar=dict(
-                    radialaxis=dict(
-                        visible=True,
-                        range=[0, 1],
-                        gridcolor='rgba(255,255,255,0.15)',
-                        tickfont=dict(color='white')
-                    ),
-                    angularaxis=dict(
-                        gridcolor='rgba(255,255,255,0.15)',
-                        tickfont=dict(color='white', size=11)
-                    ),
-                    bgcolor='rgba(0,0,0,0)'
-                ),
+            fig_stacked.update_layout(
+                barmode='stack',
                 paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white'),
-                showlegend=True,
-                legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
-                height=500,
-                margin=dict(l=80, r=80, t=50, b=50)
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(title='Persentase (%)', gridcolor='rgba(255,255,255,0.1)'),
+                margin=dict(l=20, r=20, t=20, b=20),
+                legend=dict(bgcolor='rgba(0,0,0,0)')
             )
-            
-            st.plotly_chart(fig_radar, use_container_width=True)
+            st.plotly_chart(fig_stacked, use_container_width=True)
         
-        # Advanced Statistics Section
-        st.markdown("### 🧮 **Advanced Statistics**")
+        st.markdown("#### 📋 **Statistical Summary**")
+        stats_df = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']].describe().round(3)
+        st.dataframe(
+            stats_df.style.background_gradient(cmap='viridis', axis=1),
+            use_container_width=True
+        )
         
-        stat_col1, stat_col2, stat_col3, stat_col4 = st.columns(4)
+        st.markdown("#### 📊 **Advanced Statistics**")
+        col_stat1, col_stat2, col_stat3 = st.columns(3)
         
-        with stat_col1:
-            st.markdown("#### Shapiro-Wilk Normality Test")
-            if len(df_filtered) >= 3 and len(df_filtered) <= 5000:
-                try:
-                    stat_sw, p_sw = shapiro(df_filtered['Skor_Produktivitas'])
-                    normal = "✓ Normal" if p_sw > 0.05 else "✗ Non-Normal"
-                    st.markdown(f"""
-                    <div class="glass-card-v4">
-                        <p>W-statistic: <span class="metric-highlight-v4">{stat_sw:.4f}</span></p>
-                        <p>p-value: <span class="metric-highlight-v4">{p_sw:.4f}</span></p>
-                        <p style="font-size: 0.85rem; color: var(--primary-green);">{normal}</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                except:
-                    st.info("Data tidak cukup")
-            else:
-                st.info("Perlu 3-5000 samples")
-        
-        with stat_col2:
-            st.markdown("#### Distribution Metrics")
-            skewness = skew(df_filtered['Skor_Produktivitas'])
-            kurt = kurtosis(df_filtered['Skor_Produktivitas'])
-            cv = (df_filtered['Skor_Produktivitas'].std() / df_filtered['Skor_Produktivitas'].mean() * 100) if df_filtered['Skor_Produktivitas'].mean() > 0 else 0
-            
-            st.markdown(f"""
-            <div class="glass-card-v4">
-                <p>Skewness: <span class="metric-highlight-v4">{skewness:.3f}</span></p>
-                <p>Kurtosis: <span class="metric-highlight-v4">{kurt:.3f}</span></p>
-                <p>CV: <span class="metric-highlight-v4">{cv:.2f}%</span></p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with stat_col3:
-            st.markdown("#### Percentiles")
-            p25 = np.percentile(df_filtered['Skor_Produktivitas'], 25)
-            p50 = np.percentile(df_filtered['Skor_Produktivitas'], 50)
-            p75 = np.percentile(df_filtered['Skor_Produktivitas'], 75)
-            p90 = np.percentile(df_filtered['Skor_Produktivitas'], 90)
-            
-            st.markdown(f"""
-            <div class="glass-card-v4">
-                <p>P25: <span class="metric-highlight-v4">{p25:.2f}</span></p>
-                <p>P50 (Median): <span class="metric-highlight-v4">{p50:.2f}</span></p>
-                <p>P75: <span class="metric-highlight-v4">{p75:.2f}</span></p>
-                <p>P90: <span class="metric-highlight-v4">{p90:.2f}</span></p>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with stat_col4:
-            st.markdown("#### Outlier Detection (IQR)")
-            Q1 = np.percentile(df_filtered['Skor_Produktivitas'], 25)
-            Q3 = np.percentile(df_filtered['Skor_Produktivitas'], 75)
-            IQR = Q3 - Q1
-            lower_bound = Q1 - 1.5 * IQR
-            upper_bound = Q3 + 1.5 * IQR
-            outliers = df_filtered[(df_filtered['Skor_Produktivitas'] < lower_bound) | 
-                                   (df_filtered['Skor_Produktivitas'] > upper_bound)]
-            
-            st.markdown(f"""
-            <div class="glass-card-v4">
-                <p>IQR: <span class="metric-highlight-v4">{IQR:.2f}</span></p>
-                <p>Range: <span class="metric-highlight-v4">[{lower_bound:.2f}, {upper_bound:.2f}]</span></p>
-                <p>Outliers: <span class="metric-highlight-v4">{len(outliers)}</span></p>
-            </div>
-            """, unsafe_allow_html=True)
+        with col_stat1:
+            st.metric("Skewness (Produktivitas)", f"{df_filtered['Skor_Produktivitas'].skew():.3f}")
+        with col_stat2:
+            st.metric("Kurtosis (Produktivitas)", f"{df_filtered['Skor_Produktivitas'].kurtosis():.3f}")
+        with col_stat3:
+            mean_prod = df_filtered['Skor_Produktivitas'].mean()
+            std_prod = df_filtered['Skor_Produktivitas'].std()
+            cv = (std_prod / mean_prod * 100) if mean_prod > 0 else 0
+            st.metric("Coefficient of Variation", f"{cv:.2f}%")
     else:
-        st.warning("⚠️ Data kosong.")
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
 # ===================== TAB 3: KORELASI =====================
 with tab3:
     st.markdown("""
-    <div class="section-header-v4">
-        <span class="section-number-v4">03</span>
+    <div class="section-header">
+        <span class="section-number">03</span>
         <div>
-            <h2 class="section-title-v4">Correlation Analysis</h2>
-            <p class="section-subtitle-v4">Pearson, Spearman & Kendall correlation matrix</p>
+            <h2 class="section-title">Correlation Analysis</h2>
+            <p class="section-subtitle">Statistical relationships between variables</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
     if len(df_filtered) > 1:
-        col_a, col_b = st.columns([1, 1])
+        col_e, col_f = st.columns([1, 1])
         
-        with col_a:
-            st.markdown("#### 🎨 **Correlation Heatmap**")
-            corr_cols = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk', 'Efficiency_Score']
+        with col_e:
+            st.markdown("#### 🎨 **3D Correlation Heatmap**")
+            corr_cols = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']
             corr_matrix = df_filtered[corr_cols].corr(method='pearson')
             
             fig_heatmap = px.imshow(
                 corr_matrix,
                 text_auto=".3f",
-                color_continuous_scale=['#ff006e', '#1a0b2e', '#06ffa5'],
+                color_continuous_scale=['#0f0524', '#8338ec', '#ff006e', '#ffbe0b', '#06ffa5'],
                 zmin=-1, zmax=1
             )
             fig_heatmap.update_layout(
-                height=500,
+                height=450,
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', family='JetBrains Mono'),
                 margin=dict(l=20, r=20, t=20, b=20)
             )
+            fig_heatmap.update_traces(
+                hovertemplate="<b>%{y} vs %{x}</b><br>Correlation: %{z:.3f}<extra></extra>"
+            )
             st.plotly_chart(fig_heatmap, use_container_width=True)
         
-        with col_b:
+        with col_f:
             st.markdown("#### 📈 **Scatter: Kopi vs Produktivitas**")
             
             if len(df_filtered) > 1:
@@ -1791,9 +1970,9 @@ with tab3:
                 signifikansi = "Signifikan" if p_value < 0.05 else "Tidak Signifikan"
                 
                 st.markdown(f"""
-                <div class="info-box-v4">
-                    📊 Pearson r: <span class="metric-highlight-v4">{p_coeff:.4f}</span><br>
-                    📉 P-Value: <span class="metric-highlight-v4">{p_value:.4f}</span> ({signifikansi})
+                <div class="info-box">
+                    📊 Koefisien Pearson: <span class="metric-highlight">r = {p_coeff:.4f}</span><br>
+                    📉 P-Value: <span class="metric-highlight">{p_value:.4f}</span> ({signifikansi})
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -1803,7 +1982,7 @@ with tab3:
                 y='Skor_Produktivitas',
                 trendline='ols' if len(df_filtered) > 2 else None,
                 color='Durasi_Belajar_Num',
-                color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5'],
+                color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff'],
                 size='Kualitas_Tidur_Memburuk',
                 size_max=20,
                 hover_data=['Fokus_Label', 'Kategori_Konsumsi']
@@ -1812,134 +1991,182 @@ with tab3:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white'),
-                xaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
-                yaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
                 margin=dict(l=20, r=20, t=20, b=20)
+            )
+            fig_scatter.update_traces(
+                marker=dict(
+                    opacity=0.8,
+                    line=dict(color='rgba(255,255,255,0.3)', width=1)
+                ),
+                hovertemplate="<b>%{x} cangkir</b><br>Produktivitas: %{y:.2f}<extra></extra>"
             )
             st.plotly_chart(fig_scatter, use_container_width=True)
         
-        # Detailed Correlation Table
-        st.markdown("#### 📋 **Complete Correlation Matrix**")
+        col_g, col_h = st.columns(2)
         
-        corr_details = []
-        for i, col1 in enumerate(corr_cols):
-            for j, col2 in enumerate(corr_cols):
-                if i < j:
-                    try:
-                        pearson_r, pearson_p = pearsonr(df_filtered[col1], df_filtered[col2])
-                        spearman_r, spearman_p = spearmanr(df_filtered[col1], df_filtered[col2])
-                        
-                        # Interpretation
-                        abs_r = abs(pearson_r)
-                        if abs_r < 0.2: strength = "Very Weak"
-                        elif abs_r < 0.4: strength = "Weak"
-                        elif abs_r < 0.6: strength = "Moderate"
-                        elif abs_r < 0.8: strength = "Strong"
-                        else: strength = "Very Strong"
-                        
-                        corr_details.append({
-                            'Variables': f'{col1} ↔ {col2}',
-                            'Pearson r': f"{pearson_r:.4f}",
-                            'Pearson p': f"{pearson_p:.4f}",
-                            'Spearman ρ': f"{spearman_r:.4f}",
-                            'Spearman p': f"{spearman_p:.4f}",
-                            'Strength': strength,
-                            'Significant': '✓' if pearson_p < 0.05 else '✗'
-                        })
-                    except:
-                        pass
+        with col_g:
+            st.markdown("#### 🔗 **Spearman Rank Correlation**")
+            if len(df_filtered) > 1:
+                spearman_cols = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']
+                spearman_matrix = df_filtered[spearman_cols].corr(method='spearman')
+                
+                fig_spearman = px.imshow(
+                    spearman_matrix,
+                    text_auto=".3f",
+                    color_continuous_scale=['#3a86ff', '#8338ec', '#ff006e'],
+                    zmin=-1, zmax=1
+                )
+                fig_spearman.update_layout(
+                    height=400,
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    plot_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white', family='JetBrains Mono'),
+                    margin=dict(l=20, r=20, t=20, b=20)
+                )
+                st.plotly_chart(fig_spearman, use_container_width=True)
         
-        if len(corr_details) > 0:
-            corr_df = pd.DataFrame(corr_details)
-            st.dataframe(
-                corr_df.style.background_gradient(cmap='RdYlGn', subset=['Pearson r', 'Spearman ρ']),
-                use_container_width=True
-            )
+        with col_h:
+            st.markdown("#### 📊 **Correlation Matrix Details**")
+            
+            corr_details = []
+            for i, col1 in enumerate(corr_cols):
+                for j, col2 in enumerate(corr_cols):
+                    if i < j:
+                        try:
+                            pearson_r, pearson_p = pearsonr(df_filtered[col1], df_filtered[col2])
+                            spearman_r, spearman_p = spearmanr(df_filtered[col1], df_filtered[col2])
+                            
+                            corr_details.append({
+                                'Variable 1': col1,
+                                'Variable 2': col2,
+                                'Pearson r': f"{pearson_r:.4f}",
+                                'Pearson p-value': f"{pearson_p:.4f}",
+                                'Spearman ρ': f"{spearman_r:.4f}",
+                                'Spearman p-value': f"{spearman_p:.4f}"
+                            })
+                        except:
+                            pass
+            
+            if len(corr_details) > 0:
+                corr_df = pd.DataFrame(corr_details)
+                st.dataframe(
+                    corr_df.style.background_gradient(cmap='YlOrRd', subset=['Pearson r', 'Spearman ρ']),
+                    use_container_width=True
+                )
         
-        # Key Insights
         st.markdown("### 💡 **Key Insights**")
-        i_cols = st.columns(3)
+        i_col1, i_col2, i_col3 = st.columns(3)
         
-        insight_list = [
-            ("☕⚡", "Kopi ↔ Produktivitas", "Korelasi menunjukkan kopi <b>sedikit meningkatkan</b> persepsi produktivitas"),
-            ("☕😴", "Kopi ↔ Kualitas Tidur", "Korelasi <b>negatif</b>: lebih banyak kopi = tidur lebih buruk"),
-            ("☕📚", "Kopi ↔ Durasi Belajar", "Peminum kopi cenderung <b>belajar lebih lama</b>")
-        ]
-        
-        for i, (icon, title, text) in enumerate(insight_list):
-            with i_cols[i]:
-                st.markdown(f"""
-                <div class="insight-card-v4">
-                    <div class="insight-icon-v4">{icon}</div>
-                    <div class="insight-title-v4">{title}</div>
-                    <div class="insight-text-v4">{text}</div>
+        with i_col1:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">☕⚡</div>
+                <div class="insight-title">Kopi ↔ Produktivitas</div>
+                <div class="insight-text">
+                    Korelasi positif lemah menunjukkan kopi <b>sedikit meningkatkan</b> 
+                    persepsi produktivitas mahasiswa.
                 </div>
-                """, unsafe_allow_html=True)
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with i_col2:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">☕😴</div>
+                <div class="insight-title">Kopi ↔ Kualitas Tidur</div>
+                <div class="insight-text">
+                    Korelasi <b>negatif moderat</b> membuktikan trade-off: 
+                    lebih banyak kopi = tidur lebih buruk.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with i_col3:
+            st.markdown("""
+            <div class="insight-card">
+                <div class="insight-icon">☕📚</div>
+                <div class="insight-title">Kopi ↔ Durasi Belajar</div>
+                <div class="insight-text">
+                    Korelasi positif menunjukkan <b>peminum kopi cenderung 
+                    belajar lebih lama</b>.
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
     else:
-        st.warning("⚠️ Data tidak cukup (min 2 data points).")
+        st.warning("⚠️ Data tidak cukup untuk analisis korelasi (minimal 2 data point).")
 
 # ===================== TAB 4: PROBABILITAS =====================
 with tab4:
     st.markdown("""
-    <div class="section-header-v4">
-        <span class="section-number-v4">04</span>
+    <div class="section-header">
+        <span class="section-number">04</span>
         <div>
-            <h2 class="section-title-v4">Conditional Probability</h2>
-            <p class="section-subtitle-v4">Bayesian analysis & Chi-Square tests</p>
+            <h2 class="section-title">Conditional Probability</h2>
+            <p class="section-subtitle">P(High Focus | Coffee Consumption)</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
     if len(df_filtered) > 0:
-        col_a, col_b = st.columns([1, 1])
+        col_g, col_h = st.columns([1, 1])
         
-        with col_a:
+        with col_g:
             st.markdown("#### 📊 **Tabel Kontingensi**")
             kontingensi = pd.crosstab(
                 df_filtered['Is_Peminum_Kopi'],
                 df_filtered['Is_Fokus_Tinggi'],
                 margins=True
             )
-            kontingensi.index = ['Non-Drinkers', 'Coffee Drinkers', 'Total'] if len(kontingensi) == 3 else list(kontingensi.index)
+            kontingensi.index = ['Non-Drinkers', 'Coffee Drinkers', 'Total'] if len(kontingensi) == 3 else [kontingensi.index[0], 'Total'] if len(kontingensi) == 2 else list(kontingensi.index)
             kontingensi.columns = ['Low Focus', 'High Focus', 'Total'] if len(kontingensi.columns) == 3 else list(kontingensi.columns)
             st.dataframe(kontingensi, use_container_width=True)
             
             try:
-                ct_table = pd.crosstab(df_filtered['Is_Peminum_Kopi'], df_filtered['Is_Fokus_Tinggi'])
-                if ct_table.shape[0] > 1 and ct_table.shape[1] > 1:
-                    chi2, p_chi, dof, expected = chi2_contingency(ct_table)
-                    
-                    st.markdown(f"""
-                    <div class="info-box-v4">
-                        📊 Chi-Square Test:<br>
-                        χ² = <span class="metric-highlight-v4">{chi2:.4f}</span><br>
-                        p-value = <span class="metric-highlight-v4">{p_chi:.4f}</span><br>
-                        df = <span class="metric-highlight-v4">{dof}</span><br>
-                        Status: <b>{'✓ Signifikan' if p_chi < 0.05 else '✗ Tidak Signifikan'}</b>
-                    </div>
-                    """, unsafe_allow_html=True)
+                if len(df_filtered) > 0:
+                    ct_table = pd.crosstab(df_filtered['Is_Peminum_Kopi'], df_filtered['Is_Fokus_Tinggi'])
+                    if ct_table.shape[0] > 1 and ct_table.shape[1] > 1:
+                        chi2, p_chi, dof, expected = chi2_contingency(ct_table)
+                        
+                        st.markdown(f"""
+                        <div class="info-box">
+                            📊 Chi-Square Test:<br>
+                            χ² = <span class="metric-highlight">{chi2:.4f}</span><br>
+                            p-value = <span class="metric-highlight">{p_chi:.4f}</span><br>
+                            Degrees of Freedom = <span class="metric-highlight">{dof}</span><br>
+                            Status: <b>{'Signifikan' if p_chi < 0.05 else 'Tidak Signifikan'}</b>
+                        </div>
+                        """, unsafe_allow_html=True)
             except:
                 pass
-        
-        with col_b:
-            st.markdown("#### 📈 **Probability Comparison**")
             
+            st.markdown("#### 🎯 **Matriks Probabilitas**")
             prob_bersyarat = pd.crosstab(
                 df_filtered['Is_Peminum_Kopi'],
                 df_filtered['Is_Fokus_Tinggi'],
                 normalize='index'
             ) * 100
+            prob_bersyarat.index = ['Non-Drinkers', 'Coffee Drinkers'] if len(prob_bersyarat) == 2 else list(prob_bersyarat.index)
+            prob_bersyarat.columns = ['Low Focus (%)', 'High Focus (%)'] if len(prob_bersyarat.columns) == 2 else list(prob_bersyarat.columns)
+            st.dataframe(
+                prob_bersyarat.round(2).style.background_gradient(cmap='YlOrRd', axis=1),
+                use_container_width=True
+            )
+        
+        with col_h:
+            st.markdown("#### 📈 **Probability Comparison**")
             
-            if 1 in prob_bersyarat.index and 1 in prob_bersyarat.columns:
-                p_kopi = prob_bersyarat.loc[1, 1] if 1 in prob_bersyarat.columns else 0
+            if 1 in df_filtered['Is_Peminum_Kopi'].values and len(prob_bersyarat) > 1:
+                p_kopi = prob_bersyarat.iloc[-1, -1]
             else:
                 p_kopi = 0
-                
-            if 0 in prob_bersyarat.index and 1 in prob_bersyarat.columns:
-                p_non_kopi = prob_bersyarat.loc[0, 1] if 1 in prob_bersyarat.columns else 0
+
+            if 0 in df_filtered['Is_Peminum_Kopi'].values and len(prob_bersyarat) > 1:
+                p_non_kopi = prob_bersyarat.iloc[0, -1]
             else:
                 p_non_kopi = 0
-            
+
             fig_prob = go.Figure(data=[
                 go.Bar(
                     name='High Focus',
@@ -1947,7 +2174,7 @@ with tab4:
                     y=[p_kopi, p_non_kopi],
                     marker=dict(
                         color=['#ff006e', '#3a86ff'],
-                        line=dict(color='rgba(255,255,255,0.4)', width=2)
+                        line=dict(color='rgba(255,255,255,0.3)', width=2)
                     ),
                     text=[f'{p_kopi:.1f}%', f'{p_non_kopi:.1f}%'],
                     textposition='auto',
@@ -1958,28 +2185,33 @@ with tab4:
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white'),
-                yaxis=dict(title="Probability (%)", range=[0, 100], gridcolor='rgba(255,255,255,0.15)'),
-                xaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
+                yaxis=dict(title="Probability (%)", range=[0, 100], gridcolor='rgba(255,255,255,0.1)'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
                 margin=dict(l=20, r=20, t=40, b=20)
+            )
+            fig_prob.update_traces(
+                hovertemplate="<b>%{x}</b><br>Probability: %{y:.1f}%<extra></extra>"
             )
             st.plotly_chart(fig_prob, use_container_width=True)
             
-            if p_kopi > 0 and p_non_kopi > 0:
-                odds_kopi = p_kopi / (100 - p_kopi)
+            if p_kopi > p_non_kopi and p_non_kopi > 0:
+                st.success(f"📈 Coffee drinkers have **{p_kopi/p_non_kopi:.1f}x higher** chance of achieving high focus!")
+            
+            if p_non_kopi > 0 and p_non_kopi < 100 and p_kopi < 100:
+                odds_kopi = p_kopi / (100 - p_kopi) if p_kopi < 100 else float('inf')
                 odds_non = p_non_kopi / (100 - p_non_kopi)
-                odds_ratio = odds_kopi / odds_non
+                odds_ratio = odds_kopi / odds_non if odds_non > 0 else float('inf')
                 
                 st.markdown(f"""
-                <div class="glass-card-v4">
+                <div class="glass-card">
                     <h4>📊 Odds Ratio Analysis</h4>
-                    <p>Odds Ratio: <span class="metric-highlight-v4">{odds_ratio:.2f}</span></p>
-                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.8);">
-                        Coffee drinkers have <b>{odds_ratio:.2f}x higher odds</b> of achieving high focus.
+                    <p>Odds Ratio: <span class="metric-highlight">{odds_ratio:.2f}</span></p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        Coffee drinkers have {odds_ratio:.2f}x higher odds of achieving high focus compared to non-drinkers.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
         
-        # Bayesian Matrix
         st.markdown("#### 🎲 **Bayesian Probability Matrix**")
         
         prob_matrix = pd.crosstab(
@@ -1996,710 +2228,248 @@ with tab4:
             use_container_width=True
         )
     else:
-        st.warning("⚠️ Data kosong.")
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
 # ===================== TAB 5: MONTE CARLO =====================
 with tab5:
     st.markdown("""
-    <div class="section-header-v4">
-        <span class="section-number-v4">05</span>
+    <div class="section-header">
+        <span class="section-number">05</span>
         <div>
-            <h2 class="section-title-v4">Monte Carlo Simulation <span class="badge-4d">✦ STOCHASTIC</span></h2>
-            <p class="section-subtitle-v4">Advanced stochastic modeling dengan scenario analysis</p>
+            <h2 class="section-title">Monte Carlo Simulation <span class="badge-3d">✦ STOCHASTIC</span></h2>
+            <p class="section-subtitle">Stochastic modeling with 10,000+ iterations</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
-    col_a, col_b = st.columns([1, 2])
+    col_i, col_j = st.columns([1, 2])
     
-    with col_a:
-        st.markdown("#### ⚙️ **Simulation Parameters**")
+    with col_i:
+        st.markdown("#### ⚙️ **Parameters**")
         n_mahasiswa = st.slider("👥 Students per Class:", 10, 500, 100, 10)
-        n_iterasi = st.slider("🔄 Iterations:", 1000, 100000, 20000, 5000)
+        n_iterasi = st.slider("🔄 Iterations:", 1000, 50000, 10000, 1000)
         
         st.markdown("#### 📊 **Empirical Distribution**")
         p_kopi_dist = df['Kopi_per_Hari'].value_counts(normalize=True).sort_index()
         for cat, w in p_kopi_dist.items():
-            st.markdown(f"- <b>{cat} cangkir:</b> <span class='metric-highlight-v4'>{w*100:.1f}%</span>", unsafe_allow_html=True)
+            st.markdown(f"- <b>{cat} cangkir:</b> <span class='metric-highlight'>{w*100:.1f}%</span>", unsafe_allow_html=True)
         
         simulate_btn = st.button("🎲 Run Simulation", type="primary", use_container_width=True)
-        
-        # Scenario Analyzer
-        st.markdown("#### 🔮 **Scenario Analyzer**")
-        scenario = st.selectbox(
-            "Pilih Skenario:",
-            ["Baseline", "Optimistic", "Conservative", "Extreme"]
-        )
-        
-        scenario_configs = {
-            "Baseline": {"factor": 1.0, "desc": "Kondisi normal berdasarkan data"},
-            "Optimistic": {"factor": 1.2, "desc": "Produktivitas +20% (asumsi ideal)"},
-            "Conservative": {"factor": 0.8, "desc": "Produktivitas -20% (asumsi realistis)"},
-            "Extreme": {"factor": 1.5, "desc": "Skenario best-case extreme"}
-        }
-        
-        st.markdown(f"""
-        <div class="scenario-panel">
-            <h4 style="color: var(--primary-yellow);">🎯 {scenario} Scenario</h4>
-            <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">{scenario_configs[scenario]['desc']}</p>
-        </div>
-        """, unsafe_allow_html=True)
     
-    with col_b:
+    with col_j:
         if simulate_btn or 'mc_results' not in st.session_state:
             with st.spinner("⚡ Running Monte Carlo simulation..."):
                 categories_kopi = p_kopi_dist.index.values
                 weights_kopi = p_kopi_dist.values
-                
+
                 stats_by_group = df.groupby('Kopi_per_Hari')['Skor_Produktivitas'].agg(['mean', 'std'])
                 overall_std = df['Skor_Produktivitas'].std()
                 stats_by_group['std'] = stats_by_group['std'].fillna(overall_std)
-                
-                scenario_factor = scenario_configs[scenario]['factor']
-                
+
                 hasil_rata_rata = []
                 for _ in range(n_iterasi):
                     simulasi_kopi = np.random.choice(categories_kopi, size=n_mahasiswa, p=weights_kopi)
                     skor_kelas = []
                     for pilihan in simulasi_kopi:
-                        mean_val = stats_by_group.loc[pilihan, 'mean'] * scenario_factor
+                        mean_val = stats_by_group.loc[pilihan, 'mean']
                         std_val = stats_by_group.loc[pilihan, 'std']
                         if np.isnan(std_val):
                             std_val = overall_std
                         skor_acak = np.clip(np.random.normal(mean_val, std_val), 1.0, 5.0)
                         skor_kelas.append(skor_acak)
                     hasil_rata_rata.append(np.mean(skor_kelas))
-                
+
                 st.session_state['mc_results'] = hasil_rata_rata
-                st.session_state['mc_scenario'] = scenario
-        
+
         if 'mc_results' in st.session_state:
             hasil = st.session_state['mc_results']
             mean_mc = np.mean(hasil)
             ci_bawah = np.percentile(hasil, 2.5)
             ci_atas = np.percentile(hasil, 97.5)
-            median_mc = np.median(hasil)
             
-            m_cols = st.columns(4)
-            with m_cols[0]:
+            m1, m2, m3 = st.columns(3)
+            with m1:
                 st.markdown(f"""
-                <div class="kpi-card-v4">
-                    <span class="kpi-icon-v4">📊</span>
-                    <p class="kpi-value-v4">{mean_mc:.3f}</p>
-                    <p class="kpi-label-v4">Expected Mean</p>
+                <div class="kpi-card">
+                    <span class="kpi-icon">📊</span>
+                    <p class="kpi-value">{mean_mc:.3f}</p>
+                    <p class="kpi-label">Expected Mean</p>
                 </div>
                 """, unsafe_allow_html=True)
-            with m_cols[1]:
+            with m2:
                 st.markdown(f"""
-                <div class="kpi-card-v4">
-                    <span class="kpi-icon-v4">⬇️</span>
-                    <p class="kpi-value-v4">{ci_bawah:.3f}</p>
-                    <p class="kpi-label-v4">CI 95% Lower</p>
+                <div class="kpi-card">
+                    <span class="kpi-icon">⬇️</span>
+                    <p class="kpi-value">{ci_bawah:.3f}</p>
+                    <p class="kpi-label">CI 95% Lower</p>
                 </div>
                 """, unsafe_allow_html=True)
-            with m_cols[2]:
+            with m3:
                 st.markdown(f"""
-                <div class="kpi-card-v4">
-                    <span class="kpi-icon-v4">⬆️</span>
-                    <p class="kpi-value-v4">{ci_atas:.3f}</p>
-                    <p class="kpi-label-v4">CI 95% Upper</p>
-                </div>
-                """, unsafe_allow_html=True)
-            with m_cols[3]:
-                st.markdown(f"""
-                <div class="kpi-card-v4">
-                    <span class="kpi-icon-v4">📈</span>
-                    <p class="kpi-value-v4">{median_mc:.3f}</p>
-                    <p class="kpi-label-v4">Median</p>
+                <div class="kpi-card">
+                    <span class="kpi-icon">⬆️</span>
+                    <p class="kpi-value">{ci_atas:.3f}</p>
+                    <p class="kpi-label">CI 95% Upper</p>
                 </div>
                 """, unsafe_allow_html=True)
             
             fig_mc = go.Figure()
             fig_mc.add_trace(go.Histogram(
                 x=hasil,
-                nbinsx=75,
+                nbinsx=50,
                 marker=dict(
-                    color='rgba(131, 56, 236, 0.7)',
-                    line=dict(color='#8338ec', width=1.5)
+                    color='rgba(131, 56, 236, 0.6)',
+                    line=dict(color='#8338ec', width=1)
                 ),
                 hovertemplate="Score: %{x:.3f}<br>Frequency: %{y}<extra></extra>"
             ))
-            fig_mc.add_vline(x=mean_mc, line_dash="dash", line_color="#ff006e", line_width=3,
-                            annotation_text=f"Mean: {mean_mc:.3f}", annotation_font_color="#ff006e")
-            fig_mc.add_vline(x=ci_bawah, line_dash="dot", line_color="#06ffa5", line_width=2,
-                            annotation_text=f"CI: {ci_bawah:.3f}", annotation_font_color="#06ffa5")
-            fig_mc.add_vline(x=ci_atas, line_dash="dot", line_color="#06ffa5", line_width=2,
-                            annotation_text=f"CI: {ci_atas:.3f}", annotation_font_color="#06ffa5")
-            fig_mc.add_vline(x=median_mc, line_dash="dash", line_color="#ffbe0b", line_width=2,
-                            annotation_text=f"Median: {median_mc:.3f}", annotation_font_color="#ffbe0b")
-            
+            fig_mc.add_vline(
+                x=mean_mc, line_dash="dash", line_color="#ff006e", line_width=3,
+                annotation_text=f"Mean: {mean_mc:.3f}", annotation_font_color="#ff006e"
+            )
+            fig_mc.add_vline(
+                x=ci_bawah, line_dash="dot", line_color="#06ffa5", line_width=2,
+                annotation_text=f"CI: {ci_bawah:.3f}", annotation_font_color="#06ffa5"
+            )
+            fig_mc.add_vline(
+                x=ci_atas, line_dash="dot", line_color="#06ffa5", line_width=2,
+                annotation_text=f"CI: {ci_atas:.3f}", annotation_font_color="#06ffa5"
+            )
             fig_mc.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', family='Space Grotesk'),
-                xaxis=dict(title="Average Productivity Score", gridcolor='rgba(255,255,255,0.15)', color='white'),
-                yaxis=dict(title="Frequency", gridcolor='rgba(255,255,255,0.15)', color='white'),
-                height=450,
+                xaxis=dict(title="Average Productivity Score", gridcolor='rgba(255,255,255,0.1)', color='white'),
+                yaxis=dict(title="Frequency", gridcolor='rgba(255,255,255,0.1)', color='white'),
+                height=400,
                 margin=dict(l=20, r=20, t=40, b=20),
-                title=dict(text=f"Probability Distribution ({len(hasil):,} Iterations) - {st.session_state.get('mc_scenario', 'Baseline')}",
-                          font=dict(color='white', size=16))
+                title=dict(
+                    text=f"Probability Distribution ({len(hasil)} Iterations)",
+                    font=dict(color='white', size=16)
+                )
             )
             st.plotly_chart(fig_mc, use_container_width=True)
             
-            # Probability analysis
-            st.markdown("#### 📊 **Probability Analysis**")
-            prob_cols = st.columns(3)
+            st.markdown("#### 📊 **Monte Carlo Statistics**")
+            mc_col1, mc_col2, mc_col3, mc_col4 = st.columns(4)
             
-            with prob_cols[0]:
-                p_above_3 = np.mean([1 if x > 3 else 0 for x in hasil]) * 100
-                st.markdown(f"""
-                <div class="glass-card-v4">
-                    <h4>📈 P(Productivity > 3.0)</h4>
-                    <p class="scenario-result">{p_above_3:.1f}%</p>
-                    <p style="color: rgba(255,255,255,0.7);">Probabilitas produktivitas di atas rata-rata</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with prob_cols[1]:
-                p_above_4 = np.mean([1 if x > 4 else 0 for x in hasil]) * 100
-                st.markdown(f"""
-                <div class="glass-card-v4">
-                    <h4>🚀 P(Productivity > 4.0)</h4>
-                    <p class="scenario-result">{p_above_4:.1f}%</p>
-                    <p style="color: rgba(255,255,255,0.7);">Probabilitas produktivitas tinggi</p>
-                </div>
-                """, unsafe_allow_html=True)
-            
-            with prob_cols[2]:
-                p_below_2 = np.mean([1 if x < 2 else 0 for x in hasil]) * 100
-                st.markdown(f"""
-                <div class="glass-card-v4">
-                    <h4>⚠️ P(Productivity < 2.0)</h4>
-                    <p class="scenario-result">{p_below_2:.1f}%</p>
-                    <p style="color: rgba(255,255,255,0.7);">Probabilitas produktivitas rendah</p>
-                </div>
-                """, unsafe_allow_html=True)
+            with mc_col1:
+                st.metric("Std Deviation", f"{np.std(hasil):.4f}")
+            with mc_col2:
+                st.metric("Median", f"{np.median(hasil):.4f}")
+            with mc_col3:
+                st.metric("Min Value", f"{np.min(hasil):.4f}")
+            with mc_col4:
+                st.metric("Max Value", f"{np.max(hasil):.4f}")
 
-# ===================== TAB 6: PREDICTIVE ML =====================
+# ===================== TAB 6: ADVANCED ANALYTICS =====================
 with tab6:
     st.markdown("""
-    <div class="section-header-v4">
-        <span class="section-number-v4">06</span>
+    <div class="section-header">
+        <span class="section-number">06</span>
         <div>
-            <h2 class="section-title-v4">Predictive Machine Learning <span class="badge-4d">✦ AI</span></h2>
-            <p class="section-subtitle-v4">Clustering, Classification & Regression dengan scikit-learn</p>
-        </div>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    if len(df_filtered) > 10:
-        ml_sub1, ml_sub2, ml_sub3 = st.tabs(["🎯 K-Means Clustering", "🤖 Logistic Regression", "📈 Linear Regression"])
-        
-        with ml_sub1:
-            st.markdown("### 🎯 **K-Means Clustering: Student Segmentation**")
-            st.markdown("""
-            <div class="info-box-v4">
-                🧠 <strong>Unsupervised Learning:</strong> Algoritma mengelompokkan responden ke dalam 
-                cluster berdasarkan pola konsumsi kopi, produktivitas, dan durasi belajar.
-            </div>
-            """, unsafe_allow_html=True)
-            
-            n_clusters = st.slider("Jumlah Cluster (K):", 2, 6, 4, 1)
-            
-            # Prepare data for clustering
-            cluster_features = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']
-            X_cluster = df_filtered[cluster_features].values
-            
-            # Standardize
-            scaler = StandardScaler()
-            X_scaled = scaler.fit_transform(X_cluster)
-            
-            # K-Means
-            kmeans = KMeans(n_clusters=n_clusters, random_state=42, n_init=10)
-            df_filtered['Cluster'] = kmeans.fit_predict(X_scaled)
-            
-            # Cluster visualization
-            fig_cluster = px.scatter_3d(
-                df_filtered,
-                x='Kopi_per_Hari',
-                y='Durasi_Belajar_Num',
-                z='Skor_Produktivitas',
-                color='Cluster',
-                color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5', '#ffbe0b', '#00ffff'],
-                size_max=15,
-                labels={
-                    'Kopi_per_Hari': '☕ Cangkir Kopi',
-                    'Durasi_Belajar_Num': '📚 Durasi (jam)',
-                    'Skor_Produktivitas': '⚡ Produktivitas'
-                }
-            )
-            
-            fig_cluster.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white', family='Space Grotesk'),
-                scene=dict(
-                    xaxis=dict(backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)'),
-                    yaxis=dict(backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)'),
-                    zaxis=dict(backgroundcolor='rgba(0,0,0,0)', gridcolor='rgba(255,255,255,0.15)')
-                ),
-                height=550,
-                margin=dict(l=20, r=20, t=20, b=20),
-                legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
-            )
-            
-            st.plotly_chart(fig_cluster, use_container_width=True)
-            
-            # Cluster profiles
-            st.markdown("### 📊 **Cluster Profiles**")
-            cluster_profiles = df_filtered.groupby('Cluster').agg({
-                'Kopi_per_Hari': 'mean',
-                'Durasi_Belajar_Num': 'mean',
-                'Skor_Produktivitas': 'mean',
-                'Kualitas_Tidur_Memburuk': 'mean',
-                'Efficiency_Score': 'mean'
-            }).round(2)
-            cluster_profiles['Count'] = df_filtered.groupby('Cluster').size()
-            
-            # Add cluster names
-            cluster_names = []
-            for idx, row in cluster_profiles.iterrows():
-                if row['Kopi_per_Hari'] == 0:
-                    name = "🚫 Non-Drinkers"
-                elif row['Skor_Produktivitas'] > 3.5 and row['Kualitas_Tidur_Memburuk'] < 3:
-                    name = "⭐ Optimal Performers"
-                elif row['Kopi_per_Hari'] >= 3 and row['Kualitas_Tidur_Memburuk'] >= 4:
-                    name = "⚠️ At-Risk Heavy Users"
-                elif row['Skor_Produktivitas'] < 2.5:
-                    name = "📉 Low Performers"
-                else:
-                    name = "☕ Moderate Users"
-                cluster_names.append(name)
-            
-            cluster_profiles['Profile'] = cluster_names
-            
-            st.dataframe(
-                cluster_profiles.style.background_gradient(cmap='viridis', subset=['Skor_Produktivitas', 'Efficiency_Score']),
-                use_container_width=True
-            )
-            
-            # Cluster insights
-            st.markdown("### 💡 **Cluster Insights**")
-            for cluster_id in range(min(n_clusters, len(cluster_profiles))):
-                profile = cluster_profiles.iloc[cluster_id]
-                st.markdown(f"""
-                <div class="insight-card-v4">
-                    <div class="insight-icon-v4">🎯</div>
-                    <div class="insight-title-v4">Cluster {cluster_id}: {profile['Profile']}</div>
-                    <div class="insight-text-v4">
-                        <b>{int(profile['Count'])}</b> responden • 
-                        Avg Kopi: <span class="metric-highlight-v4">{profile['Kopi_per_Hari']:.1f}</span> cangkir • 
-                        Produktivitas: <span class="metric-highlight-v4">{profile['Skor_Produktivitas']:.2f}</span> • 
-                        Efficiency: <span class="metric-highlight-v4">{profile['Efficiency_Score']:.2f}</span>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
-        
-        with ml_sub2:
-            st.markdown("### 🤖 **Logistic Regression: High Focus Prediction**")
-            st.markdown("""
-            <div class="info-box-v4">
-                🎯 <strong>Binary Classification:</strong> Memprediksi apakah seorang responden akan 
-                mencapai <b>High Focus</b> berdasarkan fitur-fitur yang ada.
-            </div>
-            """, unsafe_allow_html=True)
-            
-            try:
-                # Prepare data
-                X_lr = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk']].values
-                y_lr = df_filtered['Is_Fokus_Tinggi'].values
-                
-                # Standardize
-                scaler_lr = StandardScaler()
-                X_lr_scaled = scaler_lr.fit_transform(X_lr)
-                
-                # Train model
-                model_lr = LogisticRegression(random_state=42, max_iter=1000)
-                model_lr.fit(X_lr_scaled, y_lr)
-                
-                # Predictions
-                y_pred = model_lr.predict(X_lr_scaled)
-                y_prob = model_lr.predict_proba(X_lr_scaled)[:, 1]
-                
-                accuracy = accuracy_score(y_lr, y_pred)
-                
-                # ROC Curve
-                fpr, tpr, _ = roc_curve(y_lr, y_prob)
-                roc_auc = auc(fpr, tpr)
-                
-                col_lr1, col_lr2 = st.columns(2)
-                
-                with col_lr1:
-                    st.markdown("#### 📊 **Model Performance**")
-                    st.markdown(f"""
-                    <div class="glass-card-v4">
-                        <h4>🎯 Accuracy Score</h4>
-                        <p class="scenario-result">{accuracy*100:.1f}%</p>
-                        <p style="color: rgba(255,255,255,0.8);">Kemampuan model memprediksi dengan benar</p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                    
-                    st.markdown("#### 📈 **Feature Coefficients**")
-                    coef_df = pd.DataFrame({
-                        'Feature': ['Coffee', 'Study Hours', 'Sleep Quality'],
-                        'Coefficient': model_lr.coef_[0],
-                        'Impact': ['⬆️' if c > 0 else '⬇️' for c in model_lr.coef_[0]]
-                    })
-                    st.dataframe(
-                        coef_df.style.background_gradient(cmap='RdYlGn', subset=['Coefficient']),
-                        use_container_width=True
-                    )
-                
-                with col_lr2:
-                    st.markdown("#### 📈 **ROC Curve**")
-                    fig_roc = go.Figure()
-                    fig_roc.add_trace(go.Scatter(
-                        x=fpr, y=tpr,
-                        mode='lines',
-                        name=f'ROC (AUC = {roc_auc:.3f})',
-                        line=dict(color='#ff006e', width=3)
-                    ))
-                    fig_roc.add_trace(go.Scatter(
-                        x=[0, 1], y=[0, 1],
-                        mode='lines',
-                        name='Random',
-                        line=dict(color='rgba(255,255,255,0.3)', width=2, dash='dash')
-                    ))
-                    fig_roc.update_layout(
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        font=dict(color='white'),
-                        xaxis=dict(title='False Positive Rate', gridcolor='rgba(255,255,255,0.15)', color='white'),
-                        yaxis=dict(title='True Positive Rate', gridcolor='rgba(255,255,255,0.15)', color='white'),
-                        height=400,
-                        margin=dict(l=20, r=20, t=20, b=20),
-                        legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white'))
-                    )
-                    st.plotly_chart(fig_roc, use_container_width=True)
-                    
-                    # Confusion Matrix
-                    st.markdown("#### 🔢 **Confusion Matrix**")
-                    cm = confusion_matrix(y_lr, y_pred)
-                    fig_cm = px.imshow(
-                        cm,
-                        text_auto=True,
-                        color_continuous_scale=['#0f0524', '#8338ec', '#ff006e'],
-                        labels=dict(x="Predicted", y="Actual")
-                    )
-                    fig_cm.update_layout(
-                        paper_bgcolor='rgba(0,0,0,0)',
-                        plot_bgcolor='rgba(0,0,0,0)',
-                        font=dict(color='white'),
-                        height=300,
-                        margin=dict(l=20, r=20, t=20, b=20)
-                    )
-                    st.plotly_chart(fig_cm, use_container_width=True)
-            except Exception as e:
-                st.error(f"Error: {str(e)}")
-        
-        with ml_sub3:
-            st.markdown("### 📈 **Linear Regression: Productivity Prediction**")
-            st.markdown("""
-            <div class="info-box-v4">
-                📊 <strong>Regression Analysis:</strong> Memprediksi skor produktivitas 
-                berdasarkan konsumsi kopi, durasi belajar, dan kualitas tidur.
-            </div>
-            """, unsafe_allow_html=True)
-            
-            try:
-                X_reg = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk']].values
-                y_reg = df_filtered['Skor_Produktivitas'].values
-                
-                # Add intercept
-                X_with_intercept = np.column_stack([np.ones(len(X_reg)), X_reg])
-                
-                # Least squares
-                beta, residuals, rank, s = np.linalg.lstsq(X_with_intercept, y_reg, rcond=None)
-                y_pred = X_with_intercept @ beta
-                
-                # Metrics
-                ss_res = np.sum((y_reg - y_pred) ** 2)
-                ss_tot = np.sum((y_reg - np.mean(y_reg)) ** 2)
-                r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
-                rmse = np.sqrt(np.mean((y_reg - y_pred) ** 2))
-                mae = np.mean(np.abs(y_reg - y_pred))
-                
-                coef = beta[1:]
-                
-                st.markdown(f"""
-                <div class="glass-card-v4">
-                    <h4>🤖 Linear Regression Model</h4>
-                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
-                        <div>
-                            <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">R² Score</p>
-                            <p class="scenario-result">{r2:.4f}</p>
-                        </div>
-                        <div>
-                            <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">RMSE</p>
-                            <p class="scenario-result">{rmse:.4f}</p>
-                        </div>
-                        <div>
-                            <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">MAE</p>
-                            <p class="scenario-result">{mae:.4f}</p>
-                        </div>
-                        <div>
-                            <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">Model Fit</p>
-                            <p class="scenario-result">{r2*100:.1f}%</p>
-                        </div>
-                    </div>
-                    <p style="color: rgba(255,255,255,0.8); font-size: 0.9rem; margin-top: 1.5rem;">
-                        <strong>📐 Coefficients:</strong><br>
-                        Coffee: <span class="metric-highlight-v4">{coef[0]:.4f}</span> | 
-                        Study Duration: <span class="metric-highlight-v4">{coef[1]:.4f}</span> | 
-                        Sleep Quality: <span class="metric-highlight-v4">{coef[2]:.4f}</span>
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-                # Feature importance
-                st.markdown("#### 📊 **Feature Importance**")
-                feature_importance = pd.DataFrame({
-                    'Feature': ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk'],
-                    'Importance': np.abs(coef)
-                }).sort_values('Importance', ascending=False)
-                
-                fig_importance = px.bar(
-                    feature_importance,
-                    x='Importance',
-                    y='Feature',
-                    orientation='h',
-                    color='Importance',
-                    color_continuous_scale=['#06ffa5', '#8338ec', '#ff006e']
-                )
-                fig_importance.update_layout(
-                    paper_bgcolor='rgba(0,0,0,0)',
-                    plot_bgcolor='rgba(0,0,0,0)',
-                    font=dict(color='white'),
-                    xaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
-                    yaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
-                    showlegend=False,
-                    coloraxis_showscale=False,
-                    height=300,
-                    margin=dict(l=20, r=20, t=20, b=20)
-                )
-                st.plotly_chart(fig_importance, use_container_width=True)
-                
-                # Prediction demo
-                st.markdown("#### 🎯 **Prediction Demo**")
-                demo_col1, demo_col2, demo_col3 = st.columns(3)
-                
-                with demo_col1:
-                    demo_kopi = st.slider("☕ Cangkir Kopi:", 0, 5, 1)
-                with demo_col2:
-                    demo_durasi = st.slider("📚 Durasi (jam):", 0.0, 10.0, 3.0, 0.5)
-                with demo_col3:
-                    demo_tidur = st.slider("😴 Kualitas Tidur:", 1, 5, 3)
-                
-                demo_pred = beta[0] + beta[1]*demo_kopi + beta[2]*demo_durasi + beta[3]*demo_tidur
-                demo_pred = np.clip(demo_pred, 1, 5)
-                
-                st.markdown(f"""
-                <div class="scenario-panel">
-                    <h4 style="color: var(--primary-yellow);">🔮 Prediksi Produktivitas</h4>
-                    <p class="scenario-result">{demo_pred:.2f}</p>
-                    <p style="color: rgba(255,255,255,0.8);">
-                        Berdasarkan: {demo_kopi} cangkir, {demo_durasi}h belajar, tidur={demo_tidur}/5
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
-                
-            except Exception as e:
-                st.error(f"Error: {str(e)}")
-    else:
-        st.warning("⚠️ Data tidak cukup untuk ML (minimal 10 samples).")
-
-# ===================== TAB 7: ADVANCED =====================
-with tab7:
-    st.markdown("""
-    <div class="section-header-v4">
-        <span class="section-number-v4">07</span>
-        <div>
-            <h2 class="section-title-v4">Advanced Analytics <span class="badge-4d">✦ PRO</span></h2>
-            <p class="section-subtitle-v4">Deep dive dengan hypothesis testing & network analysis</p>
+            <h2 class="section-title">Advanced Analytics <span class="badge-3d">✦ ADVANCED</span></h2>
+            <p class="section-subtitle">Deep dive analysis with machine learning insights</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
     
     if len(df_filtered) > 0:
-        adv_sub1, adv_sub2, adv_sub3 = st.tabs(["🕸️ Network Graph", "⚖️ Hypothesis Testing", "🌡️ Advanced Heatmaps"])
+        col_adv1, col_adv2 = st.columns(2)
         
-        with adv_sub1:
-            st.markdown("### 🕸️ **Correlation Network Graph**")
-            st.markdown("""
-            <div class="info-box-v4">
-                🌐 <strong>Network Visualization:</strong> Menampilkan hubungan antar variabel 
-                sebagai jaringan. Tebal garis = kekuatan korelasi, warna = arah (positif/negatif).
-            </div>
-            """, unsafe_allow_html=True)
+        with col_adv1:
+            st.markdown("#### 🕸️ **Radar Chart: Multi-dimensional Profile**")
             
-            corr_cols = ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk', 'Efficiency_Score']
-            corr_matrix = df_filtered[corr_cols].corr()
+            radar_data = df_filtered.groupby('Kategori_Konsumsi').agg({
+                'Kopi_per_Hari': 'mean',
+                'Durasi_Belajar_Num': 'mean',
+                'Skor_Produktivitas': 'mean',
+                'Kualitas_Tidur_Memburuk': 'mean'
+            }).round(2)
             
-            # Create network visualization
-            nodes = []
-            edges = []
-            
-            for i, col1 in enumerate(corr_cols):
-                nodes.append({'id': col1, 'label': col1, 'group': i})
-                for j, col2 in enumerate(corr_cols):
-                    if i < j:
-                        corr_val = corr_matrix.loc[col1, col2]
-                        if abs(corr_val) > 0.2:  # Only show significant correlations
-                            edges.append({
-                                'source': col1,
-                                'target': col2,
-                                'value': corr_val,
-                                'weight': abs(corr_val) * 5
-                            })
-            
-            fig_network = go.Figure()
-            
-            # Add edges
-            for edge in edges:
-                fig_network.add_trace(go.Scatter(
-                    x=[corr_cols.index(edge['source']), corr_cols.index(edge['target'])],
-                    y=[0, 0],
-                    mode='lines',
-                    line=dict(
-                        color='#ff006e' if edge['value'] > 0 else '#3a86ff',
-                        width=edge['weight']
+            if len(radar_data) > 0:
+                radar_min = radar_data.min()
+                radar_max = radar_data.max()
+                radar_range = radar_max - radar_min + 0.001
+                radar_normalized = (radar_data - radar_min) / radar_range
+                
+                categories = ['Coffee Consumption', 'Study Duration', 'Productivity', 'Sleep Quality']
+                
+                fig_radar = go.Figure()
+                
+                for idx, category in enumerate(radar_normalized.index):
+                    vals = radar_normalized.loc[category].values.tolist()
+                    vals.append(vals[0])
+                    theta = categories + [categories[0]]
+                    
+                    fig_radar.add_trace(go.Scatterpolar(
+                        r=vals,
+                        theta=theta,
+                        fill='toself',
+                        name=category,
+                        line=dict(width=2)
+                    ))
+                
+                fig_radar.update_layout(
+                    polar=dict(
+                        radialaxis=dict(
+                            visible=True,
+                            range=[0, 1],
+                            gridcolor='rgba(255,255,255,0.1)',
+                            tickfont=dict(color='white')
+                        ),
+                        angularaxis=dict(
+                            gridcolor='rgba(255,255,255,0.1)',
+                            tickfont=dict(color='white', size=12)
+                        ),
+                        bgcolor='rgba(0,0,0,0)'
                     ),
-                    opacity=0.5,
-                    showlegend=False
-                ))
+                    paper_bgcolor='rgba(0,0,0,0)',
+                    font=dict(color='white', family='Space Grotesk'),
+                    showlegend=True,
+                    legend=dict(bgcolor='rgba(0,0,0,0)', font=dict(color='white')),
+                    height=500,
+                    margin=dict(l=80, r=80, t=50, b=50)
+                )
+                
+                st.plotly_chart(fig_radar, use_container_width=True)
+        
+        with col_adv2:
+            st.markdown("#### 📊 **Parallel Coordinates: Multi-variable Analysis**")
             
-            # Add nodes
-            fig_network.add_trace(go.Scatter(
-                x=list(range(len(corr_cols))),
-                y=[0] * len(corr_cols),
-                mode='markers+text',
-                marker=dict(
-                    size=50,
-                    color=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5', '#ffbe0b'],
-                    line=dict(color='white', width=2)
-                ),
-                text=corr_cols,
-                textposition="middle center",
-                textfont=dict(color='white', size=10)
-            ))
-            
-            fig_network.update_layout(
-                paper_bgcolor='rgba(0,0,0,0)',
-                plot_bgcolor='rgba(0,0,0,0)',
-                font=dict(color='white'),
-                xaxis=dict(visible=False),
-                yaxis=dict(visible=False),
-                height=400,
-                margin=dict(l=20, r=20, t=20, b=20)
+            fig_parallel = px.parallel_coordinates(
+                df_filtered,
+                dimensions=['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk'],
+                color='Skor_Produktivitas',
+                color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5'],
+                labels={
+                    'Kopi_per_Hari': 'Coffee',
+                    'Durasi_Belajar_Num': 'Study Hours',
+                    'Skor_Produktivitas': 'Productivity',
+                    'Kualitas_Tidur_Memburuk': 'Sleep Quality'
+                }
             )
             
-            st.plotly_chart(fig_network, use_container_width=True)
+            fig_parallel.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white', family='Space Grotesk'),
+                height=500,
+                margin=dict(l=20, r=20, t=20, b=20),
+                coloraxis_colorbar=dict(
+                    title='Productivity',
+                    tickfont=dict(color='white'),
+                    title_font=dict(color='white')
+                )
+            )
+            
+            st.plotly_chart(fig_parallel, use_container_width=True)
         
-        with adv_sub2:
-            st.markdown("### ⚖️ **Comprehensive Hypothesis Testing**")
-            
-            test_col1, test_col2, test_col3 = st.columns(3)
-            
-            with test_col1:
-                st.markdown("##### T-Test: Drinkers vs Non-Drinkers")
-                drinkers = df_filtered[df_filtered['Is_Peminum_Kopi'] == 1]['Skor_Produktivitas']
-                non_drinkers = df_filtered[df_filtered['Is_Peminum_Kopi'] == 0]['Skor_Produktivitas']
-                
-                if len(drinkers) > 1 and len(non_drinkers) > 1:
-                    t_stat, p_t = ttest_ind(drinkers, non_drinkers)
-                    
-                    st.markdown(f"""
-                    <div class="glass-card-v4">
-                        <p>t-statistic: <span class="metric-highlight-v4">{t_stat:.4f}</span></p>
-                        <p>p-value: <span class="metric-highlight-v4">{p_t:.4f}</span></p>
-                        <p style="font-size: 0.85rem; color: {'var(--primary-green)' if p_t < 0.05 else 'rgba(255,255,255,0.6)'};">
-                            {'✓ Significant difference' if p_t < 0.05 else '✗ No significant difference'}
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.info("Data tidak cukup")
-            
-            with test_col2:
-                st.markdown("##### ANOVA: Multiple Groups")
-                groups = []
-                for cups in df_filtered['Kopi_per_Hari'].unique():
-                    group_data = df_filtered[df_filtered['Kopi_per_Hari'] == cups]['Skor_Produktivitas']
-                    if len(group_data) > 1:
-                        groups.append(group_data)
-                
-                if len(groups) >= 2:
-                    f_stat, p_anova = f_oneway(*groups)
-                    
-                    st.markdown(f"""
-                    <div class="glass-card-v4">
-                        <p>F-statistic: <span class="metric-highlight-v4">{f_stat:.4f}</span></p>
-                        <p>p-value: <span class="metric-highlight-v4">{p_anova:.4f}</span></p>
-                        <p style="font-size: 0.85rem; color: {'var(--primary-green)' if p_anova < 0.05 else 'rgba(255,255,255,0.6)'};">
-                            {'✓ Significant difference' if p_anova < 0.05 else '✗ No significant difference'}
-                        </p>
-                    </div>
-                    """, unsafe_allow_html=True)
-                else:
-                    st.info("Data tidak cukup")
-            
-            with test_col3:
-                st.markdown("##### Kruskal-Wallis Test")
-                try:
-                    if len(groups) >= 2:
-                        h_stat, p_kw = kruskal(*groups)
-                        
-                        st.markdown(f"""
-                        <div class="glass-card-v4">
-                            <p>H-statistic: <span class="metric-highlight-v4">{h_stat:.4f}</span></p>
-                            <p>p-value: <span class="metric-highlight-v4">{p_kw:.4f}</span></p>
-                            <p style="font-size: 0.85rem; color: {'var(--primary-green)' if p_kw < 0.05 else 'rgba(255,255,255,0.6)'};">
-                                {'✓ Significant difference' if p_kw < 0.05 else '✗ No significant difference'}
-                            </p>
-                        </div>
-                        """, unsafe_allow_html=True)
-                    else:
-                        st.info("Data tidak cukup")
-                except:
-                    st.info("Error")
-            
-            # Mann-Whitney U Test
-            st.markdown("#### 📊 **Non-Parametric Tests**")
-            if len(drinkers) > 1 and len(non_drinkers) > 1:
-                u_stat, p_mw = mannwhitneyu(drinkers, non_drinkers, alternative='two-sided')
-                
-                st.markdown(f"""
-                <div class="glass-card-v4">
-                    <h4>Mann-Whitney U Test</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-                        <div>
-                            <p>U-statistic: <span class="metric-highlight-v4">{u_stat:.4f}</span></p>
-                            <p>p-value: <span class="metric-highlight-v4">{p_mw:.4f}</span></p>
-                        </div>
-                        <div>
-                            <p style="color: {'var(--primary-green)' if p_mw < 0.05 else 'rgba(255,255,255,0.6)'};">
-                                {'✓ Significant difference' if p_mw < 0.05 else '✗ No significant difference'}
-                            </p>
-                        </div>
-                    </div>
-                </div>
-                """, unsafe_allow_html=True)
+        col_adv3, col_adv4 = st.columns(2)
         
-        with adv_sub3:
-            st.markdown("### 🌡️ **Advanced Heatmaps**")
+        with col_adv3:
+            st.markdown("#### 📈 **Violin Plot: Distribution by Category**")
             
-            # Violin Plot
-            st.markdown("#### 🎻 **Violin Plot: Distribution by Category**")
             fig_violin = px.violin(
                 df_filtered,
                 x='Kategori_Konsumsi',
@@ -2709,19 +2479,22 @@ with tab7:
                 points='outliers',
                 color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5']
             )
+            
             fig_violin.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white'),
-                xaxis=dict(gridcolor='rgba(255,255,255,0.15)'),
-                yaxis=dict(title='Productivity Score', gridcolor='rgba(255,255,255,0.15)'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(title='Productivity Score', gridcolor='rgba(255,255,255,0.1)'),
                 showlegend=False,
                 margin=dict(l=20, r=20, t=20, b=20)
             )
-            st.plotly_chart(fig_violin, use_container_width=True)
             
-            # Heatmap
-            st.markdown("#### 🗺️ **Heatmap: Productivity by Coffee & Study Duration**")
+            st.plotly_chart(fig_violin, use_container_width=True)
+        
+        with col_adv4:
+            st.markdown("#### 🌡️ **Heatmap: Productivity by Coffee & Study Duration**")
+            
             heatmap_data = df_filtered.groupby(['Kopi_per_Hari', 'Durasi_Belajar_Num'])['Skor_Produktivitas'].mean().reset_index()
             heatmap_pivot = heatmap_data.pivot(index='Kopi_per_Hari', columns='Durasi_Belajar_Num', values='Skor_Produktivitas')
             
@@ -2731,25 +2504,101 @@ with tab7:
                 color_continuous_scale=['#0f0524', '#8338ec', '#ff006e', '#ffbe0b', '#06ffa5'],
                 labels=dict(x="Study Duration (h)", y="Coffee Cups", color="Productivity")
             )
+            
             fig_heatmap_adv.update_layout(
                 paper_bgcolor='rgba(0,0,0,0)',
                 plot_bgcolor='rgba(0,0,0,0)',
                 font=dict(color='white', family='JetBrains Mono'),
                 height=500,
-                margin=dict(l=20, r=20, t=20, b=20)
+                margin=dict(l=20, r=20, t=20, b=20),
+                coloraxis_colorbar=dict(
+                    title='Productivity',
+                    tickfont=dict(color='white'),
+                    title_font=dict(color='white')
+                )
             )
+            
             st.plotly_chart(fig_heatmap_adv, use_container_width=True)
+        
+        st.markdown("#### 🧪 **Hypothesis Testing**")
+        
+        test_col1, test_col2, test_col3 = st.columns(3)
+        
+        with test_col1:
+            st.markdown("##### T-Test: Drinkers vs Non-Drinkers")
+            drinkers = df_filtered[df_filtered['Is_Peminum_Kopi'] == 1]['Skor_Produktivitas']
+            non_drinkers = df_filtered[df_filtered['Is_Peminum_Kopi'] == 0]['Skor_Produktivitas']
+            
+            if len(drinkers) > 1 and len(non_drinkers) > 1:
+                from scipy.stats import ttest_ind
+                t_stat, p_t = ttest_ind(drinkers, non_drinkers)
+                
+                st.markdown(f"""
+                <div class="glass-card">
+                    <p>t-statistic: <span class="metric-highlight">{t_stat:.4f}</span></p>
+                    <p>p-value: <span class="metric-highlight">{p_t:.4f}</span></p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        {'✓ Significant difference' if p_t < 0.05 else '✗ No significant difference'}
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("⚠️ Data tidak cukup")
+        
+        with test_col2:
+            st.markdown("##### ANOVA: Multiple Groups")
+            from scipy.stats import f_oneway
+            
+            groups = []
+            for cups in df_filtered['Kopi_per_Hari'].unique():
+                group_data = df_filtered[df_filtered['Kopi_per_Hari'] == cups]['Skor_Produktivitas']
+                if len(group_data) > 1:
+                    groups.append(group_data)
+            
+            if len(groups) >= 2:
+                f_stat, p_anova = f_oneway(*groups)
+                
+                st.markdown(f"""
+                <div class="glass-card">
+                    <p>F-statistic: <span class="metric-highlight">{f_stat:.4f}</span></p>
+                    <p>p-value: <span class="metric-highlight">{p_anova:.4f}</span></p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        {'✓ Significant difference' if p_anova < 0.05 else '✗ No significant difference'}
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("⚠️ Data tidak cukup")
+        
+        with test_col3:
+            st.markdown("##### Mann-Whitney U Test")
+            from scipy.stats import mannwhitneyu
+            
+            if len(drinkers) > 1 and len(non_drinkers) > 1:
+                u_stat, p_mw = mannwhitneyu(drinkers, non_drinkers, alternative='two-sided')
+                
+                st.markdown(f"""
+                <div class="glass-card">
+                    <p>U-statistic: <span class="metric-highlight">{u_stat:.4f}</span></p>
+                    <p>p-value: <span class="metric-highlight">{p_mw:.4f}</span></p>
+                    <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+                        {'✓ Significant difference' if p_mw < 0.05 else '✗ No significant difference'}
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+            else:
+                st.markdown("⚠️ Data tidak cukup")
     else:
-        st.warning("⚠️ Data kosong.")
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
-# ===================== TAB 8: AI INSIGHTS =====================
-with tab8:
+# ===================== TAB 7: AI INSIGHTS =====================
+with tab7:
     st.markdown("""
-    <div class="section-header-v4">
-        <span class="section-number-v4">08</span>
+    <div class="section-header">
+        <span class="section-number">07</span>
         <div>
-            <h2 class="section-title-v4">AI-Powered Insights <span class="badge-4d">✦ GPT</span></h2>
-            <p class="section-subtitle-v4">Automated analysis, anomaly detection & recommendations</p>
+            <h2 class="section-title">AI-Powered Insights <span class="badge-3d">✦ AI</span></h2>
+            <p class="section-subtitle">Automated pattern recognition and recommendations</p>
         </div>
     </div>
     """, unsafe_allow_html=True)
@@ -2757,7 +2606,6 @@ with tab8:
     if len(df_filtered) > 0:
         st.markdown("### 🤖 **Automated Analysis**")
         
-        # Optimal Coffee
         prod_by_coffee = df_filtered.groupby('Kopi_per_Hari')['Skor_Produktivitas'].mean()
         if len(prod_by_coffee) > 0:
             optimal_coffee = prod_by_coffee.idxmax()
@@ -2767,18 +2615,17 @@ with tab8:
             optimal_score = 0
         
         st.markdown(f"""
-        <div class="insight-card-v4">
-            <div class="insight-icon-v4">🏆</div>
-            <div class="insight-title-v4">Optimal Coffee Consumption</div>
-            <div class="insight-text-v4">
-                Berdasarkan analisis, konsumsi kopi optimal untuk produktivitas maksimal adalah 
-                <span class="metric-highlight-v4">{optimal_coffee} cangkir per hari</span>, dengan rata-rata 
-                skor produktivitas <span class="metric-highlight-v4">{optimal_score:.2f}</span>.
+        <div class="insight-card">
+            <div class="insight-icon">🏆</div>
+            <div class="insight-title">Optimal Coffee Consumption</div>
+            <div class="insight-text">
+                Based on our analysis, the optimal coffee consumption for maximum productivity is 
+                <span class="metric-highlight">{optimal_coffee} cups per day</span>, achieving an average 
+                productivity score of <span class="metric-highlight">{optimal_score:.2f}</span>.
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Study Duration Sweet Spot
         durasi_bins = pd.cut(df_filtered['Durasi_Belajar_Num'], bins=[0, 2, 4, 6, 8, 10])
         durasi_productivity = df_filtered.groupby(durasi_bins, observed=True)['Skor_Produktivitas'].mean()
         if len(durasi_productivity) > 0:
@@ -2789,151 +2636,180 @@ with tab8:
             optimal_durasi_score = 0
         
         st.markdown(f"""
-        <div class="insight-card-v4">
-            <div class="insight-icon-v4">⏰</div>
-            <div class="insight-title-v4">Study Duration Sweet Spot</div>
-            <div class="insight-text-v4">
-                Durasi belajar paling produktif adalah <span class="metric-highlight-v4">{optimal_durasi}</span>, 
-                dengan rata-rata skor <span class="metric-highlight-v4">{optimal_durasi_score:.2f}</span>.
-                Pertimbangkan untuk mengatur sesi belajar dalam rentang waktu ini.
+        <div class="insight-card">
+            <div class="insight-icon">⏰</div>
+            <div class="insight-title">Study Duration Sweet Spot</div>
+            <div class="insight-text">
+                The most productive study duration range is <span class="metric-highlight">{optimal_durasi}</span>, 
+                with an average productivity score of <span class="metric-highlight">{optimal_durasi_score:.2f}</span>.
+                Consider structuring your study sessions within this timeframe.
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Sleep Quality Impact
         sleep_corr = df_filtered['Kualitas_Tidur_Memburuk'].corr(df_filtered['Skor_Produktivitas'])
         
         st.markdown(f"""
-        <div class="insight-card-v4">
-            <div class="insight-icon-v4">😴</div>
-            <div class="insight-title-v4">Sleep Quality Impact</div>
-            <div class="insight-text-v4">
-                Kualitas tidur menunjukkan korelasi <span class="metric-highlight-v4">{'positif' if sleep_corr > 0 else 'negatif'}</span> 
-                dengan produktivitas (r = {sleep_corr:.3f}). 
-                {'Tidur berkualitas lebih baik diasosiasikan dengan produktivitas lebih tinggi.' if sleep_corr > 0 else 'Kualitas tidur buruk diasosiasikan dengan produktivitas rendah.'}
+        <div class="insight-card">
+            <div class="insight-icon">😴</div>
+            <div class="insight-title">Sleep Quality Impact</div>
+            <div class="insight-text">
+                Sleep quality shows a <span class="metric-highlight">{'positive' if sleep_corr > 0 else 'negative'}</span> 
+                correlation with productivity (r = {sleep_corr:.3f}). 
+                {'Better sleep quality is associated with higher productivity.' if sleep_corr > 0 else 'Poorer sleep quality is associated with lower productivity.'}
             </div>
         </div>
         """, unsafe_allow_html=True)
         
-        # Risk Factor Alert
         high_coffee_low_sleep = df_filtered[(df_filtered['Kopi_per_Hari'] >= 2) & (df_filtered['Kualitas_Tidur_Memburuk'] >= 4)]
-        risk_percentage = (len(high_coffee_low_sleep) / len(df_filtered)) * 100 if len(df_filtered) > 0 else 0
+        risk_percentage = (len(high_coffee_low_sleep) / len(df_filtered)) * 100
         
-        if risk_percentage > 20:
-            st.markdown(f"""
-            <div class="anomaly-alert">
-                <h4 style="color: var(--primary-pink);">⚠️ Risk Factor Alert</h4>
-                <p style="color: rgba(255,255,255,0.9);">
-                    <span class="metric-highlight-v4">{risk_percentage:.1f}%</span> responden menunjukkan pola berisiko tinggi: 
-                    konsumsi 2+ cangkir kopi per hari dengan kualitas tidur buruk (≥4). 
-                    Kombinasi ini dapat menyebabkan masalah kesehatan jangka panjang dan penurunan performa kognitif.
-                </p>
+        st.markdown(f"""
+        <div class="insight-card">
+            <div class="insight-icon">⚠️</div>
+            <div class="insight-title">Risk Factor Alert</div>
+            <div class="insight-text">
+                <span class="metric-highlight">{risk_percentage:.1f}%</span> of respondents show a high-risk pattern: 
+                consuming 2+ cups of coffee daily with poor sleep quality (≥4). This combination may lead to 
+                long-term health issues and decreased cognitive performance.
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
+        
+        st.markdown("### 💡 **Personalized Recommendations**")
+        
+        rec_col1, rec_col2, rec_col3 = st.columns(3)
+        
+        with rec_col1:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #06ffa5;">☕ For Light Drinkers</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                    <li>✓ Maintain 1 cup/day routine</li>
+                    <li>✓ Consume before study sessions</li>
+                    <li>✓ Avoid after 4 PM</li>
+                    <li>✓ Monitor sleep quality</li>
+                </ul>
             </div>
             """, unsafe_allow_html=True)
-        else:
+        
+        with rec_col2:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #ffbe0b;">⚡ For Moderate Drinkers</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                    <li>⚠ Consider reducing to 1 cup</li>
+                    <li>⚠ Track productivity changes</li>
+                    <li>⚠ Implement coffee breaks</li>
+                    <li>⚠ Prioritize sleep hygiene</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        with rec_col3:
+            st.markdown("""
+            <div class="glass-card">
+                <h4 style="color: #ff006e;">🚨 For Heavy Drinkers</h4>
+                <ul style="color: rgba(255,255,255,0.8); font-size: 0.9rem;">
+                    <li>🚨 Reduce consumption gradually</li>
+                    <li>🚨 Consult health professional</li>
+                    <li>🚨 Implement detox periods</li>
+                    <li>🚨 Focus on sleep recovery</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+        
+        st.markdown("### 📊 **Predictive Model Summary**")
+        
+        try:
+            X = df_filtered[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk']].values
+            y = df_filtered['Skor_Produktivitas'].values
+            
+            X_with_intercept = np.column_stack([np.ones(len(X)), X])
+            
+            beta, residuals, rank, s = np.linalg.lstsq(X_with_intercept, y, rcond=None)
+            y_pred = X_with_intercept @ beta
+            
+            ss_res = np.sum((y - y_pred) ** 2)
+            ss_tot = np.sum((y - np.mean(y)) ** 2)
+            r2 = 1 - (ss_res / ss_tot) if ss_tot != 0 else 0
+            
+            rmse = np.sqrt(np.mean((y - y_pred) ** 2))
+            
+            coef = beta[1:]
+            
             st.markdown(f"""
-            <div class="insight-card-v4">
-                <div class="insight-icon-v4">✓</div>
-                <div class="insight-title-v4">Low Risk Profile</div>
-                <div class="insight-text-v4">
-                    Hanya <span class="metric-highlight-v4">{risk_percentage:.1f}%</span> responden menunjukkan pola berisiko tinggi. 
-                    Secara keseluruhan, populasi ini memiliki kebiasaan konsumsi kopi yang relatif sehat.
+            <div class="glass-card">
+                <h4>🤖 Linear Regression Model (NumPy)</h4>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1rem;">
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">R² Score</p>
+                        <p class="metric-highlight" style="font-size: 1.5rem;">{r2:.4f}</p>
+                    </div>
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">RMSE</p>
+                        <p class="metric-highlight" style="font-size: 1.5rem;">{rmse:.4f}</p>
+                    </div>
+                    <div>
+                        <p style="color: rgba(255,255,255,0.6); font-size: 0.8rem;">Model Fit</p>
+                        <p class="metric-highlight" style="font-size: 1.5rem;">{r2*100:.1f}%</p>
+                    </div>
                 </div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        # Anomaly Detection
-        st.markdown("### 🔍 **Anomaly Detection**")
-        
-        Q1 = np.percentile(df_filtered['Skor_Produktivitas'], 25)
-        Q3 = np.percentile(df_filtered['Skor_Produktivitas'], 75)
-        IQR = Q3 - Q1
-        lower_bound = Q1 - 1.5 * IQR
-        upper_bound = Q3 + 1.5 * IQR
-        
-        anomalies = df_filtered[
-            (df_filtered['Skor_Produktivitas'] < lower_bound) | 
-            (df_filtered['Skor_Produktivitas'] > upper_bound)
-        ]
-        
-        if len(anomalies) > 0:
-            st.markdown(f"""
-            <div class="anomaly-alert">
-                <h4>🎯 {len(anomalies)} Anomali Terdeteksi</h4>
-                <p style="color: rgba(255,255,255,0.9);">
-                    Ditemukan <b>{len(anomalies)}</b> responden dengan skor produktivitas di luar range normal 
-                    [{lower_bound:.2f}, {upper_bound:.2f}]. Responden ini mungkin memerlukan analisis lebih lanjut.
+                <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-top: 1rem;">
+                    <strong>Coefficients:</strong><br>
+                    Coffee: {coef[0]:.4f} | Study Duration: {coef[1]:.4f} | Sleep Quality: {coef[2]:.4f}
                 </p>
             </div>
             """, unsafe_allow_html=True)
             
-            st.dataframe(anomalies[['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Skor_Produktivitas', 'Kualitas_Tidur_Memburuk']].head(10))
-        else:
-            st.success("✅ Tidak ada anomali signifikan terdeteksi.")
-        
-        # Personalized Recommendations
-        st.markdown("### 💡 **Personalized Recommendations**")
-        
-        rec_cols = st.columns(3)
-        
-        with rec_cols[0]:
-            st.markdown("""
-            <div class="glass-card-v4">
-                <h4 style="color: var(--primary-green);">☕ For Light Drinkers</h4>
-                <ul style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">
-                    <li>✓ Pertahankan rutinitas 1 cangkir/hari</li>
-                    <li>✓ Konsumsi sebelum sesi belajar</li>
-                    <li>✓ Hindari setelah jam 4 sore</li>
-                    <li>✓ Monitor kualitas tidur</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with rec_cols[1]:
-            st.markdown("""
-            <div class="glass-card-v4">
-                <h4 style="color: var(--primary-yellow);">⚡ For Moderate Drinkers</h4>
-                <ul style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">
-                    <li>⚠ Pertimbangkan mengurangi ke 1 cangkir</li>
-                    <li>⚠ Lacak perubahan produktivitas</li>
-                    <li>⚠ Implementasikan coffee breaks</li>
-                    <li>⚠ Prioritaskan sleep hygiene</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with rec_cols[2]:
-            st.markdown("""
-            <div class="glass-card-v4">
-                <h4 style="color: var(--primary-pink);">🚨 For Heavy Drinkers</h4>
-                <ul style="color: rgba(255,255,255,0.9); font-size: 0.9rem;">
-                    <li>🚨 Kurangi konsumsi secara bertahap</li>
-                    <li>🚨 Konsultasi profesional kesehatan</li>
-                    <li>🚨 Implementasikan periode detoks</li>
-                    <li>🚨 Fokus pada pemulihan tidur</li>
-                </ul>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown("### 📈 **Feature Importance**")
+            
+            feature_importance = pd.DataFrame({
+                'Feature': ['Kopi_per_Hari', 'Durasi_Belajar_Num', 'Kualitas_Tidur_Memburuk'],
+                'Importance': np.abs(coef)
+            }).sort_values('Importance', ascending=False)
+            
+            fig_importance = px.bar(
+                feature_importance,
+                x='Importance',
+                y='Feature',
+                orientation='h',
+                color='Importance',
+                color_continuous_scale=['#06ffa5', '#8338ec', '#ff006e']
+            )
+            
+            fig_importance.update_layout(
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)',
+                font=dict(color='white'),
+                xaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                yaxis=dict(gridcolor='rgba(255,255,255,0.1)'),
+                showlegend=False,
+                coloraxis_showscale=False,
+                height=300,
+                margin=dict(l=20, r=20, t=20, b=20)
+            )
+            
+            st.plotly_chart(fig_importance, use_container_width=True)
+            
+        except Exception as e:
+            st.error(f"⚠️ Error in regression model: {str(e)}")
+            st.info("Pastikan data memiliki cukup variasi untuk analisis regresi.")
     else:
-        st.warning("⚠️ Data kosong.")
+        st.warning("⚠️ Tidak ada data yang sesuai dengan filter.")
 
-# --- FOOTER V4 ---
-st.markdown('<div style="height: 2px; background: linear-gradient(90deg, var(--primary-pink), var(--primary-purple), var(--primary-blue), var(--primary-green)); margin: 3rem 0;"></div>', unsafe_allow_html=True)
-
+# --- FOOTER ---
+st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
 st.markdown("""
-<div class="premium-footer-v4">
-    <p class="footer-brand-v4">☕ COFFEE ANALYTICS 4D PRO</p>
-    <p style="color: rgba(255,255,255,0.7); font-size: 0.95rem; margin: 1rem 0;">
-        Next-Gen Neuroscience & Productivity Intelligence Platform
-    </p>
-    <p style="color: rgba(255,255,255,0.6); font-size: 0.85rem; margin: 0.5rem 0;">
-        Dibuat untuk Mata Kuliah <b>Statistika dan Probabilitas</b>
-    </p>
-    <p style="color: rgba(255,255,255,0.5); font-size: 0.8rem; margin: 0.5rem 0;">
-        Sumber Data: Kuesioner Mahasiswa (n={}) | Powered by Streamlit, Plotly 3D & scikit-learn
-    </p>
-    <p style="color: rgba(255,255,255,0.4); font-size: 0.75rem; margin-top: 1.5rem; letter-spacing: 2px;">
-        ◆ 4D VISUALIZATION ◆ AI-POWERED ◆ ML CLUSTERING ◆ STOCHASTIC MODELING ◆
+<div class="premium-footer">
+    <p class="footer-brand">☕ Coffee Analytics Pro Dashboard</p>
+    <p class="footer-text">Advanced 3D Neuroscience & Productivity Intelligence Platform</p>
+    <p class="footer-text">Dibuat untuk Mata Kuliah <b>Statistika dan Probabilitas</b></p>
+    <p class="footer-text">Sumber Data: Kuesioner Mahasiswa (n=31) | Powered by Streamlit & Plotly 3D</p>
+    <p class="footer-text" style="margin-top: 1rem; opacity: 0.6;">
+        ◆ Interactive 3D Visualization ◆ AI-Powered Insights ◆ Stochastic Modeling ◆ Advanced Analytics ◆
     </p>
 </div>
-""".format(len(df)), unsafe_allow_html=True)
+""", unsafe_allow_html=True)
+
+
