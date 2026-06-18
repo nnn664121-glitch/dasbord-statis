@@ -2559,59 +2559,62 @@ with tab1:
         st.markdown('<div class="fancy-divider"></div>', unsafe_allow_html=True)
         
         # Additional 3D Line Plot
-        st.markdown("### 📊 **3D Line Plot: Temporal Patterns**")
-        st.markdown("""
-        <div class="info-box">
-            📈 <strong>Line Plot 3D:</strong> Visualisasi pola temporal produktivitas berdasarkan 
-            urutan responden dan karakteristik mereka.
-        </div>
-        """, unsafe_allow_html=True)
-        
-        # Create sample indices for line plot
-        sample_indices = np.linspace(0, len(df_filtered)-1, min(50, len(df_filtered))).astype(int)
-        df_sample = df_filtered.iloc[sample_indices].reset_index(drop=True)
-        df_sample['Index'] = range(len(df_sample))
-        
-        fig_line_3d = px.line_3d(
-            df_sample,
-            x='Index',
-            y='Kopi_per_Hari',
-            z='Skor_Produktivitas',
-            color='Durasi_Belajar_Num',
-            color_continuous_scale=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5'],
-            labels={
-                'Index': 'Respondent Index',
-                'Kopi_per_Hari': 'Coffee Cups',
-                'Skor_Produktivitas': 'Productivity'
-            }
+st.markdown("### 📊 **3D Line Plot: Temporal Patterns**")
+st.markdown("""
+<div class="info-box">
+📈 <strong>Line Plot 3D:</strong> Visualisasi pola temporal produktivitas berdasarkan
+urutan responden dan karakteristik mereka.
+</div>
+""", unsafe_allow_html=True)
+
+# Create sample indices for line plot
+sample_indices = np.linspace(0, len(df_filtered)-1, min(50, len(df_filtered))).astype(int)
+df_sample = df_filtered.iloc[sample_indices].reset_index(drop=True)
+df_sample['Index'] = range(len(df_sample))
+
+# [PERBAIKAN] Konversi ke string agar dibaca sebagai kategori diskrit oleh Plotly
+df_sample['Durasi_Label'] = df_sample['Durasi_Belajar_Num'].astype(str) + ' jam'
+
+fig_line_3d = px.line_3d(
+    df_sample,
+    x='Index',
+    y='Kopi_per_Hari',
+    z='Skor_Produktivitas',
+    color='Durasi_Label', # Menggunakan kolom string baru
+    color_discrete_sequence=['#ff006e', '#8338ec', '#3a86ff', '#06ffa5'], # Ganti dari color_continuous_scale
+    labels={
+        'Index': 'Respondent Index',
+        'Kopi_per_Hari': 'Coffee Cups',
+        'Skor_Produktivitas': 'Productivity',
+        'Durasi_Label': 'Study Duration'
+    }
+)
+
+fig_line_3d.update_layout(
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='white', family='Space Grotesk'),
+    scene=dict(
+        xaxis=dict(
+            title='📊 Respondent Index',
+            backgroundcolor='rgba(0,0,0,0)',
+            gridcolor='rgba(255,255,255,0.1)'
+        ),
+        yaxis=dict(
+            title='☕ Coffee Cups',
+            backgroundcolor='rgba(0,0,0,0)',
+            gridcolor='rgba(255,255,255,0.1)'
+        ),
+        zaxis=dict(
+            title='⚡ Productivity',
+            backgroundcolor='rgba(0,0,0,0)',
+            gridcolor='rgba(255,255,255,0.1)'
         )
-        
-        fig_line_3d.update_layout(
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)',
-            font=dict(color='white', family='Space Grotesk'),
-            scene=dict(
-                xaxis=dict(
-                    title='📊 Respondent Index',
-                    backgroundcolor='rgba(0,0,0,0)',
-                    gridcolor='rgba(255,255,255,0.1)'
-                ),
-                yaxis=dict(
-                    title='☕ Coffee Cups',
-                    backgroundcolor='rgba(0,0,0,0)',
-                    gridcolor='rgba(255,255,255,0.1)'
-                ),
-                zaxis=dict(
-                    title='⚡ Productivity',
-                    backgroundcolor='rgba(0,0,0,0)',
-                    gridcolor='rgba(255,255,255,0.1)'
-                )
-            ),
-            height=500,
-            margin=dict(l=20, r=20, t=20, b=20)
-        )
-        
-        st.plotly_chart(fig_line_3d, use_container_width=True)
+    ),
+    height=500,
+    margin=dict(l=20, r=20, t=20, b=20)
+)
+st.plotly_chart(fig_line_3d, use_container_width=True)
     else:
         st.warning("⚠️ Tidak ada data yang sesuai dengan filter. Silakan ubah filter di sidebar.")
 
