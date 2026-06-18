@@ -1937,28 +1937,26 @@ st.markdown("""
         <p class="hero-subtitle">Advanced 3D Neuroscience & Productivity Intelligence Platform</p>
         <span class="hero-badge">◆ PREMIUM EDITION v4.0 ◆ AI-POWERED INSIGHTS ◆ INTERACTIVE 3D ◆</span>
         
-          <div class="hero-stats">
-      <div class="hero-stat-item">
-          <span class="hero-stat-icon">📊</span>
-          <p class="hero-stat-value">12+</p>
-          <p class="hero-stat-label">Analysis Tabs</p>
-      </div>
-      <div class="hero-stat-item">
-          <span class="hero-stat-icon">📈</span>
-          <p class="hero-stat-value">50+</p>
-          <p class="hero-stat-label">Visualizations</p>
-      </div>
-      <div class="hero-stat-item">
-          <span class="hero-stat-icon">🎲</span>
-          <p class="hero-stat-value">10K+</p>
-          <p class="hero-stat-label">MC Simulations</p>
-      </div>
-      <div class="hero-stat-item">
-          <span class="hero-stat-icon">🤖</span>
-          <p class="hero-stat-value">AI</p>
-          <p class="hero-stat-label">Powered</p>
-      </div>
-</div>
+        <div class="hero-stats">
+            <div class="hero-stat-item">
+                <span class="hero-stat-icon">📊</span>
+                <p class="hero-stat-value">12+</p>
+                <p class="hero-stat-label">Analysis Tabs</p>
+            </div>
+            <div class="hero-stat-item">
+                <span class="hero-stat-icon">📈</span>
+                <p class="hero-stat-value">50+</p>
+                <p class="hero-stat-label">Visualizations</p>
+            </div>
+            <div class="hero-stat-item">
+                <span class="hero-stat-icon">🎲</span>
+                <p class="hero-stat-value">10K+</p>
+                <p class="hero-stat-label">MC Simulations</p>
+            </div>
+            <div class="hero-stat-item">
+                <span class="hero-stat-icon">🤖</span>
+                <p class="hero-stat-value">AI</p>
+                <p class="hero-stat-label">Powered</p>
             </div>
         </div>
     </div>
