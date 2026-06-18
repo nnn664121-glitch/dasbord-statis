@@ -1540,8 +1540,7 @@ st.markdown("""
         0% { background-position: 200% 0; }
         100% { background-position: -200% 0; }
     }
-</style>
-""", unsafe_allow_html=True)
+
 
 
 /* ============================================ */
@@ -1762,6 +1761,8 @@ st.markdown("""
         transform: scale(1) translateY(0) rotate(0deg);
     }
 }
+</style>
+""", unsafe_allow_html=True)
 # --- ANIMATED BACKGROUND ELEMENTS ---
 st.markdown("""
 <div class="animated-grid"></div>
