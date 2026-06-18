@@ -321,57 +321,7 @@ st.markdown("""
         50% { transform: translateY(-10px); }
     }
     
-    .hero-stats {
-        display: flex;
-        justify-content: center;
-        gap: 2rem;
-        margin-top: 2rem;
-        flex-wrap: wrap;
-    }
     
-    .hero-stat-item {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.1);
-        border-radius: 15px;
-        padding: 1rem 2rem;
-        backdrop-filter: blur(10px);
-        animation: stat-pop 0.6s ease-out backwards;
-    }
-    
-    .hero-stat-item:nth-child(1) { animation-delay: 0.8s; }
-    .hero-stat-item:nth-child(2) { animation-delay: 0.9s; }
-    .hero-stat-item:nth-child(3) { animation-delay: 1.0s; }
-    .hero-stat-item:nth-child(4) { animation-delay: 1.1s; }
-    
-    @keyframes stat-pop {
-        0% {
-            opacity: 0;
-            transform: scale(0.8) translateY(20px);
-        }
-        100% {
-            opacity: 1;
-            transform: scale(1) translateY(0);
-        }
-    }
-    
-    .hero-stat-value {
-        font-size: 2rem;
-        font-weight: 700;
-        background: linear-gradient(135deg, #ff006e, #8338ec);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        margin: 0;
-        font-family: 'JetBrains Mono', monospace;
-    }
-    
-    .hero-stat-label {
-        font-size: 0.8rem;
-        color: rgba(255, 255, 255, 0.6);
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        margin-top: 0.3rem;
-    }
     
     /* ============================================ */
     /* KPI CARDS - ENHANCED WITH SHIMMER            */
@@ -1593,6 +1543,225 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
+
+/* ============================================ */
+/* HERO STATS - ENHANCED PREMIUM VERSION       */
+/* ============================================ */
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    flex-wrap: wrap;
+    position: relative;
+    z-index: 3;
+    padding: 0 1rem;
+}
+
+.hero-stat-item {
+    flex: 1;
+    min-width: 180px;
+    max-width: 220px;
+    background: linear-gradient(135deg, 
+        rgba(255, 255, 255, 0.08) 0%, 
+        rgba(131, 56, 236, 0.05) 50%,
+        rgba(255, 0, 110, 0.03) 100%);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 1.5rem 1rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: stat-pop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+    box-shadow: 
+        0 8px 32px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.hero-stat-item:nth-child(1) { animation-delay: 0.8s; }
+.hero-stat-item:nth-child(2) { animation-delay: 0.95s; }
+.hero-stat-item:nth-child(3) { animation-delay: 1.1s; }
+.hero-stat-item:nth-child(4) { animation-delay: 1.25s; }
+
+/* Top gradient accent */
+.hero-stat-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+    background-size: 300% 100%;
+    animation: gradient-shift 4s linear infinite;
+    border-radius: 20px 20px 0 0;
+}
+
+/* Shimmer effect */
+.hero-stat-item::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.08),
+        transparent
+    );
+    transition: left 0.8s ease;
+    pointer-events: none;
+}
+
+.hero-stat-item:hover {
+    transform: translateY(-8px) scale(1.05);
+    border-color: rgba(131, 56, 236, 0.6);
+    box-shadow: 
+        0 20px 40px rgba(131, 56, 236, 0.4),
+        0 0 60px rgba(255, 0, 110, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.hero-stat-item:hover::after {
+    left: 100%;
+}
+
+/* Icon above value */
+.hero-stat-icon {
+    font-size: 1.8rem;
+    display: inline-block;
+    margin-bottom: 0.5rem;
+    filter: drop-shadow(0 0 10px rgba(131, 56, 236, 0.5));
+    animation: icon-float 3s ease-in-out infinite;
+}
+
+.hero-stat-item:nth-child(1) .hero-stat-icon { animation-delay: 0s; }
+.hero-stat-item:nth-child(2) .hero-stat-icon { animation-delay: 0.3s; }
+.hero-stat-item:nth-child(3) .hero-stat-icon { animation-delay: 0.6s; }
+.hero-stat-item:nth-child(4) .hero-stat-icon { animation-delay: 0.9s; }
+
+@keyframes icon-float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-5px) rotate(5deg); }
+}
+
+/* Value with gradient */
+.hero-stat-value {
+    font-size: 2.5rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #ff006e 0%, #ffbe0b 30%, #8338ec 60%, #3a86ff 85%, #06ffa5 100%);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 0.3rem 0 0.2rem 0;
+    font-family: 'JetBrains Mono', monospace;
+    letter-spacing: -1px;
+    line-height: 1;
+    animation: value-gradient-flow 4s ease infinite, value-glow-pulse 2.5s ease-in-out infinite;
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes value-gradient-flow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+}
+
+@keyframes value-glow-pulse {
+    0%, 100% { 
+        filter: drop-shadow(0 0 8px rgba(131, 56, 236, 0.4));
+    }
+    50% { 
+        filter: drop-shadow(0 0 20px rgba(255, 0, 110, 0.7));
+    }
+}
+
+/* Label */
+.hero-stat-label {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.7);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0.5rem 0 0 0;
+    font-weight: 500;
+    position: relative;
+    z-index: 2;
+}
+
+/* Subtle counter effect */
+.hero-stat-item:hover .hero-stat-value {
+    transform: scale(1.1);
+    transition: transform 0.3s ease;
+}
+
+.hero-stat-item:hover .hero-stat-label {
+    color: #06ffa5;
+    transition: color 0.3s ease;
+}
+
+/* Badge indicator on hover */
+.hero-stat-item:hover::before {
+    animation: gradient-shift 1s linear infinite;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-stats {
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .hero-stat-item {
+        min-width: 140px;
+        padding: 1rem 0.8rem;
+    }
+    
+    .hero-stat-value {
+        font-size: 2rem;
+    }
+    
+    .hero-stat-icon {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-stats {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .hero-stat-item {
+        width: 100%;
+        max-width: 280px;
+    }
+}
+
+/* Pop animation with bounce */
+@keyframes stat-pop {
+    0% {
+        opacity: 0;
+        transform: scale(0.3) translateY(40px) rotate(-5deg);
+    }
+    50% {
+        opacity: 0.8;
+        transform: scale(1.1) translateY(-10px) rotate(2deg);
+    }
+    70% {
+        transform: scale(0.95) translateY(5px) rotate(-1deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0) rotate(0deg);
+    }
+}
 # --- ANIMATED BACKGROUND ELEMENTS ---
 st.markdown("""
 <div class="animated-grid"></div>
@@ -1767,22 +1936,28 @@ st.markdown("""
         <p class="hero-subtitle">Advanced 3D Neuroscience & Productivity Intelligence Platform</p>
         <span class="hero-badge">◆ PREMIUM EDITION v4.0 ◆ AI-POWERED INSIGHTS ◆ INTERACTIVE 3D ◆</span>
         
-        <div class="hero-stats">
-            <div class="hero-stat-item">
-                <p class="hero-stat-value">12+</p>
-                <p class="hero-stat-label">Analysis Tabs</p>
-            </div>
-            <div class="hero-stat-item">
-                <p class="hero-stat-value">50+</p>
-                <p class="hero-stat-label">Visualizations</p>
-            </div>
-            <div class="hero-stat-item">
-                <p class="hero-stat-value">10K+</p>
-                <p class="hero-stat-label">MC Simulations</p>
-            </div>
-            <div class="hero-stat-item">
-                <p class="hero-stat-value">AI</p>
-                <p class="hero-stat-label">Powered</p>
+          <div class="hero-stats">
+      <div class="hero-stat-item">
+          <span class="hero-stat-icon">📊</span>
+          <p class="hero-stat-value">12+</p>
+          <p class="hero-stat-label">Analysis Tabs</p>
+      </div>
+      <div class="hero-stat-item">
+          <span class="hero-stat-icon">📈</span>
+          <p class="hero-stat-value">50+</p>
+          <p class="hero-stat-label">Visualizations</p>
+      </div>
+      <div class="hero-stat-item">
+          <span class="hero-stat-icon">🎲</span>
+          <p class="hero-stat-value">10K+</p>
+          <p class="hero-stat-label">MC Simulations</p>
+      </div>
+      <div class="hero-stat-item">
+          <span class="hero-stat-icon">🤖</span>
+          <p class="hero-stat-value">AI</p>
+          <p class="hero-stat-label">Powered</p>
+      </div>
+</div>
             </div>
         </div>
     </div>
