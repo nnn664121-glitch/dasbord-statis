@@ -1936,7 +1936,6 @@ st.markdown("""
         <h1 class="hero-title">Coffee Analytics Pro</h1>
         <p class="hero-subtitle">Advanced 3D Neuroscience & Productivity Intelligence Platform</p>
         <span class="hero-badge">◆ PREMIUM EDITION v4.0 ◆ AI-POWERED INSIGHTS ◆ INTERACTIVE 3D ◆</span>
-        
         <div class="hero-stats">
             <div class="hero-stat-item">
                 <span class="hero-stat-icon">📊</span>
